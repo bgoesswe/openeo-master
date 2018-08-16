@@ -1,0 +1,329 @@
+from flask import Flask, render_template, request, jsonify
+import os, subprocess
+import uuid
+import cpuinfo
+import json
+from hashlib import md5
+import collections
+
+BACKEND_VERSION = "1"
+OPENEO_API_VERSION = "0.0.3"
+
+DOCKER_BASE_IMAGE = "python:3.6.4"
+DOCKER_VERSION = "docker -v"
+
+HW_ENV_CMD = "lspci -nnk"
+OS_ENV_CMD = "dpkg -l"
+
+app = Flask(__name__)
+
+DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
+LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
+JOB_LOCATION = "/sdcard/Master/JOBS"
+
+IMAGE_DIR = "../release-mini/*"
+
+PROCESS_GRAPH = {
+   "process_graph":{
+      "process_id":"min_time",
+      "args":{
+         "imagery":{
+            "process_id":"NDVI",
+            "args":{
+               "imagery":{
+                  "process_id":"filter_daterange",
+                  "args":{
+                     "imagery":{
+                        "process_id":"filter_bbox",
+                        "args":{
+                           "imagery":{
+                              "product_id":"s2a_prd_msil1c"
+                           },
+                           "left":652000,
+                           "right":672000,
+                           "top":5161000,
+                           "bottom":5181000,
+                           "srs":"EPSG:32632"
+                        }
+                     },
+                     "from":"2017 -01 -01",
+                     "to":"2017 -01 -08"
+                  }
+               },
+               "red":"B04",
+               "nir":"B08"
+            }
+         }
+      }
+   }
+}
+
+
+def create_context_model(job_id):
+   location = JOB_LOCATION+"/"+str(job_id)+"/"
+
+
+   CODE_ENV_CMD = 'now show --dir={}'.format(location)
+
+   context_model = {}
+
+   # Retrieving data
+
+   process = subprocess.Popen(OS_ENV_CMD.split(), stdout=subprocess.PIPE)
+   output, error = process.communicate()
+
+   os_hash = md5(output).hexdigest()
+
+   process = subprocess.Popen(HW_ENV_CMD.split(), stdout=subprocess.PIPE)
+   output, error = process.communicate()
+
+   hw_hash = md5(output).hexdigest()
+
+   process = subprocess.Popen(CODE_ENV_CMD.split(), stdout=subprocess.PIPE)
+   output, error = process.communicate()
+
+   output = str(output).split('\\n')
+
+   trial = output[1].split(':')[1].strip()
+   code_hash = output[5].split(':')[1].strip()
+
+   # save to json
+
+   context_model['backend_version'] = BACKEND_VERSION
+   context_model['openeo_api'] = OPENEO_API_VERSION
+   context_model['process_graph'] = PROCESS_GRAPH
+   context_model['job_id'] = job_id
+   context_model['os'] = os_hash
+   context_model['hw'] = hw_hash
+   context_model['code'] = code_hash
+
+   # if there is already a cm
+   if os.path.isfile(location+"context_model.json"):
+       json1_file = open(location+"context_model.json")
+       json1_str = json1_file.read()
+       cm = json.loads(json1_str)
+   else:
+       cm = {}
+   cm[trial] = context_model
+   # context_model = json.loads(str(context_model))
+
+   with open('context_model.json', 'w') as outfile:
+      json.dump(cm, outfile)
+
+   command = 'cp context_model.json {}'.format(location)
+   sudo_pass = 'mil1rre9'
+
+   os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+
+   print(cm)
+   return cm
+
+
+def compare_previous(job_id):
+    print("compare_previous")
+
+    location = JOB_LOCATION + "/" + str(job_id) + "/"
+
+    if os.path.isfile(location + "context_model.json"):
+        json1_file = open(location + "context_model.json")
+        json1_str = json1_file.read()
+        cm = json.loads(json1_str)
+
+    orderer_cm = collections.OrderedDict(sorted(cm.items(), reverse=True))
+
+    orderer_cm = list(orderer_cm)
+
+    if len(orderer_cm) < 2:
+        return None
+
+    current = cm[orderer_cm[0]]
+    before = cm[orderer_cm[1]]
+
+    cmp_dict = {}
+
+    for key in current:
+        if current[key] == before[key]:
+            cmp_dict[key] = "EQUAL"
+        else:
+            cmp_dict[key] = "DIFFERENT"
+
+    return cmp_dict
+
+
+
+def run_job(content, job_id):
+    job_id =str(job_id)
+
+    sudo_pass = 'mil1rre9'
+
+    job_whole_path = JOB_LOCATION + "/" + job_id
+
+    if not os.path.isdir(job_whole_path):
+        print("create job dir")
+        os.mkdir(job_whole_path)
+        print("change owner")
+        command = 'chown berni:berni -R {}'.format(job_whole_path)
+        print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
+        os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+    os.system('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path))
+    print("finished copy command")
+
+
+    command = './runlocal.sh {}'.format(job_whole_path)
+
+    #if os.path.isdir(job_whole_path):
+    #    os.system('cp -r {} {}'.format(job_whole_path + "/", LOCAL_NOW_OUT_DIR))
+
+    # command = 'now run app.py --dir={}'.format(job_whole_path)
+    print("run now command: {}".format(command))
+    # os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+    os.system(command)
+
+    print("after run now command")
+
+    create_context_model(job_id)
+
+        # os.mkdir(job_whole_path+"/.noworkflow")
+
+
+
+    # command = 'cp -r {} {}'.format(LOCAL_NOW_OUT_DIR, job_whole_path+"/")
+
+    # test = os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+
+    # command = 'rm -r {}'.format(LOCAL_NOW_OUT_DIR)
+
+    # test = os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+
+    # print (test)
+    # shutil.move(DOCKER_NOW_OUT_DIR, job_id+"/")
+
+
+
+    # print (cm)
+
+
+def get_python_detail(job_id):
+
+    job_whole_path = JOB_LOCATION + "/" + job_id+"/now_modules"
+
+    if not os.path.isfile(job_whole_path):
+        return None
+    else:
+        file = open(job_whole_path, "r")
+        modules = file.read()
+        modules = modules.split('Name:')[1:]
+        formated_modules = []
+        for module in modules:
+            module = module.split('Path:')[0].replace('\n', '').strip()
+            formated_modules.append(module)
+        return formated_modules
+
+
+
+def get_env_info():
+    # result = os.system('echo %s|sudo -S %s' % (sudoPassword, cmd))
+
+    env_dir = {}
+
+    process = subprocess.Popen(DOCKER_VERSION.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    output = str(output).split('\\n')[0].split("b'")[1]
+
+    env_dir["docker"] = {"docker_version": output,
+                         "docker_base": DOCKER_BASE_IMAGE}
+
+    out = cpuinfo.get_cpu_info()
+
+    env_dir["hardware"] = {"cpu": out['brand']+" "+out["raw_arch_string"]}
+
+    cmd = "lsb_release -a"
+
+    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    output = str(output).split('\\n')
+
+    env_dir["os"] = {"os": output[1].split('\\t')[1]}
+
+    return env_dir
+
+@app.route('/')
+def main():
+    return render_template('index.html')
+
+
+@app.route('/version')
+def version():
+    answer = {
+        "backend_version": BACKEND_VERSION,
+        "openeo_api_version": OPENEO_API_VERSION,
+        "environment": get_env_info()
+    }
+    return jsonify(answer)
+
+
+@app.route('/jobs', methods=["POST"])
+def job():
+    job_id = uuid.uuid4()
+
+
+    answer = {
+        "job_id": str(job_id),
+        "status": "submitted"
+    }
+    return jsonify(answer)
+
+@app.route('/jobs/<job_id>/queue', methods=["PATCH"])
+def job_queue(job_id):
+    content = request.get_json()
+    print(content)
+
+    run_job(content, job_id)
+
+    cmp = compare_previous(job_id)
+
+    answer ={
+        "job_id": str(job_id),
+        "status": "finished"
+    }
+
+    if cmp:
+        answer["validation"] = cmp
+
+    return jsonify(answer)
+
+
+@app.route('/jobs/<job_id>', methods=["GET"])
+def job_detail(job_id):
+    job_whole_path = JOB_LOCATION + "/" + job_id
+
+    if not os.path.isdir(job_whole_path):
+        answer = {
+            "job_id": str(job_id),
+            "status": "submitted"
+        }
+        return jsonify(answer)
+
+    cmp = compare_previous(job_id)
+
+    answer = {
+        "job_id": str(job_id),
+        "status": "finished"
+    }
+
+    if cmp:
+        answer["validation"] = cmp
+
+    py_modules = get_python_detail(job_id)
+
+    if py_modules:
+        answer["z_python-modules"] = py_modules
+
+    return jsonify(answer)
+
+
+if __name__ == '__main__':
+    # print(get_python_detail("test"))
+    # print(compare_previous("test"))
+    # job_queue("test")
+    app.run(debug=True, port=5957)

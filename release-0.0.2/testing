@@ -1,0 +1,50 @@
+Start cleaning directory...
+Finished cleaning directory...
+Start Sentinel 2 data extraction process...
+-> Start data unzipping...
+ - Unzipped data/products/S2A_MSIL1C_20180206T000751_N0206_R130_T48CWV_20180206T011111.zip
+-> Finished data unzipping.
+-> Start data extraction...
+ - Extracted T48CWV_20180206T000751_B09.jp2
+ - Extracted T48CWV_20180206T000751_B02.jp2
+ - Extracted T48CWV_20180206T000751_B11.jp2
+ - Extracted T48CWV_20180206T000751_B05.jp2
+ - Extracted T48CWV_20180206T000751_B03.jp2
+ - Extracted T48CWV_20180206T000751_B08.jp2
+ - Extracted T48CWV_20180206T000751_B07.jp2
+ - Extracted T48CWV_20180206T000751_B01.jp2
+ - Extracted T48CWV_20180206T000751_B12.jp2
+ - Extracted T48CWV_20180206T000751_B10.jp2
+ - Extracted T48CWV_20180206T000751_B06.jp2
+ - Extracted T48CWV_20180206T000751_TCI.jp2
+ - Extracted T48CWV_20180206T000751_B8A.jp2
+ - Extracted T48CWV_20180206T000751_B04.jp2
+-> Finished data extraction.
+-> Start combining bands...
+ - Combined bands for T48CWV_20180206T000751.vrt
+-> Finished combining bands.
+-> Start combining same UTM zone...
+ - Combined UTM for T48_2018-02-06.vrt
+-> Finished combining same UTM zone.
+-> Start reprojection...
+ - Reprojected T48_2018-02-06_epsg4326.vrt
+-> Finished reprojection.
+-> Start merging...
+ - Merged filter-s2_2018-02-06_epsg-4326.vrt
+-> Finished merging.
+-> Start translation to GeoTiff...
+ - Translated filter-s2_2018-02-06_epsg-4326.tif
+-> Finished translation to GeoTiff.
+-> Start clean up...
+-> Finished clean up.
+['filter-s2_2018-02-06_epsg-4326.tif', 'files.json']
+Finished Sentinel 2 data extraction process.
+Start processing 'NDVI' ...
+-> Start calculating NDVI...
+ - NDVI calculated for filter-s2_2018-02-06_epsg-4326.tif
+-> Finished calculating NDVI.
+Finished 'NDVI' processing.
+Start processing 'min_time' ...
+-> Start calculating minimal NDVI...
+-> Finished calculating minimal NDVI
+Finished 'min_time' processing.

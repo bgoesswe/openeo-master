@@ -1,0 +1,2 @@
+noworkflow-alpha==2.0.0a0
+ipykernel==4.8.2
