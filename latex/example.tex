@@ -1,0 +1,232 @@
+% Copyright (C) 2014-2017 by Thomas Auzinger <thomas@auzinger.name>
+
+\documentclass[draft,final]{vutinfth} % Remove option 'final' to obtain debug information.
+
+% Load packages to allow in- and output of non-ASCII characters.
+\usepackage{lmodern}        % Use an extension of the original Computer Modern font to minimize the use of bitmapped letters.
+\usepackage[T1]{fontenc}    % Determines font encoding of the output. Font packages have to be included before this line.
+\usepackage[utf8]{inputenc} % Determines encoding of the input. All input files have to use UTF8 encoding.
+
+% Extended LaTeX functionality is enables by including packages with \usepackage{...}.
+\usepackage{amsmath}    % Extended typesetting of mathematical expression.
+\usepackage{amssymb}    % Provides a multitude of mathematical symbols.
+\usepackage{mathtools}  % Further extensions of mathematical typesetting.
+\usepackage{microtype}  % Small-scale typographic enhancements.
+\usepackage[inline]{enumitem} % User control over the layout of lists (itemize, enumerate, description).
+\usepackage{multirow}   % Allows table elements to span several rows.
+\usepackage{booktabs}   % Improves the typesettings of tables.
+\usepackage{subcaption} % Allows the use of subfigures and enables their referencing.
+\usepackage[ruled,linesnumbered,algochapter]{algorithm2e} % Enables the writing of pseudo code.
+\usepackage[usenames,dvipsnames,table]{xcolor} % Allows the definition and use of colors. This package has to be included before tikz.
+\usepackage{nag}       % Issues warnings when best practices in writing LaTeX documents are violated.
+\usepackage{todonotes} % Provides tooltip-like todo notes.
+\usepackage{hyperref}  % Enables cross linking in the electronic document version. This package has to be included second to last.
+\usepackage[acronym,toc]{glossaries} % Enables the generation of glossaries and lists fo acronyms. This package has to be included last.
+
+% Define convenience functions to use the author name and the thesis title in the PDF document properties.
+\newcommand{\authorname}{Bernhard Gößwein} % The author name without titles.
+\newcommand{\thesistitle}{Designing a Framework gaining Repeatability for the OpenEO platform} % The title of the thesis. The English version should be used, if it exists.
+
+% Set PDF document properties
+\hypersetup{
+    pdfpagelayout   = TwoPageRight,           % How the document is shown in PDF viewers (optional).
+    linkbordercolor = {Melon},                % The color of the borders of boxes around crosslinks (optional).
+    pdfauthor       = {\authorname},          % The author's name in the document properties (optional).
+    pdftitle        = {\thesistitle},         % The document's title in the document properties (optional).
+    pdfsubject      = {Subject},              % The document's subject in the document properties (optional).
+    pdfkeywords     = {a, list, of, keywords} % The document's keywords in the document properties (optional).
+}
+
+\setpnumwidth{2.5em}        % Avoid overfull hboxes in the table of contents (see memoir manual).
+\setsecnumdepth{subsection} % Enumerate subsections.
+
+\nonzeroparskip             % Create space between paragraphs (optional).
+\setlength{\parindent}{0pt} % Remove paragraph identation (optional).
+
+\makeindex      % Use an optional index.
+\makeglossaries % Use an optional glossary.
+%\glstocfalse   % Remove the glossaries from the table of contents.
+
+% Set persons with 4 arguments:
+%  {title before name}{name}{title after name}{gender}
+%  where both titles are optional (i.e. can be given as empty brackets {}).
+\setauthor{}{\authorname}{}{male}
+\setadvisor{Ao.Univ.Prof. Dipl.-Ing. Dr.techn.}{Andreas Rauber}{}{male}
+
+% For bachelor and master theses:
+%\setfirstassistant{Ao.Univ.Prof. Dipl.-Ing. Dr.techn.}{Andreas Rauber}{}{male}
+\setfirstassistant{Dr.}{Tomasz Miksa}{}{male}
+%\setthirdassistant{Pretitle}{Forename Surname}{Posttitle}{male}
+
+% For dissertations:
+%\setfirstreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+%\setsecondreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+
+% For dissertations at the PhD School and optionally for dissertations:
+%\setsecondadvisor{Pretitle}{Forename Surname}{Posttitle}{male} % Comment to remove.
+
+% Required data.
+\setaddress{Vorderer Ödhof 1, 3062 Kirchstetten}
+\setregnumber{01026884}
+\setdate{01}{01}{2001} % Set date with 3 arguments: {day}{month}{year}.
+\settitle{\thesistitle}{Deutscher Titel} % Sets English and German version of the title (both can be English or German). If your title contains commas, enclose it with additional curvy brackets (i.e., {{your title}}) or define it as a macro as done with \thesistitle.
+\setsubtitle{}{} % Sets English and German version of the subtitle (both can be English or German).
+
+% Select the thesis type: bachelor / master / doctor / phd-school.
+% Bachelor:
+%\setthesis{bachelor}
+%
+% Master:
+\setthesis{master}
+\setmasterdegree{dipl.} % dipl. / rer.nat. / rer.soc.oec. / master
+%
+% Doctor:
+%\setthesis{doctor}
+%\setdoctordegree{rer.soc.oec.}% rer.nat. / techn. / rer.soc.oec.
+%
+% Doctor at the PhD School
+%\setthesis{phd-school} % Deactivate non-English title pages (see below)
+
+% For bachelor and master:
+\setcurriculum{Software Engineering and Internet Computing}{Software Engineering and Internet Computing} % Sets the English and German name of the curriculum.
+
+% For dissertations at the PhD School:
+%\setfirstreviewerdata{Affiliation, Country}
+%\setsecondreviewerdata{Affiliation, Country}
+
+
+\begin{document}
+
+\frontmatter % Switches to roman numbering.
+% The structure of the thesis has to conform to
+%  http://www.informatik.tuwien.ac.at/dekanat
+
+\addtitlepage{naustrian} % German title page (not for dissertations at the PhD School).
+\addtitlepage{english} % English title page.
+\addstatementpage
+
+\begin{danksagung*}
+\todo{Ihr Text hier.}
+\end{danksagung*}
+
+\begin{acknowledgements*}
+\todo{Enter your text here.}
+\end{acknowledgements*}
+
+\begin{kurzfassung}
+\todo{Ihr Text hier.}
+\end{kurzfassung}
+
+\begin{abstract}
+\todo{Enter your text here.}
+\end{abstract}
+
+% Select the language of the thesis, e.g., english or naustrian.
+\selectlanguage{english}
+
+% Add a table of contents (toc).
+\tableofcontents % Starred version, i.e., \tableofcontents*, removes the self-entry.
+
+% Switch to arabic numbering and start the enumeration of chapters in the table of content.
+\mainmatter
+
+\chapter{Introduction}
+\section{Problem Description}
+Over the last decades remote sensing agencies have increased the variations of data processing and therefore the amount of resulting data. To preserve the data for further usage in the future it is necessary to have citable data and processes on the data to ensure repeatability in a long-term.\cite{6352411} 
+Already most of the the data used in earth observation sciences are retrieved or provided via Service Oriented Architecture (SOA) interfaces. Provider like Google Earth Engine and EODC provide an Web API for retrieving and processing data. Due to a different range of functionality and a difference between the endpoints of the providers it is hard to create a workflow for more than one provider.  
+The OpenEO project has the goal to be an abstraction layer above different EO data providers. The underlying structure consists of three parts:
+\begin{itemize}
+	\item Client Module : Is written in the program language of the user and transfers the users commands to the backends.
+	\item Core Module: A standard on how the communication should take place between client and backend.
+	\item Backend Module: The provider of the data and the services, which gets the instructions from the clients and returns the results.
+\end{itemize}   
+Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}).Until now there is no consideration of repeatability verification of workflows for users in the OpenEO architecture.Generalised layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, because it handles data and processes on the data in a standardised way on different providers. Even though the range of functionality and the API endpoints are well defined in the OpenEO coreAPI the contributing content providers (OpenEO backends) will have different underlying software types and versions. The underlying technology of an OpenEO backend will also change over time and can lead to different results on the same workflow executions. Consider the following: A scientist runs an experiment using OpenEO as his research tool and gets results. The same scientist runs the same experiment with the same input some months later and gets slightly different results. The question occurs, why are the results different? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the backend provider changed. Adding a possibility for the users of OpenEO to gain this information is an important feature for the scientific community. The aim of this thesis is to provide a possibility for users of OpenEO to verify and validate a job re-execution on different underlying technologies of an OpenEO backend provider.\cite{openeo}
+\todo{Read through and improve above text.}
+
+\section{Aim of this Work}
+
+The expected outcome of this thesis is to discover and develop a possible framework for providing repeatability in the OpenEO project. This enables users to re-execute workflows and validate the results, so that differences on the process or data are accessible for the users. To achieve this goal a model for repeatability within the project has to be discovered and implemented to evaluate the ability of the model. The model shall then conclude recommendations for the OpenEO project on how to improve re-execution validation for the user and how it can be achieved. Therefore the following research questions can be formulated:
+
+\begin{itemize}
+	\item \textbf{How can an OpenEO job re-executed be applied like the initial execution?}
+	\begin{itemize}
+		\item How can the used data be identified after the initial execution?
+		\item How can the used software of the initial execution be reproduced?
+		\item What data has to be captured when?
+		\item How can the result of a re-execution in future software versions be verified?
+	\end{itemize}
+	\item \textbf{How can the equality of the OpenEO job re-execution results be validated?}
+	\begin{itemize}
+		\item What are the validation requirements?
+		\item How can the data be compared?
+		\item How can the re-execution be validated after changes of the OpenEO backend environment?
+		\item How can differences in the environment between the executions be discovered?
+	\end{itemize}
+\end{itemize}
+\todo{Read through above text and improve.}
+\todo{Add description of use cases (see summary).}
+\chapter{Related Work}
+Currently, there exists no concrete solution to add the ability of repeatability to the OpenEO project. However there are concepts of adding repeatability in computer science.
+
+\section{eScience}
+The eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and workflows citable. In \cite{Rauber2015RepeatabilityAR} is a common way of reaching this goal formulated. It describes an approach to look at whole research processes, other than only data citation by introducing Process Management Plans. The capturing, verification and validation of the needed data for a computational process is also demonstrated within the paper.\cite{Rauber2015RepeatabilityAR}
+
+\section{Data Citation}
+Since the earth observation community use a high amount of satellite data and also within the OpenEO project a lot of big data sets are being used, there needs to be a solution to cite the used data in a workflow. The Research Data Alliance (RDA) working group on data citation provides a 14 step recommendation of data citation. It contains solutions not only for static, but also for dynamic data, so data that changes over time. Using the guideline for data citations from the RDA makes the data scientifically citable. \cite{rauber2016identification} 
+In earth science there is also a strategy of ESA and NASA to achieve a content standard for data preservation.\cite{6352411}
+
+\section{Provenance Data}
+The re-execution of an OpenEO workflow not only needs data citation, but also the information of how the workflow was executed. Therefore provenance data has to be captured.\cite{Roure11towardsthe}There are already several provenance models defined in the scientific community. One of the existing models is the PROV model, which was published in 2013 by the World Wide Web Consortium Provenance Working Group and consists of recommendations and guidelines for provenance data.\cite{MOREAU2015235} 
+Another model is the VFramework, designed for the purpose of redeployment including the verification of a re-execution of the same workflow. \cite{DBLP:conf/ipres/MiksaPMSVBR13}
+
+\todo{Read through above text and improve.}
+\todo{Add section about ReproZip.}
+\todo{Add section about Smartcontainer.}
+\todo{Add section about EO reproducibility.}
+\chapter{Methodology}
+\begin{enumerate}
+	\item \textbf{Literature review} \\
+	The background and other approaches on repeatability have to be considered for an implementation in earth observation data science. Especially for the knowledge of earth observation data, a base of information has to be gathered. Since the thesis is related to the OpenEO project and especially the Backend Module, information about their structure is important. 
+	\item\textbf{Create concept for OpenEO} \\
+	In the second part, a concept of repeatability for the OpenEO project gets created. The information gathered by the literature review leads to design decisions and approaches to achieve this. Data citation and workflow capturing are the key elements of the model. Another important component of it is how the re-execution can be validated and viewed from the users perspective.
+	\item \textbf{Implementation of a prototype} \\
+	A software for the capturing of the data and environment has to be implemented for OpenEO job executions. The implementation also includes the validation of the OpenEO job re-execution.
+	\item \textbf{Analysing Results} \\
+	In this step the implemented software is build into an OpenEO instance and gets tested and evaluated. It also includes the discussion of the results and thoughts about further steps or improvements.
+\end{enumerate}
+\todo{Read through above text and improve.}
+\todo{Add section about noworkflow}
+\chapter{Proof of Concept}
+\todo{Enter your text here.}
+
+
+\chapter{Conclusion}
+\todo{Enter your text here.}
+
+% Remove following line for the final thesis.
+%\input{intro.tex} % A short introduction to LaTeX.
+
+\backmatter
+
+% Use an optional list of figures.
+\listoffigures % Starred version, i.e., \listoffigures*, removes the toc entry.
+
+% Use an optional list of tables.
+\cleardoublepage % Start list of tables on the next empty right hand page.
+\listoftables % Starred version, i.e., \listoftables*, removes the toc entry.
+
+% Use an optional list of alogrithms.
+%\listofalgorithms
+%\addcontentsline{toc}{chapter}{List of Algorithms}
+
+% Add an index.
+\printindex
+
+% Add a glossary.
+\printglossaries
+
+% Add a bibliography.
+\bibliographystyle{alpha}
+\bibliography{intro}
+
+\end{document}
