@@ -1,0 +1,9 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: example.aux
+The style file: alpha.bst
+Database file #1: intro.bib
+A bad cross reference---entry "DBLP:conf/ipres/MiksaPMSVBR13"
+refers to entry "DBLP:conf/ipres/2013", which doesn't exist
+Warning--I didn't find a database entry for "DBLP:conf/ipres/2013"
+Warning--empty journal in openeo
+Warning--empty booktitle in rauber2016identification
+(There was 1 error message)
