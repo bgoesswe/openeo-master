@@ -147,7 +147,7 @@ def combine_bands(temp_folders, out_folder):
     print("-> Start combining bands...")
 
     # Create Out folder
-    temp_folders["combined_bands"] = create_folder(out_folder, "03_combined_bands")
+    temp_folders["combined_bands"] = create_folder(out_folder, "03combined_bands")
 
     # Iterate over each day
     for day in listdir(temp_folders["unzipped"]):

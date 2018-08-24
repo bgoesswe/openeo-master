@@ -80,7 +80,7 @@ def run_graph():
 
     clean_dir(OUT_VOLUME)
 
-    print("Finished cleaning directory... !")
+    print("Finished cning directory... !")
     # Run filter
 
     print("Start Sentinel 2 data extraction process...")
