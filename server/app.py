@@ -5,6 +5,7 @@ import cpuinfo
 import json
 from hashlib import md5
 import collections
+from PIL import Image # Python Imaging Library
 
 BACKEND_VERSION = "1"
 OPENEO_API_VERSION = "0.0.3"
@@ -39,7 +40,7 @@ PROCESS_GRAPH = {
                            "imagery":{
                               "product_id":"s2a_prd_msil1c"
                            },
-                           "left":652000,
+                           "left":652001,
                            "right":672000,
                            "top":5161000,
                            "bottom":5181000,
@@ -58,6 +59,57 @@ PROCESS_GRAPH = {
    }
 }
 
+# def gen_dict_extract(key, var):
+#     if hasattr(var,'iteritems'):
+#         for k, v in var.iteritems():
+#             if k == key:
+#                 yield v
+#             if isinstance(v, dict):
+#                 for result in gen_dict_extract(key, v):
+#                     yield result
+#             elif isinstance(v, list):
+#                 for d in v:
+#                     for result in gen_dict_extract(key, d):
+#                         yield result
+
+
+def get_filehash(jsonfile):
+    data_dir = "/data/"
+    hasher = md5()
+    with open(jsonfile) as json_data:
+        d = json.load(json_data)
+        outdir = data_dir + d['file_paths'][0]
+        with open(outdir, 'rb') as afile:
+            buf = afile.read()
+            hasher.update(buf)
+        return hasher.hexdigest()
+
+
+def processgraph_add_hashes(graph):
+
+    outdir_dict = {
+        "min_time": "/data/job_data/template_id_mintime/files.json",
+        "NDVI": "/data/job_data/template_id_ndvi/files.json",
+        "filter_bbox": "/data/job_data/template_id/files.json",
+        "filter_daterange": "/data/job_data/template_id/files.json"
+    }
+    buffer = {}
+    counter = 0
+    for key, value in graph.items():
+        if isinstance(value, dict):
+            buf = processgraph_add_hashes(value)
+            if buf:
+                buffer = {**buffer, **processgraph_add_hashes(value)}
+            for key2, value2 in graph.items():
+                if not isinstance(value2, dict):
+                    if value2 in outdir_dict.keys():
+                        buffer[value2+"_"+str(counter)] = get_filehash(outdir_dict[value2])
+                        counter += 1
+            return buffer
+    return buffer
+
+
+
 
 def create_context_model(job_id):
    location = JOB_LOCATION+"/"+str(job_id)+"/"
@@ -73,6 +125,10 @@ def create_context_model(job_id):
    process_graph_file = location+"process_graph.json"
 
    context_model = {}
+
+   # file_hashes
+   process_graph = open(process_graph_file).read()
+   file_hashes = processgraph_add_hashes(json.loads(process_graph))
 
    # read process graph
 
@@ -158,6 +214,7 @@ def create_context_model(job_id):
    context_model['backend_version'] = BACKEND_VERSION
    context_model['openeo_api'] = OPENEO_API_VERSION
    context_model['process_graph'] = process_graph
+   context_model['inter_output'] = file_hashes
    context_model['job_id'] = job_id
    context_model['os'] = os_hash
    context_model['hw'] = hw_hash
@@ -265,6 +322,61 @@ def compare_jobs(job1_id, job2_id):
     return cmp_dict
 
 
+def replace_item(obj, key, replace_value):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = replace_item(v, key, replace_value)
+    if key in obj:
+        obj[key] = replace_value
+    return obj
+
+
+def find_item(obj, key):
+    returner = None
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            returner = find_item(v, key)
+            if returner:
+                return returner
+    if key in obj:
+        returner = obj[key]
+        if returner:
+            return returner
+    if returner:
+        return returner
+
+
+
+def update_conf(content):
+    config_dirs = ["../release-mini/config/config.json", "../release-mini/config/config_ndvi.json"]
+
+    interesting_keys = ["red", "nir", "left", "right", "top", "bottom", "from", "to", "srs"]
+
+    # content = str(content)
+
+    content_dict = {}
+
+    for interest in interesting_keys:
+
+        val = find_item(content, interest)
+        if val:
+            content_dict[interest] = val
+
+
+    for config_file in config_dirs:
+
+        with open(config_file) as json_data:
+            d = json.load(json_data)
+
+            for key, val in content_dict.items():
+                replace_item(d, key, val)
+
+            print("Updated Config to "+str(d))
+
+            with open(config_file, 'w+') as outfile:
+                json.dump(d, outfile)
+
+
 def run_job(content, job_id):
     job_id =str(job_id)
 
@@ -348,12 +460,12 @@ def get_env_info():
 
     env_dir = {}
 
-    process = subprocess.Popen(DOCKER_VERSION.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    output = str(output).split('\\n')[0].split("b'")[1]
+    #process = subprocess.Popen(DOCKER_VERSION.split(), stdout=subprocess.PIPE)
+    #output, error = process.communicate()
+    #output = str(output).split('\\n')[0].split("b'")[1]
 
-    env_dir["docker"] = {"docker_version": output,
-                         "docker_base": DOCKER_BASE_IMAGE}
+    #env_dir["docker"] = {"docker_version": output,
+    #                     "docker_base": DOCKER_BASE_IMAGE}
 
     out = cpuinfo.get_cpu_info()
 
@@ -479,4 +591,7 @@ if __name__ == '__main__':
     # print(get_python_detail("test"))
     # print(compare_previous("test"))
     # job_queue("test")
+    # print(processgraph_add_hashes(PROCESS_GRAPH))
+    # update_conf(PROCESS_GRAPH)
+    # print(find_item(PROCESS_GRAPH, "left"))
     app.run(debug=True, port=5957)

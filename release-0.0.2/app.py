@@ -18,6 +18,8 @@ def clean_dir(folder):
         except Exception as e:
             print(e)
 
+def logging(text):
+    return text
 
 # convert
 IN_VOLUME = "/data/job_data"
@@ -83,8 +85,9 @@ def run_graph():
     print("Finshed cleaning directory...")
     # Run filter
 
-    print("Start Sentinel 2 data extraction process...")
-
+    print("Start Sentinel 2 dataasd extraction process...")
+    logging("IN:filter_bbox")
+    logging("IN:filter_daterange")
     unzip_data(TEMP_FOLDERS, OUT_FOLDER, ARGS)
     extract_sentinel_2_data(TEMP_FOLDERS, OUT_FOLDER, ARGS, PARAMS)
     combine_bands(TEMP_FOLDERS, OUT_FOLDER)
@@ -94,29 +97,32 @@ def run_graph():
     transform_to_geotiff(TEMP_FOLDERS, OUT_FOLDER, PARAMS)
     write_output(ARGS, OUT_EPSG, OUT_FOLDER)
     clean_up(TEMP_FOLDERS, OUT_FOLDER)
+    logging("OUT:filter_bbox")
+    logging("OUT:filter_daterange")
 
     print("Finished Sentinel 2 data extraction process.")
     
     # Run ndvi
     print("Start processing 'NDVI' ...")
-
+    logging("IN:NDVI")
     NDVI_CONFIG_FILE = "/data/job_data/template_id/files.json"
     NDVI_PARAMS = read_parameters(NDVI_CONFIG_FILE)
 
     perform_ndvi(NDVI_PARAMS, NDVI_OUT_VOLUME, NDVI_OUT_FOLDER)
     write_ndvi_output(NDVI_PARAMS, NDVI_OUT_FOLDER)
+    logging("OUT:NDVI")
 
     print("Finished 'NDVI' processing.")
     # Run min_time
 
     print("Start processing 'min_time' ...")
-
+    logging("IN:min_time")
     MINTIME_CONFIG_FILE = "/data/job_data/template_id_ndvi/files.json"
     MINTIME_PARAMS = read_parameters(MINTIME_CONFIG_FILE)
 
     perform_min_time(MINTIME_OUT_FOLDER, NDVI_OUT_VOLUME, MINTIME_PARAMS)
     write_min_time_output(MINTIME_PARAMS, MINTIME_OUT_FOLDER)
-
+    logging("OUT:min_time")
     print("Finished 'min_time' processing.")
 
     # Run convert
