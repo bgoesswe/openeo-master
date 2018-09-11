@@ -317,6 +317,22 @@ def compare_jobs(job1_id, job2_id):
                 cmp_dict[key] = "EQUAL"
             else:
                 cmp_dict[key] = "DIFFERENT"
+                print("DIFF {} != {}".format(cm1[key], cm2[key]))
+            if key in ["inter_output"]:
+                cmp_dict[key] = {}
+                for k in cm1[key]:
+                    if k in cm2[key]:
+                        if cm1[key][k] == cm2[key][k]:
+                            cmp_dict[key][k] = "EQUAL"
+                        else:
+                            if cm1[key][k] == cm2[key][k]:
+                                cmp_dict[key][k] = "EQUAL"
+                            else:
+                                cmp_dict[key][k] = "DIFFERENT"
+                                # print("DIFF {} != {}".format(cm1[key], cm2[key]))
+                    else:
+                        cmp_dict[key][k] = "MISSING"
+                        # print("MISS {} != {}".format(cm1[key], cm2[key]))
         except KeyError as e:
             continue
     return cmp_dict
@@ -377,7 +393,8 @@ def update_conf(content):
                 json.dump(d, outfile)
 
 
-def run_job(content, job_id):
+def cp_job(content, job_id):
+
     job_id =str(job_id)
 
     sudo_pass = 'mil1rre9'
@@ -399,6 +416,16 @@ def run_job(content, job_id):
     os.system('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path))
     print("finished copy command")
 
+    with open(process_graph_file, 'w+') as outfile:
+        json.dump(content, outfile)
+
+
+def run_job(content, job_id):
+
+    job_whole_path = JOB_LOCATION + "/" + job_id
+
+    if content:
+        cp_job(content, job_id)
 
     command = './runlocal.sh {}'.format(job_whole_path)
 
@@ -411,9 +438,6 @@ def run_job(content, job_id):
     os.system(command)
 
     print("after run now command")
-
-    with open(process_graph_file, 'w+') as outfile:
-        json.dump(content, outfile)
 
     create_context_model(job_id)
 
@@ -500,7 +524,9 @@ def version():
 def job():
     job_id = uuid.uuid4()
 
-
+    content = request.get_json()
+    print(content)
+    cp_job(content, job_id)
     answer = {
         "job_id": str(job_id),
         "status": "submitted"
