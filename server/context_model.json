@@ -1,1 +1,84 @@
-{"1": {"output_data": "c102cbd20320561e182be8b855786794", "input_data": "8ea4a8cc2bf48188310559dfb8e43911", "backend_version": "1", "openeo_api": "0.0.3", "process_graph": {"process_graph": {"process_id": "min_time", "args": {"imagery": {"process_id": "NDVI", "args": {"imagery": {"process_id": "filter_daterange", "args": {"imagery": {"process_id": "filter_bbox", "args": {"imagery": {"product_id": "s2a_prd_msil1c"}, "left": 652001, "right": 672000, "top": 5161000, "bottom": 5181000, "srs": "EPSG:32632"}}, "from": "2017-01-01", "to": "2017-01-31"}}, "red": "B04", "nir": "B08"}}}}}, "inter_output": {"filter_bbox_0": "0323719237e63f50c07810b3efb99c3c", "filter_daterange_0": "0323719237e63f50c07810b3efb99c3c", "NDVI_0": "408dc5288c8a947fcec5ca01aecead14", "min_time_0": "c102cbd20320561e182be8b855786794"}, "job_id": "83df0839-05d3-46de-b36f-ac484395ba42", "os": "9b204e4392db669a13fc5e43d50cc687", "hw": "5159b8b8515c64faab7430ae11a8b217", "code": "d3ccf58bf592eeb7dd436e3dc34654cd41a75298", "code_env": [{"name": "filter", "version": "None", "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"}, {"name": "osgeo", "version": "2.2.4", "hash": "ed424bd381e3964cfc773f4e345280a560d143f2"}, {"name": "ndvi", "version": "None", "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"}, {"name": "unittest", "version": "None", "hash": "7a9ba19dbde2728388912e3d749074717fb263df"}, {"name": "mklinit", "version": "None", "hash": "ff578aa0933e981d3ef466f5875f9c20cf3695fc"}, {"name": "mkl_fft", "version": "1.0.4", "hash": "9f70d4b4bb058398006dcc3440b2e528cc07363e"}, {"name": "numpy", "version": "1.15.0", "hash": "ca4b0b82328acb38813cbeee9d8216cd9ee48260"}, {"name": "mintime", "version": "None", "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"}]}}
+{
+    "1": {
+        "backend_version": "1",
+        "code": "1215caea593c0753b5ff2456f049626a826bb367",
+        "code_env": [
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "filter",
+                "version": "None"
+            },
+            {
+                "hash": "ed424bd381e3964cfc773f4e345280a560d143f2",
+                "name": "osgeo",
+                "version": "2.2.4"
+            },
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "ndvi",
+                "version": "None"
+            },
+            {
+                "hash": "7a9ba19dbde2728388912e3d749074717fb263df",
+                "name": "unittest",
+                "version": "None"
+            },
+            {
+                "hash": "7fb73033a208aca42b6044f3e4926e9e115938e1",
+                "name": "numpy",
+                "version": "1.14.3"
+            },
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "mintime",
+                "version": "None"
+            }
+        ],
+        "hw": "d3cdd0da42c7f21334e2dcfe512ea407",
+        "input_data": "8ea4a8cc2bf48188310559dfb8e43911",
+        "inter_output": {
+            "0_filter_bbox": "0323719237e63f50c07810b3efb99c3c",
+            "1_filter_daterange": "0323719237e63f50c07810b3efb99c3c",
+            "2_NDVI": "408dc5288c8a947fcec5ca01aecead14",
+            "3_min_time": "c102cbd20320561e182be8b855786794"
+        },
+        "job_id": "e7b41753-d0cd-4964-a99a-e4c83d921cce",
+        "openeo_api": "0.0.3",
+        "os": "eee660a47ca3d4a250d045b624e45550",
+        "output_data": "c102cbd20320561e182be8b855786794",
+        "process_graph": {
+            "process_graph": {
+                "args": {
+                    "imagery": {
+                        "args": {
+                            "imagery": {
+                                "args": {
+                                    "from": "2017-01-01",
+                                    "imagery": {
+                                        "args": {
+                                            "bottom": 5181000,
+                                            "imagery": {
+                                                "product_id": "s2a_prd_msil1c"
+                                            },
+                                            "left": 652001,
+                                            "right": 672000,
+                                            "srs": "EPSG:32632",
+                                            "top": 5161000
+                                        },
+                                        "process_id": "filter_bbox"
+                                    },
+                                    "to": "2017-01-31"
+                                },
+                                "process_id": "filter_daterange"
+                            },
+                            "nir": "B08",
+                            "red": "B04"
+                        },
+                        "process_id": "NDVI"
+                    }
+                },
+                "process_id": "min_time"
+            }
+        }
+    }
+}

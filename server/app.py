@@ -5,7 +5,7 @@ import cpuinfo
 import json
 from hashlib import md5
 import collections
-from PIL import Image # Python Imaging Library
+#from PIL import Image # Python Imaging Library
 
 BACKEND_VERSION = "1"
 OPENEO_API_VERSION = "0.0.3"
@@ -18,7 +18,9 @@ OS_ENV_CMD = "dpkg -l"
 
 app = Flask(__name__)
 
-DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
+SUDO_PASS = "gz/UJMko0"
+
+# DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
 LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
 JOB_LOCATION = "/sdcard/Master/JOBS"
 
@@ -85,6 +87,8 @@ def get_filehash(jsonfile):
         return hasher.hexdigest()
 
 
+
+
 def processgraph_add_hashes(graph):
 
     outdir_dict = {
@@ -94,7 +98,6 @@ def processgraph_add_hashes(graph):
         "filter_daterange": "/data/job_data/template_id/files.json"
     }
     buffer = {}
-    counter = 0
     for key, value in graph.items():
         if isinstance(value, dict):
             buf = processgraph_add_hashes(value)
@@ -103,12 +106,9 @@ def processgraph_add_hashes(graph):
             for key2, value2 in graph.items():
                 if not isinstance(value2, dict):
                     if value2 in outdir_dict.keys():
-                        buffer[value2+"_"+str(counter)] = get_filehash(outdir_dict[value2])
-                        counter += 1
+                        buffer[str(len(buffer.items()))+"_"+value2] = get_filehash(outdir_dict[value2])
             return buffer
     return buffer
-
-
 
 
 def create_context_model(job_id):
@@ -232,12 +232,11 @@ def create_context_model(job_id):
    # context_model = json.loads(str(context_model))
 
    with open('context_model.json', 'w') as outfile:
-      json.dump(cm, outfile)
+      json.dump(cm, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
    command = 'cp context_model.json {}'.format(location)
-   sudo_pass = 'mil1rre9'
 
-   os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+   os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
 
    print(cm)
    return cm
@@ -362,7 +361,6 @@ def find_item(obj, key):
         return returner
 
 
-
 def update_conf(content):
     config_dirs = ["../release-mini/config/config.json", "../release-mini/config/config_ndvi.json"]
 
@@ -397,8 +395,6 @@ def cp_job(content, job_id):
 
     job_id =str(job_id)
 
-    sudo_pass = 'mil1rre9'
-
     job_whole_path = JOB_LOCATION + "/" + job_id
 
     process_graph_file = job_whole_path+'/process_graph.json'
@@ -412,7 +408,7 @@ def cp_job(content, job_id):
         print("change owner")
         command = 'chown berni:berni -R {}'.format(job_whole_path)
         print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
-        os.system('echo %s|sudo -S %s' % (sudo_pass, command))
+        os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
     os.system('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path))
     print("finished copy command")
 
@@ -581,6 +577,15 @@ def job_diff(job_id):
 
     return jsonify(answer)
 
+@app.route('/users/<username>/jobs', methods=["GET"])
+def get_jobs(username):
+
+    dirlist = [item for item in os.listdir(JOB_LOCATION) if
+               os.path.isdir(os.path.join(JOB_LOCATION, item))]
+    print(dirlist)
+
+    return jsonify({'jobs': dirlist})
+
 
 @app.route('/jobs/<job_id>', methods=["GET"])
 def job_detail(job_id):
@@ -620,4 +625,5 @@ if __name__ == '__main__':
     # print(processgraph_add_hashes(PROCESS_GRAPH))
     # update_conf(PROCESS_GRAPH)
     # print(find_item(PROCESS_GRAPH, "left"))
+    # get_jobs('asd')
     app.run(debug=True, port=5957)
