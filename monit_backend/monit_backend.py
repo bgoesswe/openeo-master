@@ -2,10 +2,11 @@
 import os
 import hashlib
 import subprocess
+import json
 
-MONIT_DIR = ['/home/berni/Master/REPO/openeo-master/', '/data/products']
+MONIT_DIR = ['/data/MASTER/REPO/openeo-master/', '/data/products']
 
-GIT_REPOS = ['/home/berni/Master/REPO/openeo-master/']
+GIT_REPOS = ['/data/MASTER/REPO/openeo-master/']
 
 CM_OUT = '/data/system_context_model.json'
 
@@ -13,8 +14,8 @@ INOTIFY_FILE = '/data/inotify.log'
 
 INOTIFY_CALL = "inotifywait -d -e modify -e attrib -e moved_to -e create -e delete {0} -o {1}"
 
-
 initialized = False
+
 
 def init():
     for dir in MONIT_DIR:
@@ -37,48 +38,65 @@ def run_cmd(command):
 
 def get_git(path):
 
-    cm_git = {}
-
     CMD_GIT_URL = "git -C {} config --get remote.origin.url".format(path)
+    CMD_GIT_BRANCH = "git -C {} branch".format(path)
     CMD_GIT_COMMIT = "git -C {} log".format(path) # first line
     CMD_GIT_DIFF = "git -C {} diff".format(path) # Should do that ?
+
     print("Get Git Info")
 
-    git_url = run_cmd(CMD_GIT_URL)
-    git_commit = run_cmd(CMD_GIT_COMMIT).split("\n")[0]
-
+    git_url = run_cmd(CMD_GIT_URL).split("\n")[0]
+    git_commit = run_cmd(CMD_GIT_COMMIT).split("\n")[0].replace("commit", "").strip()
     git_diff = run_cmd(CMD_GIT_DIFF)
 
-    if git_diff == "":
-        git_diff = False
-    else:
-        git_diff = True
+    git_diff = hashlib.md5(git_diff.encode("utf-8"))
+    git_diff = git_diff.hexdigest()
 
-    cm_git = {'url' }
+    git_branch = run_cmd(CMD_GIT_BRANCH).replace("*", "").strip()
 
-    print(git_diff)
+    cm_git = {'url': git_url,
+              'branch': git_branch,
+              'commit': git_commit,
+              'diff': git_diff}
 
+    return cm_git
 
 
 def generate_context_model():
     working_dir_hash = None
 
+    backend_verion = 1
+
+    cm_old = {}
+
     cm = {}
 
-    if os.path.isdir(CM_OUT):
-        print("read context model")
-        #TODO: Read JSON
-    if os.path.isdir(INOTIFY_FILE):
+    if os.path.isfile(CM_OUT):
+        json1_file = open(CM_OUT)
+        json1_str = json1_file.read()
+        cm_old = json.loads(json1_str)
+        if "backend_version" in cm_old:
+            backend_verion = cm_old["backend_version"]
+
+    if os.path.isfile(INOTIFY_FILE):
         working_dir_hash = md5(INOTIFY_FILE)
 
-    #TODO get git info
+    cm['git_repos'] = []
+    for repo in GIT_REPOS:
+        cm_git = get_git(repo)
+        cm['git_repos'].append(cm_git)
 
+    cm['backend_version'] = backend_verion
+    cm['working_dir_changes'] = working_dir_hash
 
-    cm['working_dir'] = working_dir_hash
+    if cm != cm_old:
+        cm["backend_version"] += 1
 
-    #TODO Write JSON
+    with open(CM_OUT, 'w') as outfile:
+        json.dump(cm, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
+    return cm
    # if not os.path.isdir(INOTIFY_FILE):
 
 #init()
-get_git(GIT_REPOS[0])
+print(generate_context_model())

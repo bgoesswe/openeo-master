@@ -16,9 +16,11 @@ DOCKER_VERSION = "docker -v"
 HW_ENV_CMD = "lspci -nnk"
 OS_ENV_CMD = "dpkg -l"
 
+SYSTEM_CM_OUT = '/data/system_context_model.json'
+
 app = Flask(__name__)
 
-SUDO_PASS = "mil1rre9"
+SUDO_PASS = "gz/UJMko0"
 
 # DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
 LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
@@ -75,6 +77,30 @@ PROCESS_GRAPH = {
 #                         yield result
 
 
+def get_job_cm(job_id):
+    location = JOB_LOCATION + "/" + str(job_id) + "/"
+    # if there is already a cm
+    if os.path.isfile(location + "context_model.json"):
+        json1_file = open(location + "context_model.json")
+        json1_str = json1_file.read()
+        cm = json.loads(json1_str)
+    else:
+        cm = {}
+
+    return cm
+
+
+def get_system_cm():
+    cm = {}
+
+    if os.path.isfile(SYSTEM_CM_OUT):
+        json1_file = open(SYSTEM_CM_OUT)
+        json1_str = json1_file.read()
+        cm = json.loads(json1_str)
+
+    return cm
+
+
 def get_filehash(jsonfile):
     data_dir = "/data/"
     hasher = md5()
@@ -85,8 +111,6 @@ def get_filehash(jsonfile):
             buf = afile.read()
             hasher.update(buf)
         return hasher.hexdigest()
-
-
 
 
 def processgraph_add_hashes(graph):
@@ -211,23 +235,19 @@ def create_context_model(job_id):
 
    context_model['output_data'] = output_hash
    context_model['input_data'] = input_hash
-   context_model['backend_version'] = BACKEND_VERSION
+   #context_model['backend_version'] = BACKEND_VERSION
    context_model['openeo_api'] = OPENEO_API_VERSION
    context_model['process_graph'] = process_graph
    context_model['inter_output'] = file_hashes
    context_model['job_id'] = job_id
-   context_model['os'] = os_hash
-   context_model['hw'] = hw_hash
+   #context_model['os'] = os_hash
+   #context_model['hw'] = hw_hash
    context_model['code'] = code_hash
    context_model['code_env'] = python_modules
+   context_model['backend_env'] = get_system_cm()
 
-   # if there is already a cm
-   if os.path.isfile(location+"context_model.json"):
-       json1_file = open(location+"context_model.json")
-       json1_str = json1_file.read()
-       cm = json.loads(json1_str)
-   else:
-       cm = {}
+   cm = get_job_cm(job_id)
+
    cm[trial] = context_model
    # context_model = json.loads(str(context_model))
 
@@ -508,12 +528,10 @@ def main():
 
 @app.route('/version')
 def version():
-    answer = {
-        "backend_version": BACKEND_VERSION,
-        "openeo_api_version": OPENEO_API_VERSION,
-        "environment": get_env_info()
-    }
-    return jsonify(answer)
+
+    cm = get_system_cm()
+
+    return jsonify(cm)
 
 
 @app.route('/jobs', methods=["POST"])
@@ -529,6 +547,7 @@ def job():
     }
     return jsonify(answer)
 
+
 @app.route('/jobs/<job_id>/queue', methods=["PATCH"])
 def job_queue(job_id):
     content = request.get_json()
@@ -536,15 +555,15 @@ def job_queue(job_id):
 
     run_job(content, job_id)
 
-    cmp = compare_previous(job_id)
+    # cmp = compare_previous(job_id)
 
     answer ={
         "job_id": str(job_id),
         "status": "finished"
     }
 
-    if cmp:
-        answer["validation"] = cmp
+    # if cmp:
+    #    answer["validation"] = cmp
 
     return jsonify(answer)
 
@@ -598,20 +617,21 @@ def job_detail(job_id):
         }
         return jsonify(answer)
 
-    cmp = compare_previous(job_id)
+    # cmp = compare_previous(job_id)
 
     answer = {
+        "cm": get_job_cm(job_id),
         "job_id": str(job_id),
         "status": "finished"
     }
 
-    if cmp:
-        answer["validation"] = cmp
+    # if cmp:
+    #     answer["validation"] = cmp
 
-    py_modules = get_python_detail(job_id)
+    # py_modules = get_python_detail(job_id)
 
-    if py_modules:
-        answer["z_python-modules"] = py_modules
+    # if py_modules:
+    #     answer["z_python-modules"] = py_modules
 
     return jsonify(answer)
 
