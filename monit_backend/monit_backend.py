@@ -1,10 +1,11 @@
 # Tool to monitor OpenEO backend
 import os
 import hashlib
+import subprocess
 
-MONIT_DIR = ['/data/MASTER/REPO/openeo-master/', '/data/products']
+MONIT_DIR = ['/home/berni/Master/REPO/openeo-master/', '/data/products']
 
-GIT_REPOS = ['/data/MASTER/REPO/openeo-master/']
+GIT_REPOS = ['/home/berni/Master/REPO/openeo-master/']
 
 CM_OUT = '/data/system_context_model.json'
 
@@ -29,8 +30,55 @@ def md5(file):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
-#def check_on_monitor():
+
+def run_cmd(command):
+    result = subprocess.run(command.split(), stdout=subprocess.PIPE)
+    return result.stdout.decode("utf-8")
+
+def get_git(path):
+
+    cm_git = {}
+
+    CMD_GIT_URL = "git -C {} config --get remote.origin.url".format(path)
+    CMD_GIT_COMMIT = "git -C {} log".format(path) # first line
+    CMD_GIT_DIFF = "git -C {} diff".format(path) # Should do that ?
+    print("Get Git Info")
+
+    git_url = run_cmd(CMD_GIT_URL)
+    git_commit = run_cmd(CMD_GIT_COMMIT).split("\n")[0]
+
+    git_diff = run_cmd(CMD_GIT_DIFF)
+
+    if git_diff == "":
+        git_diff = False
+    else:
+        git_diff = True
+
+    cm_git = {'url' }
+
+    print(git_diff)
+
+
+
+def generate_context_model():
+    working_dir_hash = None
+
+    cm = {}
+
+    if os.path.isdir(CM_OUT):
+        print("read context model")
+        #TODO: Read JSON
+    if os.path.isdir(INOTIFY_FILE):
+        working_dir_hash = md5(INOTIFY_FILE)
+
+    #TODO get git info
+
+
+    cm['working_dir'] = working_dir_hash
+
+    #TODO Write JSON
 
    # if not os.path.isdir(INOTIFY_FILE):
 
-init()
+#init()
+get_git(GIT_REPOS[0])

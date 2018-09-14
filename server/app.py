@@ -18,7 +18,7 @@ OS_ENV_CMD = "dpkg -l"
 
 app = Flask(__name__)
 
-SUDO_PASS = "gz/UJMko0"
+SUDO_PASS = "mil1rre9"
 
 # DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
 LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
