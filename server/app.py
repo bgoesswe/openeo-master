@@ -20,7 +20,7 @@ SYSTEM_CM_OUT = '/data/system_context_model.json'
 
 app = Flask(__name__)
 
-SUDO_PASS = "gz/UJMko0"
+SUDO_PASS = ""
 
 # DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
 LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
