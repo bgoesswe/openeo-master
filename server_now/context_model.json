@@ -1,16 +1,16 @@
 {
     "1": {
         "backend_env": {
-            "backend_version": 4,
+            "backend_version": 10,
             "git_repos": [
                 {
                     "branch": "master",
-                    "commit": "a1c6fa40500566a4a4caca4d780357a7ba215caa",
-                    "diff": "c565c78252fdc948818f3938347232bb",
+                    "commit": "2795233e6a4e3dee842db5dc98c9e7ab65d5f321",
+                    "diff": "88f32fa089aa65088061c827c3418bcc",
                     "url": "https://github.com/bgoesswe/openeo-master.git"
                 }
             ],
-            "working_dir_changes": null
+            "working_dir_changes": "9ee275f30d2aa9fb3b20dc4ae92eeaed"
         },
         "code": "1215caea593c0753b5ff2456f049626a826bb367",
         "code_env": [
@@ -35,9 +35,19 @@
                 "version": "None"
             },
             {
-                "hash": "7fb73033a208aca42b6044f3e4926e9e115938e1",
+                "hash": "ff578aa0933e981d3ef466f5875f9c20cf3695fc",
+                "name": "mklinit",
+                "version": "None"
+            },
+            {
+                "hash": "9f70d4b4bb058398006dcc3440b2e528cc07363e",
+                "name": "mkl_fft",
+                "version": "1.0.4"
+            },
+            {
+                "hash": "ca4b0b82328acb38813cbeee9d8216cd9ee48260",
                 "name": "numpy",
-                "version": "1.14.3"
+                "version": "1.15.0"
             },
             {
                 "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -52,7 +62,7 @@
             "2_NDVI": "408dc5288c8a947fcec5ca01aecead14",
             "3_min_time": "c102cbd20320561e182be8b855786794"
         },
-        "job_id": "c1d48028-41e3-4477-bda3-5eb4507b629b",
+        "job_id": "527d81e2-820f-4579-8fd8-49ae286ec91b",
         "openeo_api": "0.0.3",
         "output_data": "c102cbd20320561e182be8b855786794",
         "process_graph": {

@@ -21,7 +21,7 @@ def init(config):
     for dir in config["monit_dirs"]:
         inotify_cmd = INOTIFY_CALL.format(config["inotifywait_path"], dir, config["inotify_tmpfile"])
         print("Call: {}".format(inotify_cmd))
-        # os.system(inotify_cmd)
+        os.system(inotify_cmd)
 
 
 def md5(file):
@@ -61,7 +61,7 @@ def get_git(path, config):
               'branch': git_branch,
               'commit': git_commit,
               'diff': git_diff}
-
+    
     return cm_git
 
 
@@ -115,7 +115,7 @@ def usage(argv):
 
 
 if __name__ == "__main__":
-    init = False
+    initial = False
     monit = False
 
     config = {}
@@ -128,15 +128,15 @@ if __name__ == "__main__":
         config = load_config(sys.argv[-1])
 
     if "--init" in sys.argv or "-i" in sys.argv:
-        init = True
+        initial = True
 
     if "--check" in sys.argv or "-c" in sys.argv:
         monit = True
 
 
-    if monit and init:
+    if monit and initial:
         print(usage(sys.argv))
-    elif not monit and not init:
+    elif not monit and not initial:
         print(usage(sys.argv))
     else:
         if monit:
