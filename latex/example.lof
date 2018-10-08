@@ -1,19 +1,22 @@
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {english}
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {english}
-\select@language {naustrian}
-\select@language {naustrian}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
 \addvspace {10pt}
-\select@language {naustrian}
-\select@language {english}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
 \addvspace {10pt}
-\select@language {naustrian}
-\select@language {english}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
 \addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Overview of the OpenEO architecture. (from openeo.org)\relax }}{5}{figure.caption.17}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Process graph example (from Github Spec)\relax }}{7}{figure.caption.18}
 \addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}
