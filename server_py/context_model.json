@@ -1,0 +1,103 @@
+{
+    "1": {
+        "backend_env": {
+            "backend_version": 10,
+            "git_repos": [
+                {
+                    "branch": "master",
+                    "commit": "2795233e6a4e3dee842db5dc98c9e7ab65d5f321",
+                    "diff": "88f32fa089aa65088061c827c3418bcc",
+                    "url": "https://github.com/bgoesswe/openeo-master.git"
+                }
+            ],
+            "working_dir_changes": "9ee275f30d2aa9fb3b20dc4ae92eeaed"
+        },
+        "code": "1215caea593c0753b5ff2456f049626a826bb367",
+        "code_env": [
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "filter",
+                "version": "None"
+            },
+            {
+                "hash": "ed424bd381e3964cfc773f4e345280a560d143f2",
+                "name": "osgeo",
+                "version": "2.2.4"
+            },
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "ndvi",
+                "version": "None"
+            },
+            {
+                "hash": "7a9ba19dbde2728388912e3d749074717fb263df",
+                "name": "unittest",
+                "version": "None"
+            },
+            {
+                "hash": "ff578aa0933e981d3ef466f5875f9c20cf3695fc",
+                "name": "mklinit",
+                "version": "None"
+            },
+            {
+                "hash": "9f70d4b4bb058398006dcc3440b2e528cc07363e",
+                "name": "mkl_fft",
+                "version": "1.0.4"
+            },
+            {
+                "hash": "ca4b0b82328acb38813cbeee9d8216cd9ee48260",
+                "name": "numpy",
+                "version": "1.15.0"
+            },
+            {
+                "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "name": "mintime",
+                "version": "None"
+            }
+        ],
+        "input_data": "8ea4a8cc2bf48188310559dfb8e43911",
+        "inter_output": {
+            "0_filter_bbox": "0323719237e63f50c07810b3efb99c3c",
+            "1_filter_daterange": "0323719237e63f50c07810b3efb99c3c",
+            "2_NDVI": "408dc5288c8a947fcec5ca01aecead14",
+            "3_min_time": "c102cbd20320561e182be8b855786794"
+        },
+        "job_id": "527d81e2-820f-4579-8fd8-49ae286ec91b",
+        "openeo_api": "0.0.3",
+        "output_data": "c102cbd20320561e182be8b855786794",
+        "process_graph": {
+            "process_graph": {
+                "args": {
+                    "imagery": {
+                        "args": {
+                            "imagery": {
+                                "args": {
+                                    "from": "2017-01-01",
+                                    "imagery": {
+                                        "args": {
+                                            "bottom": 5181000,
+                                            "imagery": {
+                                                "product_id": "s2a_prd_msil1c"
+                                            },
+                                            "left": 652001,
+                                            "right": 672000,
+                                            "srs": "EPSG:32632",
+                                            "top": 5161000
+                                        },
+                                        "process_id": "filter_bbox"
+                                    },
+                                    "to": "2017-01-31"
+                                },
+                                "process_id": "filter_daterange"
+                            },
+                            "nir": "B08",
+                            "red": "B04"
+                        },
+                        "process_id": "NDVI"
+                    }
+                },
+                "process_id": "min_time"
+            }
+        }
+    }
+}
