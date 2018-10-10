@@ -532,6 +532,7 @@ def job_diff(job_id):
 
     return jsonify(answer)
 
+
 @app.route('/users/<username>/jobs', methods=["GET"])
 def get_jobs(username):
 

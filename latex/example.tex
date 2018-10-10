@@ -264,6 +264,12 @@ The scope of this part of the context model is to get the static environment of 
 In this section the job dependent provenance of the context model gets described. The data captured is tied to an specific job execution, so for every job execution a new context model gets created. The structure of the capturing is using the defined process graph structure of OpenEO. The process graph is already a description of the processes that run at the back end. So sending the same process graph to the same back end again shall result in the same outcome. To assure that the process graph results in the same way of processing the processing itself gets captured. After receiving the job the back end will transform the process graph into code that actually does the processing. Figure %#TODO shows the structure of the workflow capturing. 
 
 %#TODO Overview Figure → maybe from the presentation of Wageningen
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{design_overview_common}
+	\caption{Design Overview of capturing the job context model.}
+	\label{fig:intro} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 The single parts of the capturing are described more in detail in the following sections. 
 
@@ -275,7 +281,8 @@ To guarantee that the data has not changed even though the version has not chang
 
 \subsection{Process Data}
 In this section the capturing of the process itself gets described. As mentioned above the process is described at the process graph, but to be certain that the same process id results in the same code, the code has to be captured. So the code running the processing has to be captured and has to result in a signature that can be compared to other executions. An example of doing so is to hash the entire resulting code. 
-The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. So the environment of the code and information about the code environment has to be added to the context model. If there are any docker container, where the job is running that is not independent on the process graph has to be captured. The programming language, its version and its used packages has also to be captured and added to the job context model.
+The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. So the environment of the code and information about the code environment has to be added to the context model. If there are any docker container, where the job is running that is not independent on the process graph has to be captured. The programming language, its version and its used packages has also to be captured and added to the job context model. To every process executed also the start time and end time has to be captured as a time stamp.
+
 
 \subsection{Output Data}
 The output data of the processing has to be captured as well. In the OpenEO project the results can be rather big, that is why a simple generated identifier of the output result is enough in this context model. An example of this identifier would be a hash over the resulting data. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. So for this context model a simple solution is sufficient. 
@@ -283,8 +290,35 @@ The output data of the processing has to be captured as well. In the OpenEO proj
 \subsection{Benchmarking}
 
 So far only the capturing of a single process, including input and output data, are described, but not how the whole process graph shall be captured. The basic idea of the job dependent provenance capturing is to capture the input data of the process graph, the whole process graph and the output of the process graph, described like in the sections above. This is a common basis the back end providers can agree on and is not affecting the back end providers implementations much. It is also capable of giving the OpenEO user a simple overview of how the results are generated and what are differences between different job executions. 
-To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. So that is how the benchmarking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future. 
+To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{design_overview}
+	\caption{Design Overview of capturing the job context model.}
+	\label{fig:intro} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+So that is how the benchmarking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future. 
 \section{User Information}
+
+In this section the information for the users get described. The capturing described in the previous sections consists of a lot of  information about the back ends that shall not be passed to the users in detail. On the other hand the users need to be able to see the differences of job executions and get environment information about the backends. Therefore there has to be a filter on which data can be shown to the user and what not. Every captured information is also not necessary interesting for the users. Data that is not secure to the user has to be defined by the different back ends themselves. The OpenEO project has a very diverse kinds of back ends and every one has a unique company security guideline. The important thing is that all of the information has to be captured and taken into account for the comparisons and they have to be open to the user, but anonymously if needed.
+The information has to be able to be provided to the user. Therefore there have to be some new additions to to the core api specification to do so. So there has to be a new endpoint for  the users to get information about the back end job independently. Therefore for this thesis the endpoint "GET /version" gets introduced, where the context model of the back end gets provided. 
+There needs to be an endpoint to retrieve the job dependent provenance data, which can be added to the already existing "GET /jobs/<job\_id>" endpoint, which is used to get the current status information of the job. The endpoint also includes the back end provenance of the back end during the execution of the job. 
+There shall be an additional endpoint for comparing two different jobs by their captured context model. For this purpose the endpoint "POST /jobs/<job\_id>/diff" gets introduced, were the job ids that the user wants to compare with are submitted by the POST body. 
+
+\section{Overview of OpenEO Suggestions}
+In this section the changes described in this chapter get summarized and assigned to the parts of OpenEO responsible for the tasks.
+
+\subsection{OpenEO back end}
+The openeo back ends need to implement the job dependent capturing as described in the section TODO and implemented in section TODO. The job dependent capturing is recommended to be implemented in the same programming language as the back end provider uses. The advantage of this is that the usage of the programming language is maintained anyway by the back ends to preserve the functionality of the processes and if the back end switches to a different location the setup of the capturing tool needs no further effort. 
+The back end also need to run the job independent capturing described in section TODO. This has to be run in a cron job or other automation tools so that the changes get notices by the tool. In section TODO there is also an implemented tool doing so. 
+In addition the backends need to implement the endpoints changes and additions of the OpenEO core API described in the next section.   
+\subsection{OpenEO core API}
+The core API needs to add the endpoint for the version retrieval (e.g. a /version) end point. It is also possible to extend an existing endpoint for this purpose. 
+There needs also an additional endpoint for comparing two different jobs. 
+The process graph shall be extended by a timestamp to the product element so that it is possible to access deprecated data on the back ends.
+\subsection{OpenEO Client}
+The OpenEO clients need to implement the changes described above in the core API additions. In the OpenEO client the additional retrieved data needs to be visualized for a better user understanding.
+
 
 \todo{Read through above text and improve.}
 \todo{Add section about noworkflow}
@@ -300,8 +334,7 @@ To make the comparison of different execution behaviors more informative, the gr
 \chapter{Evaluation}
 \section{Use Cases}
 \section{Using Python Client}
-
-
+\section{Performance Comparison}
 
 \chapter{Conclusion and future Work}
 

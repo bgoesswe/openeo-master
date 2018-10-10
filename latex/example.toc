@@ -1,18 +1,18 @@
-\babel@toc {naustrian}{}
-\babel@toc {naustrian}{}
-\babel@toc {english}{}
-\babel@toc {naustrian}{}
-\babel@toc {naustrian}{}
-\babel@toc {naustrian}{}
-\babel@toc {english}{}
-\babel@toc {naustrian}{}
-\babel@toc {naustrian}{}
+\select@language {naustrian}
+\select@language {naustrian}
+\select@language {english}
+\select@language {naustrian}
+\select@language {naustrian}
+\select@language {naustrian}
+\select@language {english}
+\select@language {naustrian}
+\select@language {naustrian}
 \contentsline {chapter}{Kurzfassung}{xi}{chapter*.6}
-\babel@toc {naustrian}{}
-\babel@toc {english}{}
+\select@language {naustrian}
+\select@language {english}
 \contentsline {chapter}{Abstract}{xiii}{chapter*.8}
-\babel@toc {naustrian}{}
-\babel@toc {english}{}
+\select@language {naustrian}
+\select@language {english}
 \contentsline {chapter}{Contents}{xv}{section*.10}
 \contentsline {chapter}{\chapternumberline {1}Introduction}{1}{chapter.1}
 \contentsline {section}{\numberline {1.1}Problem Description}{1}{section.1.1}
@@ -35,22 +35,22 @@
 \contentsline {section}{\numberline {3.2}Job dependent provenance}{11}{section.3.2}
 \contentsline {subsection}{\numberline {3.2.1}Input Data}{11}{subsection.3.2.1}
 \contentsline {subsection}{\numberline {3.2.2}Process Data}{12}{subsection.3.2.2}
-\contentsline {subsection}{\numberline {3.2.3}Output Data}{12}{subsection.3.2.3}
-\contentsline {subsection}{\numberline {3.2.4}Benchmarking}{12}{subsection.3.2.4}
-\contentsline {section}{\numberline {3.3}User Information}{13}{section.3.3}
-\contentsline {chapter}{\chapternumberline {4}Implementation}{15}{chapter.4}
-\contentsline {section}{\numberline {4.1}The EODC Backend}{15}{section.4.1}
-\contentsline {section}{\numberline {4.2}Job Independent Context}{15}{section.4.2}
-\contentsline {section}{\numberline {4.3}Job Dependent Context}{15}{section.4.3}
-\contentsline {section}{\numberline {4.4}User Interface}{15}{section.4.4}
-\contentsline {section}{\numberline {4.5}Overview of Changes}{15}{section.4.5}
-\contentsline {chapter}{\chapternumberline {5}Evaluation}{17}{chapter.5}
-\contentsline {section}{\numberline {5.1}Use Cases}{17}{section.5.1}
-\contentsline {section}{\numberline {5.2}Using Python Client}{17}{section.5.2}
-\contentsline {chapter}{\chapternumberline {6}Conclusion and future Work}{19}{chapter.6}
-\contentsline {chapter}{List of Figures}{21}{section*.25}
-\contentsline {chapter}{List of Tables}{23}{section*.26}
-\contentsline {chapter}{Index}{25}{section*.27}
-\contentsline {chapter}{Glossary}{27}{section*.28}
-\contentsline {chapter}{Acronyms}{29}{section*.30}
-\contentsline {chapter}{Bibliography}{31}{chapter*.32}
+\contentsline {subsection}{\numberline {3.2.3}Output Data}{13}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Benchmarking}{13}{subsection.3.2.4}
+\contentsline {section}{\numberline {3.3}User Information}{14}{section.3.3}
+\contentsline {section}{\numberline {3.4}Overview of OpenEO Suggestions}{14}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}OpenEO back end}{15}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}OpenEO core API}{15}{subsection.3.4.2}
+\contentsline {subsection}{\numberline {3.4.3}OpenEO Client}{15}{subsection.3.4.3}
+\contentsline {chapter}{\chapternumberline {4}Implementation}{17}{chapter.4}
+\contentsline {section}{\numberline {4.1}The EODC Backend}{17}{section.4.1}
+\contentsline {section}{\numberline {4.2}Job Independent Context}{17}{section.4.2}
+\contentsline {section}{\numberline {4.3}Job Dependent Context}{17}{section.4.3}
+\contentsline {section}{\numberline {4.4}User Interface}{17}{section.4.4}
+\contentsline {section}{\numberline {4.5}Overview of Changes}{17}{section.4.5}
+\contentsline {chapter}{\chapternumberline {5}Evaluation}{19}{chapter.5}
+\contentsline {section}{\numberline {5.1}Use Cases}{19}{section.5.1}
+\contentsline {section}{\numberline {5.2}Using Python Client}{19}{section.5.2}
+\contentsline {chapter}{\chapternumberline {6}Conclusion and future Work}{21}{chapter.6}
+\contentsline {chapter}{List of Figures}{23}{section*.27}
+\contentsline {chapter}{List of Tables}{25}{section*.28}
