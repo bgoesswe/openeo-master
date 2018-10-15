@@ -15,6 +15,11 @@
 \select@language {english}
 \addvspace {10pt}
 \addvspace {10pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Overview of the OpenEO architecture. (from openeo.org)\relax }}{5}{figure.caption.17}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Process graph example (from Github Spec)\relax }}{7}{figure.caption.18}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Design Overview of capturing the job context model.\relax }}{12}{figure.caption.21}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Design Overview of capturing the job context model.\relax }}{13}{figure.caption.22}
 \addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}
