@@ -4,7 +4,17 @@ from ndvi.ndvi import perform_ndvi, write_output as write_ndvi_output
 from mintime.mintime import perform_min_time, write_output as write_min_time_output
 
 import os, shutil
+import datetime
 
+import logging
+
+LOG_FILE = "job.log"
+
+logging.basicConfig(filename=LOG_FILE,
+                            filemode='w',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt=':%Y-%m-%d %H:%M:%S',
+                            level=logging.INFO)
 
 def clean_dir(folder):
     for the_file in os.listdir(folder):
@@ -18,9 +28,9 @@ def clean_dir(folder):
             print(e)
 
 
-def logging(text):
+def log(text):
     print(text)
-    return text
+    logging.info(text)
 
 
 # convert
@@ -78,6 +88,10 @@ NDVI_OUT_FOLDER = create_folder(OUT_VOLUME, "template_id_ndvi")
 MINTIME_OUT_FOLDER = create_folder(OUT_VOLUME, "template_id_mintime")
 
 
+def create_timestamp():
+    return '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+
+
 def run_graph():
     # Clean dir
     print("Start cleaning directory...")
@@ -87,9 +101,9 @@ def run_graph():
     print("Finshed cleaning directory...")
     # Run filter
 
-    print("Start Sentinel 2 dataasd extraction process...")
-    logging("IN:filter_bbox")
-    logging("IN:filter_daterange")
+    print("Start Sentinel 2 data extraction process...")
+    log("IN:filter_bbox:{}".format(create_timestamp()))
+    log("IN:filter_daterange:{}".format(create_timestamp()))
     unzip_data(TEMP_FOLDERS, OUT_FOLDER, ARGS)
     extract_sentinel_2_data(TEMP_FOLDERS, OUT_FOLDER, ARGS, PARAMS)
     combine_bands(TEMP_FOLDERS, OUT_FOLDER)
@@ -99,32 +113,32 @@ def run_graph():
     transform_to_geotiff(TEMP_FOLDERS, OUT_FOLDER, PARAMS)
     write_output(ARGS, OUT_EPSG, OUT_FOLDER)
     clean_up(TEMP_FOLDERS, OUT_FOLDER)
-    logging("OUT:filter_bbox")
-    logging("OUT:filter_daterange")
+    log("OUT:filter_bbox:{}".format(create_timestamp()))
+    log("OUT:filter_daterange:{}".format(create_timestamp()))
 
     print("Finished Sentinel 2 data extraction process.")
 
     # Run ndvi
     print("Start processing 'NDVI' ...")
-    logging("IN:NDVI")
+    log("IN:NDVI:{}".format(create_timestamp()))
     NDVI_CONFIG_FILE = "/data/job_data/template_id/files.json"
     NDVI_PARAMS = read_parameters(NDVI_CONFIG_FILE)
 
     perform_ndvi(NDVI_PARAMS, NDVI_OUT_VOLUME, NDVI_OUT_FOLDER)
     write_ndvi_output(NDVI_PARAMS, NDVI_OUT_FOLDER)
-    logging("OUT:NDVI")
+    log("OUT:NDVI:{}".format(create_timestamp()))
 
     print("Finished 'NDVI' processing.")
     # Run min_time
 
     print("Start processing 'min_time' ...")
-    logging("IN:min_time")
+    log("IN:min_time:{}".format(create_timestamp()))
     MINTIME_CONFIG_FILE = "/data/job_data/template_id_ndvi/files.json"
     MINTIME_PARAMS = read_parameters(MINTIME_CONFIG_FILE)
 
     perform_min_time(MINTIME_OUT_FOLDER, NDVI_OUT_VOLUME, MINTIME_PARAMS)
     write_min_time_output(MINTIME_PARAMS, MINTIME_OUT_FOLDER)
-    logging("OUT:min_time")
+    log("OUT:min_time:{}".format(create_timestamp()))
     print("Finished 'min_time' processing.")
 
     # Run convert

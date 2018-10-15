@@ -3,7 +3,7 @@ import os, subprocess
 import uuid
 import cpuinfo
 import json
-from hashlib import md5
+from hashlib import sha256
 import collections
 #from PIL import Image # Python Imaging Library
 
@@ -103,7 +103,7 @@ def get_system_cm():
 
 def get_filehash(jsonfile):
     data_dir = "/data/"
-    hasher = md5()
+    hasher = sha256()
     with open(jsonfile) as json_data:
         d = json.load(json_data)
         outdir = data_dir + d['file_paths'][0]
@@ -164,12 +164,12 @@ def create_context_model(job_id):
    process = subprocess.Popen(OS_ENV_CMD.split(), stdout=subprocess.PIPE)
    output, error = process.communicate()
 
-   os_hash = md5(output).hexdigest()
+   os_hash = sha256(output).hexdigest()
 
    process = subprocess.Popen(HW_ENV_CMD.split(), stdout=subprocess.PIPE)
    output, error = process.communicate()
 
-   hw_hash = md5(output).hexdigest()
+   hw_hash = sha256(output).hexdigest()
 
    # Code hash
    process = subprocess.Popen(CODE_CMD.split(), stdout=subprocess.PIPE)
@@ -221,11 +221,11 @@ def create_context_model(job_id):
 
    input_hashes = sorted(input_hashes)
    input_hashes = str(input_hashes)
-   input_hash = md5(input_hashes.encode()).hexdigest()
+   input_hash = sha256(input_hashes.encode()).hexdigest()
 
    # output hash
 
-   hasher = md5()
+   hasher = sha256()
    with open(output_location, 'rb') as afile:
        buf = afile.read()
        hasher.update(buf)

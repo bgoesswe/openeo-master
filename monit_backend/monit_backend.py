@@ -4,11 +4,13 @@ import hashlib
 import subprocess
 import json
 
-config_dir = "backend_monit.conf"
+# CONFIG_DIR = "backend_monit.conf"
 
 
 INOTIFY_CALL = "{0} -d -e modify -e attrib -e moved_to -e create -e delete {1} -o {2}"
 
+DEBIAN_PACKAGES_CMD = "dpkg --get-selections"
+UBUNTU_RELEASE_CMD = "lsb_release -a"
 
 def load_config(file):
     json1_file = open(file)
@@ -24,12 +26,12 @@ def init(config):
         os.system(inotify_cmd)
 
 
-def md5(file):
-    hash_md5 = hashlib.md5()
+def hash_file(file):
+    hash = hashlib.sha256()
     with open(file, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
+            hash.update(chunk)
+    return hash.hexdigest()
 
 
 def run_cmd(command):
@@ -41,18 +43,19 @@ def get_git(path, config):
 
     git_cmd = config["git_path"]
 
+    # print(git_cmd)
     CMD_GIT_URL = "{0} -C {1} config --get remote.origin.url".format(git_cmd, path)
     CMD_GIT_BRANCH = "{0} -C {1} branch".format(git_cmd, path)
     CMD_GIT_COMMIT = "{0} -C {1} log".format(git_cmd, path) # first line
     CMD_GIT_DIFF = "{0} -C {1} diff".format(git_cmd, path) # Should do that ?
 
-    # print("Get Git Info")
+    print("Get Git Info")
 
     git_url = run_cmd(CMD_GIT_URL).split("\n")[0]
     git_commit = run_cmd(CMD_GIT_COMMIT).split("\n")[0].replace("commit", "").strip()
     git_diff = run_cmd(CMD_GIT_DIFF)
 
-    git_diff = hashlib.md5(git_diff.encode("utf-8"))
+    git_diff = hashlib.sha256(git_diff.encode("utf-8"))
     git_diff = git_diff.hexdigest()
 
     git_branch = run_cmd(CMD_GIT_BRANCH).replace("*", "").strip()
@@ -86,7 +89,7 @@ def generate_context_model(config):
             backend_verion = cm_old["backend_version"]
 
     if os.path.isfile(INOTIFY_FILE):
-        working_dir_hash = md5(INOTIFY_FILE)
+        working_dir_hash = hash_file(INOTIFY_FILE)
 
     cm['git_repos'] = []
     for repo in GIT_REPOS:
@@ -96,11 +99,17 @@ def generate_context_model(config):
     cm['backend_version'] = backend_verion
     cm['working_dir_changes'] = working_dir_hash
 
+    cm['linux_release'] = hashlib.sha256(run_cmd(UBUNTU_RELEASE_CMD).encode()).hexdigest()
+
+    cm['linux_packages'] = hashlib.sha256(run_cmd(DEBIAN_PACKAGES_CMD).encode()).hexdigest()
+
+
     if cm != cm_old:
         cm["backend_version"] += 1
 
         with open(CM_OUT, 'w') as outfile:
             json.dump(cm, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+
 
     return cm
 

@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import os, subprocess
 import uuid
-import cpuinfo
+import glob
 import json
-from hashlib import md5
+from hashlib import sha256
 import collections
 #from PIL import Image # Python Imaging Library
 
@@ -22,6 +22,7 @@ app = Flask(__name__)
 
 SUDO_PASS = "mil1rre9"
 
+LOGFILENAME = "job.log"
 
 # LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
 JOB_LOCATION = "/sdcard/Master/JOBS"
@@ -103,7 +104,7 @@ def get_system_cm():
 
 def get_filehash(jsonfile):
     data_dir = "/data/"
-    hasher = md5()
+    hasher = sha256()
     with open(jsonfile) as json_data:
         d = json.load(json_data)
         outdir = data_dir + d['file_paths'][0]
@@ -112,6 +113,14 @@ def get_filehash(jsonfile):
             hasher.update(buf)
         return hasher.hexdigest()
 
+def get_job_hash(job_location):
+    checksums = []
+    for root, subdirs, files in os.walk(job_location):
+        for file in files:
+            with open(os.path.join(root, file), 'rb') as _file:
+                if file != "process_graph.json":
+                    checksums.append([root, file, sha256(_file.read()).hexdigest()])
+    return sha256(str(checksums).encode()).hexdigest()
 
 def processgraph_add_hashes(graph):
 
@@ -164,22 +173,16 @@ def create_context_model(job_id):
    process = subprocess.Popen(OS_ENV_CMD.split(), stdout=subprocess.PIPE)
    output, error = process.communicate()
 
-   os_hash = md5(output).hexdigest()
+   os_hash = sha256(output).hexdigest()
 
    process = subprocess.Popen(HW_ENV_CMD.split(), stdout=subprocess.PIPE)
    output, error = process.communicate()
 
-   hw_hash = md5(output).hexdigest()
+   hw_hash = sha256(output).hexdigest()
 
    # Code hash
-   # TODO
-   process = subprocess.Popen(CODE_CMD.split(), stdout=subprocess.PIPE)
-   output, error = process.communicate()
 
-   output = str(output).split('\\n')
-
-   trial = output[1].split(':')[1].strip()
-   code_hash = output[5].split(':')[1].strip()
+   code_hash = get_job_hash(location)
 
    # Code environment hash
    python_modules = get_python_detail(job_id)
@@ -191,7 +194,7 @@ def create_context_model(job_id):
 
    # Output hash
 
-   hasher = md5()
+   hasher = sha256()
    with open(output_location, 'rb') as afile:
        buf = afile.read()
        hasher.update(buf)
@@ -212,9 +215,9 @@ def create_context_model(job_id):
    context_model['code_env'] = python_modules
    context_model['backend_env'] = get_system_cm()
 
-   cm = get_job_cm(job_id)
+   # cm = get_job_cm(job_id)
 
-   cm[trial] = context_model
+   cm = context_model
    # context_model = json.loads(str(context_model))
 
    with open('context_model.json', 'w') as outfile:
@@ -551,7 +554,7 @@ def job_detail(job_id):
 
 if __name__ == '__main__':
     # compare_jobs("mynewjob", "mynewid")
-    # create_context_model("testjob1")
+    # create_context_model("test")
     # print(get_python_detail("test"))
     # print(compare_previous("test"))
     # job_queue("test")
