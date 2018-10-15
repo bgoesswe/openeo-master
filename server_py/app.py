@@ -140,6 +140,8 @@ def create_context_model(job_id):
 
    output_location = "/data/job_data/template_id_mintime/min-time_epsg-4326.tif"
 
+   input_hash_file = "/data/products/S2A_MSIL1C_20180206T000751_N0206_R130_T48CWV_20180206T011111.hash"
+
 #   CODE_CMD = 'now show --dir={}'.format(location)
 
 #   INPUT_FILE_CMD = 'now show -f --dir={}'.format(location)
@@ -180,35 +182,14 @@ def create_context_model(job_id):
    code_hash = output[5].split(':')[1].strip()
 
    # Code environment hash
-   # TODO Read pip file
-   python_modules.append(module)
+   python_modules = get_python_detail(job_id)
 
    # Input Hash
-   # TODO
-   process = subprocess.Popen(INPUT_FILE_CMD.split(), stdout=subprocess.PIPE)
-   # output, error = process.communicate()
+   with open(input_hash_file) as f:
+       lines = f.read().splitlines()
+   input_hash = lines
 
-   process = subprocess.Popen('grep -A 6 02_extracted'.split(), stdin=process.stdout,
-                            stdout=subprocess.PIPE)
-
-   process = subprocess.Popen('grep after'.split(), stdin=process.stdout,
-                              stdout=subprocess.PIPE)
-
-   output, error = process.communicate()
-
-   output = str(output).split('\\n')
-
-   input_hashes = []
-   for entry in output:
-       entries = entry.split(':')
-       if len(entries) > 1:
-         input_hashes.append(entries[1])
-
-   input_hashes = sorted(input_hashes)
-   input_hashes = str(input_hashes)
-   input_hash = md5(input_hashes.encode()).hexdigest()
-
-   # output hash
+   # Output hash
 
    hasher = md5()
    with open(output_location, 'rb') as afile:
@@ -447,14 +428,9 @@ def get_python_detail(job_id):
     if not os.path.isfile(job_whole_path):
         return None
     else:
-        file = open(job_whole_path, "r")
-        modules = file.read()
-        modules = modules.split('Name:')[1:]
-        formated_modules = []
-        for module in modules:
-            module = module.split('Path:')[0].replace('\n', '').strip()
-            formated_modules.append(module)
-        return formated_modules
+        with open(job_whole_path) as f:
+            lines = f.read().splitlines()
+        return lines
 
 
 @app.route('/')
