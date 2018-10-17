@@ -8,13 +8,8 @@ import datetime
 
 import logging
 
-LOG_FILE = "job.log"
 
-logging.basicConfig(filename=LOG_FILE,
-                            filemode='w',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt=':%Y-%m-%d %H:%M:%S',
-                            level=logging.INFO)
+
 
 def clean_dir(folder):
     for the_file in os.listdir(folder):
@@ -28,9 +23,7 @@ def clean_dir(folder):
             print(e)
 
 
-def log(text):
-    print(text)
-    logging.info(text)
+
 
 
 # convert
@@ -87,9 +80,23 @@ NDVI_OUT_FOLDER = create_folder(OUT_VOLUME, "template_id_ndvi")
 
 MINTIME_OUT_FOLDER = create_folder(OUT_VOLUME, "template_id_mintime")
 
+LOG_FILE = "job.log"
+
+
+logging.basicConfig(filename=LOG_FILE,
+                            filemode='w',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt=':%Y-%m-%d %H:%M:%S',
+                            level=logging.INFO)
+
+
+def log(text):
+    print(text)
+    logging.info(text)
+
 
 def create_timestamp():
-    return '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+    return '' # ''{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
 
 
 def run_graph():

@@ -18,9 +18,8 @@ OS_ENV_CMD = "dpkg -l"
 
 SYSTEM_CM_OUT = '/data/system_context_model.json'
 
-app = Flask(__name__)
 
-SUDO_PASS = "mil1rre9"
+app = Flask(__name__)
 
 LOGFILENAME = "job.log"
 
@@ -139,10 +138,78 @@ def processgraph_add_hashes(graph):
             for key2, value2 in graph.items():
                 if not isinstance(value2, dict):
                     if value2 in outdir_dict.keys():
-                        buffer[str(len(buffer.items()))+"_"+value2] = get_filehash(outdir_dict[value2])
+                        buffer[str(len(buffer.items()))+"_"+value2] = {'output': get_filehash(outdir_dict[value2])}
             return buffer
     return buffer
 
+def get_process_timings(logfile):
+
+    if not os.path.isfile(logfile):
+        return None
+
+    with open(logfile) as f:
+        content = f.readlines()
+    # you may also want to remove whitespace characters like `\n` at the end of each line
+    content = [x.strip() for x in content]
+
+    output_dir = {}
+
+    counter = 0
+    for logline in content:
+        if "IN:" in logline:
+            process_name = logline.split("IN:")[1].split(":")[0]
+            timestamp = logline.split("root")[0][1:].strip()
+            process_dict = {'start': timestamp}
+            output_dir[str(counter)+"_"+process_name] = process_dict
+            counter += 1
+
+        if "OUT:" in logline:
+            process_name = logline.split("OUT:")[1].split(":")[0]
+            timestamp = logline.split("root")[0][1:].strip()
+            # process_dict = {'end': timestamp}
+            for key in output_dir:
+                if process_name in key:
+                    output_dir[key]['end'] = timestamp
+
+    return output_dir
+
+
+def transform_to_prov(context_model):
+    from prov.model import ProvDocument
+    from prov.dot import prov_to_dot
+
+    doc = ProvDocument()
+    doc.add_namespace('is', 'http://www.provbook.org/nownews/is/#')
+    doc.add_namespace('void', 'http://vocab.deri.ie/void#')
+    doc.add_namespace('nowpeople', 'http://www.provbook.org/nownews/people/')
+
+    input_data = doc.entity("void:Inputdata")
+    backend_agent = doc.agent("nowpeople:EODC")
+    user_agent = doc.agent("nowpeople:OpenEO-User")
+    doc.wasAttributedTo(input_data, backend_agent)
+
+    process_details = context_model["process_details"]
+    prev_key = input_data
+    for key in process_details:
+
+        key_entity = doc.entity("void:"+key+"_output")
+
+        key_activity = doc.activity('is:'+key)
+
+        doc.used(key_activity, prev_key)
+
+        doc.wasDerivedFrom(key_entity, prev_key)
+        doc.wasGeneratedBy(key_entity, key_activity, time=process_details[key]["timing"]["end"])
+
+        doc.wasStartedBy(key_activity, user_agent, time=process_details[key]["timing"]["start"])
+
+
+        prev_key = key_entity
+
+    dot = prov_to_dot(doc)
+    dot.write_png('output-prov.png')
+
+    return doc
 
 def create_context_model(job_id):
    location = JOB_LOCATION+"/"+str(job_id)+"/"
@@ -162,6 +229,12 @@ def create_context_model(job_id):
    # file_hashes
    process_graph = open(process_graph_file).read()
    file_hashes = processgraph_add_hashes(json.loads(process_graph))
+
+   proc_timings = get_process_timings(location+"/"+LOGFILENAME)
+
+   for key in file_hashes:
+        if key in proc_timings:
+            file_hashes[key]['timing'] = proc_timings[key]
 
    # read process graph
 
@@ -207,7 +280,7 @@ def create_context_model(job_id):
    #context_model['backend_version'] = BACKEND_VERSION
    context_model['openeo_api'] = OPENEO_API_VERSION
    context_model['process_graph'] = process_graph
-   context_model['inter_output'] = file_hashes
+   context_model['process_details'] = file_hashes
    context_model['job_id'] = job_id
    #context_model['os'] = os_hash
    #context_model['hw'] = hw_hash
@@ -219,16 +292,24 @@ def create_context_model(job_id):
 
    cm = context_model
    # context_model = json.loads(str(context_model))
+   # return transform_to_prov(cm)
+
+   # return -1
 
    with open('context_model.json', 'w') as outfile:
       json.dump(cm, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
    command = 'cp context_model.json {}'.format(location)
 
-   os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+   # os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+
+   os.system(command)
 
    print(cm)
    return cm
+
+
+
 
 
 def compare_previous(job_id):
@@ -395,9 +476,9 @@ def cp_job(content, job_id):
         print("create job dir")
         os.mkdir(job_whole_path)
         print("change owner")
-        command = 'chown berni:berni -R {}'.format(job_whole_path)
-        print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
-        os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+        #command = 'chown berni:berni -R {}'.format(job_whole_path)
+        #print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
+        #os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
     os.system('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path))
     print("finished copy command")
 
@@ -412,8 +493,9 @@ def run_job(content, job_id):
     if content:
         cp_job(content, job_id)
 
-    command = './runlocal.sh {}'.format(job_whole_path)
+    print("run processing at: {}".format(job_whole_path))
 
+    command = './runlocal_tu.sh {}'.format(job_whole_path)
 
     print("run procession command: {}".format(command))
     # os.system('echo %s|sudo -S %s' % (sudo_pass, command))
@@ -554,7 +636,7 @@ def job_detail(job_id):
 
 if __name__ == '__main__':
     # compare_jobs("mynewjob", "mynewid")
-    # create_context_model("test")
+    # print(create_context_model("test7"))
     # print(get_python_detail("test"))
     # print(compare_previous("test"))
     # job_queue("test")
@@ -562,4 +644,5 @@ if __name__ == '__main__':
     # update_conf(PROCESS_GRAPH)
     # print(find_item(PROCESS_GRAPH, "left"))
     # get_jobs('asd')
+    # print(get_process_timings('/sdcard/Master/JOBS/test7/job.log'))
     app.run(debug=True, port=5957)

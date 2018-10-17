@@ -20,7 +20,7 @@ SYSTEM_CM_OUT = '/data/system_context_model.json'
 
 app = Flask(__name__)
 
-SUDO_PASS = "mil1rre9"
+LOGFILENAME = "job.log"
 
 # DOCKER_NOW_OUT_DIR = "/sdcard/docker/volumes/masterbackendvol/_data/app/.noworkflow"
 LOCAL_NOW_OUT_DIR = "../release-0.0.2/.noworkflow"
@@ -130,10 +130,41 @@ def processgraph_add_hashes(graph):
             for key2, value2 in graph.items():
                 if not isinstance(value2, dict):
                     if value2 in outdir_dict.keys():
-                        buffer[str(len(buffer.items()))+"_"+value2] = get_filehash(outdir_dict[value2])
+                        buffer[str(len(buffer.items()))+"_"+value2] = {'output': get_filehash(outdir_dict[value2])}
             return buffer
     return buffer
 
+
+def get_process_timings(logfile):
+
+    if not os.path.isfile(logfile):
+        return None
+
+    with open(logfile) as f:
+        content = f.readlines()
+    # you may also want to remove whitespace characters like `\n` at the end of each line
+    content = [x.strip() for x in content]
+
+    output_dir = {}
+
+    counter = 0
+    for logline in content:
+        if "IN:" in logline:
+            process_name = logline.split("IN:")[1].split(":")[0]
+            timestamp = logline.split("root")[0][1:].strip()
+            process_dict = {'start': timestamp}
+            output_dir[str(counter)+"_"+process_name] = process_dict
+            counter += 1
+
+        if "OUT:" in logline:
+            process_name = logline.split("OUT:")[1].split(":")[0]
+            timestamp = logline.split("root")[0][1:].strip()
+            # process_dict = {'end': timestamp}
+            for key in output_dir:
+                if process_name in key:
+                    output_dir[key]['end'] = timestamp
+
+    return output_dir
 
 def create_context_model(job_id):
    location = JOB_LOCATION+"/"+str(job_id)+"/"
@@ -153,6 +184,12 @@ def create_context_model(job_id):
    # file_hashes
    process_graph = open(process_graph_file).read()
    file_hashes = processgraph_add_hashes(json.loads(process_graph))
+
+   proc_timings = get_process_timings(location + "/" + LOGFILENAME)
+
+   for key in file_hashes:
+       if key in proc_timings:
+           file_hashes[key]['timing'] = proc_timings[key]
 
    # read process graph
 
@@ -256,7 +293,9 @@ def create_context_model(job_id):
 
    command = 'cp context_model.json {}'.format(location)
 
-   os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+   # os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+
+   os.system(command)
 
    print(cm)
    return cm
@@ -425,10 +464,10 @@ def cp_job(content, job_id):
     if not os.path.isdir(job_whole_path):
         print("create job dir")
         os.mkdir(job_whole_path)
-        print("change owner")
-        command = 'chown berni:berni -R {}'.format(job_whole_path)
-        print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
-        os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
+        #print("change owner")
+        #command = 'chown berni:berni -R {}'.format(job_whole_path)
+        #print("run copy command: {} ".format('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path)))
+        #os.system('echo %s|sudo -S %s' % (SUDO_PASS, command))
     os.system('cp -r {} {}/'.format(IMAGE_DIR, job_whole_path))
     print("finished copy command")
 
