@@ -1,56 +1,87 @@
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {english}
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {naustrian}
-\select@language {english}
-\select@language {naustrian}
-\select@language {naustrian}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
+\babel@toc {naustrian}{}
+\babel@toc {naustrian}{}
 \contentsline {chapter}{Kurzfassung}{xi}{chapter*.6}
-\select@language {naustrian}
-\select@language {english}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
 \contentsline {chapter}{Abstract}{xiii}{chapter*.8}
-\select@language {naustrian}
-\select@language {english}
+\babel@toc {naustrian}{}
+\babel@toc {english}{}
 \contentsline {chapter}{Contents}{xv}{section*.10}
 \contentsline {chapter}{\chapternumberline {1}Introduction}{1}{chapter.1}
-\contentsline {section}{\numberline {1.1}Problem Description}{1}{section.1.1}
-\contentsline {section}{\numberline {1.2}Aim of this Work}{2}{section.1.2}
-\contentsline {chapter}{\chapternumberline {2}Related Work}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}Reproducibility}{3}{section.2.1}
-\contentsline {subsection}{\numberline {2.1.1}eScience}{3}{subsection.2.1.1}
-\contentsline {subsection}{\numberline {2.1.2}Data Citation}{3}{subsection.2.1.2}
-\contentsline {subsection}{\numberline {2.1.3}Provenance Data}{4}{subsection.2.1.3}
-\contentsline {section}{\numberline {2.2}Related Work in the EO Sciences}{4}{section.2.2}
-\contentsline {section}{\numberline {2.3}Related Tools}{4}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}ReproZip}{4}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Smartcontainer}{4}{subsection.2.3.2}
-\contentsline {subsection}{\numberline {2.3.3}Reproducibility in computational geoscience}{4}{subsection.2.3.3}
-\contentsline {section}{\numberline {2.4}OpenEO Details}{4}{section.2.4}
-\contentsline {subsection}{\numberline {2.4.1}Job Execution}{5}{subsection.2.4.1}
-\contentsline {subsection}{\numberline {2.4.2}Back end Overview}{6}{subsection.2.4.2}
-\contentsline {chapter}{\chapternumberline {3}Design}{9}{chapter.3}
-\contentsline {section}{\numberline {3.1}Back end provenance}{10}{section.3.1}
-\contentsline {section}{\numberline {3.2}Job dependent provenance}{11}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Input Data}{11}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Process Data}{12}{subsection.3.2.2}
-\contentsline {subsection}{\numberline {3.2.3}Output Data}{13}{subsection.3.2.3}
-\contentsline {subsection}{\numberline {3.2.4}Benchmarking}{13}{subsection.3.2.4}
-\contentsline {section}{\numberline {3.3}User Information}{14}{section.3.3}
-\contentsline {section}{\numberline {3.4}Overview of OpenEO Suggestions}{14}{section.3.4}
-\contentsline {subsection}{\numberline {3.4.1}OpenEO back end}{15}{subsection.3.4.1}
-\contentsline {subsection}{\numberline {3.4.2}OpenEO core API}{15}{subsection.3.4.2}
-\contentsline {subsection}{\numberline {3.4.3}OpenEO Client}{15}{subsection.3.4.3}
-\contentsline {chapter}{\chapternumberline {4}Implementation}{17}{chapter.4}
-\contentsline {section}{\numberline {4.1}The EODC Backend}{17}{section.4.1}
-\contentsline {section}{\numberline {4.2}Job Independent Context}{17}{section.4.2}
-\contentsline {section}{\numberline {4.3}Job Dependent Context}{17}{section.4.3}
-\contentsline {section}{\numberline {4.4}User Interface}{17}{section.4.4}
-\contentsline {section}{\numberline {4.5}Overview of Changes}{17}{section.4.5}
-\contentsline {chapter}{\chapternumberline {5}Evaluation}{19}{chapter.5}
-\contentsline {section}{\numberline {5.1}Use Cases}{19}{section.5.1}
-\contentsline {section}{\numberline {5.2}Using Python Client}{19}{section.5.2}
-\contentsline {chapter}{\chapternumberline {6}Conclusion and future Work}{21}{chapter.6}
-\contentsline {chapter}{List of Figures}{23}{section*.27}
-\contentsline {chapter}{List of Tables}{25}{section*.28}
+\contentsline {section}{\numberline {1.1}Motivation}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Problem Description}{2}{section.1.2}
+\contentsline {section}{\numberline {1.3}Aim of the Work}{2}{section.1.3}
+\contentsline {section}{\numberline {1.4}Use Cases}{3}{section.1.4}
+\contentsline {subsection}{\numberline {1.4.1}Capturing the Back-end environment}{3}{subsection.1.4.1}
+\contentsline {subsection}{\numberline {1.4.2}Capturing job dependent environments}{4}{subsection.1.4.2}
+\contentsline {subsection}{\numberline {1.4.3}Getting differences of job executions}{4}{subsection.1.4.3}
+\contentsline {section}{\numberline {1.5}Methodological Approach}{5}{section.1.5}
+\contentsline {section}{\numberline {1.6}Structure of Work}{6}{section.1.6}
+\contentsline {chapter}{\chapternumberline {2}Related Work}{9}{chapter.2}
+\contentsline {section}{\numberline {2.1}Reproducibility}{9}{section.2.1}
+\contentsline {section}{\numberline {2.2}Earth Observation Science}{10}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Vadose Zone Journal (VZJ)}{11}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}The Geoscience Paper of the Future (GPF)}{11}{subsection.2.2.2}
+\contentsline {section}{\numberline {2.3}OpenEO}{11}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Job Execution}{13}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Back end Overview}{14}{subsection.2.3.2}
+\contentsline {section}{\numberline {2.4}Existing Tools}{14}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}ReproZip}{14}{subsection.2.4.1}
+\contentsline {subsection}{\numberline {2.4.2}Docker / Smartcontainer}{15}{subsection.2.4.2}
+\contentsline {chapter}{\chapternumberline {3}Methodology}{19}{chapter.3}
+\contentsline {section}{\numberline {3.1}Version Control Systems}{19}{section.3.1}
+\contentsline {section}{\numberline {3.2}Hash}{19}{section.3.2}
+\contentsline {section}{\numberline {3.3}Linux Tools}{20}{section.3.3}
+\contentsline {section}{\numberline {3.4}PROV}{21}{section.3.4}
+\contentsline {section}{\numberline {3.5}Noworkflow}{22}{section.3.5}
+\contentsline {section}{\numberline {3.6}Data Identification}{23}{section.3.6}
+\contentsline {section}{\numberline {3.7}EODC Back End}{24}{section.3.7}
+\contentsline {chapter}{\chapternumberline {4}Design}{25}{chapter.4}
+\contentsline {section}{\numberline {4.1}Data Identification}{25}{section.4.1}
+\contentsline {section}{\numberline {4.2}Context Model}{26}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Back end provenance}{27}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Job dependent provenance}{28}{subsection.4.2.2}
+\contentsline {subsubsection}{Input Data}{28}{section*.33}
+\contentsline {subsubsection}{Process Data}{29}{section*.34}
+\contentsline {subsubsection}{Output Data}{30}{section*.35}
+\contentsline {subsubsection}{Back end provenance}{30}{section*.36}
+\contentsline {subsubsection}{Benchmarking}{30}{section*.37}
+\contentsline {subsection}{\numberline {4.2.3}User Interface}{31}{subsection.4.2.3}
+\contentsline {section}{\numberline {4.3}Overview of Changes}{32}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}OpenEO back end}{32}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}OpenEO core API}{33}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}OpenEO Client}{33}{subsection.4.3.3}
+\contentsline {chapter}{\chapternumberline {5}Implementation}{35}{chapter.5}
+\contentsline {section}{\numberline {5.1}Data Identification}{35}{section.5.1}
+\contentsline {section}{\numberline {5.2}Back end provenance}{36}{section.5.2}
+\contentsline {section}{\numberline {5.3}Job dependent provenance}{39}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Noworkflow Implementation}{40}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Python Implementation}{42}{subsection.5.3.2}
+\contentsline {section}{\numberline {5.4}User Interface}{43}{section.5.4}
+\contentsline {section}{\numberline {5.5}Implementation Overview}{45}{section.5.5}
+\contentsline {subsection}{\numberline {5.5.1}Changes to Client}{45}{subsection.5.5.1}
+\contentsline {subsection}{\numberline {5.5.2}Changes to Core API}{45}{subsection.5.5.2}
+\contentsline {subsection}{\numberline {5.5.3}Changes to Back end}{45}{subsection.5.5.3}
+\contentsline {chapter}{\chapternumberline {6}Evaluation}{47}{chapter.6}
+\contentsline {section}{\numberline {6.1}Data Identification}{47}{section.6.1}
+\contentsline {section}{\numberline {6.2}NoWorkflow vs Python Implementation}{48}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Implementation Effort}{48}{subsection.6.2.1}
+\contentsline {subsection}{\numberline {6.2.2}Performance}{49}{subsection.6.2.2}
+\contentsline {subsection}{\numberline {6.2.3}Maintenance and Extensibility}{49}{subsection.6.2.3}
+\contentsline {section}{\numberline {6.3}Use Cases}{50}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}Capturing the Back-end environment}{50}{subsection.6.3.1}
+\contentsline {subsection}{\numberline {6.3.2}Capturing job dependent environments}{50}{subsection.6.3.2}
+\contentsline {subsection}{\numberline {6.3.3}Getting differences of job executions}{50}{subsection.6.3.3}
+\contentsline {chapter}{\chapternumberline {7}Conclusion and future Work}{51}{chapter.7}
+\contentsline {section}{\numberline {7.1}Conclusion}{51}{section.7.1}
+\contentsline {section}{\numberline {7.2}Future Work}{51}{section.7.2}
+\contentsline {chapter}{List of Figures}{53}{section*.74}
+\contentsline {chapter}{List of Tables}{55}{section*.75}
+\contentsline {chapter}{Bibliography}{57}{chapter*.76}

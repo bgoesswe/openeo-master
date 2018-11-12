@@ -104,3 +104,12 @@ venv.bak/
 .mypy_cache/
 
 .idea
+/latex/*.out
+/latex/example.glo
+/latex/example.idx
+/latex/example.ist
+/latex/example.lof
+/latex/example.log
+/latex/example.lot
+/latex/example.acn
+/latex/example.aux
