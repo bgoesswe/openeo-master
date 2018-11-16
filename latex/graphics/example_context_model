@@ -1,0 +1,37 @@
+{
+    "process_details": {
+        "0_filter_bbox": {
+            "code_id": "https://github.com/Open-EO/openeo-openshift-driver/tree/177d082e45b211f18f3b1ae55c3a65e45c96cf89/operations/filter-s2",
+            "output": "89ad98f264cfde64c086a3c314fcdfeb8896b0112276611be7596fce0e660fba",
+            "timing": {
+                "end": "2018-10-21 11:27:47,552",
+                "start": "2018-10-21 11:27:46,33"
+            }
+        },
+        "1_filter_daterange": {
+            "code_id": "https://github.com/Open-EO/openeo-openshift-driver/tree/177d082e45b211f18f3b1ae55c3a65e45c96cf89/operations/filter-s2",
+            "output": "89ad98f264cfde64c086a3c314fcdfeb8896b0112276611be7596fce0e660fba",
+            "timing": {
+                "end": "2018-10-21 11:27:47,552",
+                "start": "2018-10-21 11:27:46,33"
+            }
+        },
+        "2_NDVI": {
+            "code_id": "https://github.com/Open-EO/openeo-openshift-driver/tree/177d082e45b211f18f3b1ae55c3a65e45c96cf89/operations/ndvi",
+            "output": "9003ad2c78f982c30ee63552a7c04488e22199514ad10a4c376c7eeb0523af52",
+            "timing": {
+                "end": "2018-10-21 11:27:47,644",
+                "start": "2018-10-21 11:27:47,552"
+            }
+        },
+        "3_min_time": {
+            "code_id": "https://github.com/Open-EO/openeo-openshift-driver/tree/177d082e45b211f18f3b1ae55c3a65e45c96cf89/operations/min-time",
+            "output": "c448e6f8cd027bf0af70bab8d8372b339e70858ffc9f19854d5ea38bf401b856",
+            "timing": {
+                "end": "2018-10-21 11:27:47,653",
+                "start": "2018-10-21 11:27:47,644"
+            }
+        }
+    }
+
+}
