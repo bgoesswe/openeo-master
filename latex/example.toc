@@ -21,7 +21,7 @@
 \contentsline {section}{\numberline {1.4}Use Cases}{3}{section.1.4}
 \contentsline {subsection}{\numberline {1.4.1}Capturing the Back-end environment}{3}{subsection.1.4.1}
 \contentsline {subsection}{\numberline {1.4.2}Capturing job dependent environments}{4}{subsection.1.4.2}
-\contentsline {subsection}{\numberline {1.4.3}Getting differences of job executions}{4}{subsection.1.4.3}
+\contentsline {subsection}{\numberline {1.4.3}Getting differences of job executions}{5}{subsection.1.4.3}
 \contentsline {section}{\numberline {1.5}Methodological Approach}{5}{section.1.5}
 \contentsline {section}{\numberline {1.6}Structure of Work}{6}{section.1.6}
 \contentsline {chapter}{\chapternumberline {2}Related Work}{9}{chapter.2}
@@ -52,7 +52,7 @@
 \contentsline {subsubsection}{Process Data}{29}{section*.34}
 \contentsline {subsubsection}{Output Data}{30}{section*.35}
 \contentsline {subsubsection}{Back end provenance}{30}{section*.36}
-\contentsline {subsubsection}{Benchmarking}{30}{section*.37}
+\contentsline {subsubsection}{Benchmarking Mode}{30}{section*.37}
 \contentsline {subsection}{\numberline {4.2.3}User Interface}{31}{subsection.4.2.3}
 \contentsline {section}{\numberline {4.3}Overview of Changes}{32}{section.4.3}
 \contentsline {subsection}{\numberline {4.3.1}OpenEO back end}{32}{subsection.4.3.1}
@@ -61,14 +61,16 @@
 \contentsline {chapter}{\chapternumberline {5}Implementation}{35}{chapter.5}
 \contentsline {section}{\numberline {5.1}Data Identification}{35}{section.5.1}
 \contentsline {section}{\numberline {5.2}Back end provenance}{36}{section.5.2}
-\contentsline {section}{\numberline {5.3}Job dependent provenance}{39}{section.5.3}
-\contentsline {subsection}{\numberline {5.3.1}Noworkflow Implementation}{40}{subsection.5.3.1}
-\contentsline {subsection}{\numberline {5.3.2}Python Implementation}{42}{subsection.5.3.2}
-\contentsline {section}{\numberline {5.4}User Interface}{43}{section.5.4}
-\contentsline {section}{\numberline {5.5}Implementation Overview}{45}{section.5.5}
-\contentsline {subsection}{\numberline {5.5.1}Changes to Client}{45}{subsection.5.5.1}
-\contentsline {subsection}{\numberline {5.5.2}Changes to Core API}{45}{subsection.5.5.2}
-\contentsline {subsection}{\numberline {5.5.3}Changes to Back end}{45}{subsection.5.5.3}
+\contentsline {section}{\numberline {5.3}Job dependent provenance}{38}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Provenance Repository}{39}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Benchmarking Mode}{39}{subsection.5.3.2}
+\contentsline {subsection}{\numberline {5.3.3}Noworkflow Implementation}{41}{subsection.5.3.3}
+\contentsline {subsection}{\numberline {5.3.4}Python Implementation}{43}{subsection.5.3.4}
+\contentsline {section}{\numberline {5.4}User Interface}{45}{section.5.4}
+\contentsline {section}{\numberline {5.5}Implementation Overview}{46}{section.5.5}
+\contentsline {subsection}{\numberline {5.5.1}Changes to Client}{46}{subsection.5.5.1}
+\contentsline {subsection}{\numberline {5.5.2}Changes to Core API}{46}{subsection.5.5.2}
+\contentsline {subsection}{\numberline {5.5.3}Changes to Back end}{46}{subsection.5.5.3}
 \contentsline {chapter}{\chapternumberline {6}Evaluation}{47}{chapter.6}
 \contentsline {section}{\numberline {6.1}Data Identification}{47}{section.6.1}
 \contentsline {section}{\numberline {6.2}NoWorkflow vs Python Implementation}{48}{section.6.2}
@@ -77,11 +79,11 @@
 \contentsline {subsection}{\numberline {6.2.3}Maintenance and Extensibility}{49}{subsection.6.2.3}
 \contentsline {section}{\numberline {6.3}Use Cases}{50}{section.6.3}
 \contentsline {subsection}{\numberline {6.3.1}Capturing the Back-end environment}{50}{subsection.6.3.1}
-\contentsline {subsection}{\numberline {6.3.2}Capturing job dependent environments}{50}{subsection.6.3.2}
-\contentsline {subsection}{\numberline {6.3.3}Getting differences of job executions}{50}{subsection.6.3.3}
-\contentsline {chapter}{\chapternumberline {7}Conclusion and future Work}{51}{chapter.7}
-\contentsline {section}{\numberline {7.1}Conclusion}{51}{section.7.1}
-\contentsline {section}{\numberline {7.2}Future Work}{51}{section.7.2}
-\contentsline {chapter}{List of Figures}{53}{section*.74}
-\contentsline {chapter}{List of Tables}{55}{section*.75}
-\contentsline {chapter}{Bibliography}{57}{chapter*.76}
+\contentsline {subsection}{\numberline {6.3.2}Capturing job dependent environments}{51}{subsection.6.3.2}
+\contentsline {subsection}{\numberline {6.3.3}Getting differences of job executions}{51}{subsection.6.3.3}
+\contentsline {chapter}{\chapternumberline {7}Conclusion and future Work}{53}{chapter.7}
+\contentsline {section}{\numberline {7.1}Conclusion}{53}{section.7.1}
+\contentsline {section}{\numberline {7.2}Future Work}{53}{section.7.2}
+\contentsline {chapter}{List of Figures}{55}{section*.63}
+\contentsline {chapter}{List of Tables}{57}{section*.64}
+\contentsline {chapter}{Bibliography}{59}{section*.66}

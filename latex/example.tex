@@ -248,7 +248,7 @@ The main problem of computer sciences is that a lot of published papers are not 
 \end{figure}
 
 The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data that is divided into the static and the dynamic data. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution.\cite{Miksa2013FrameworkFV}
-
+\todo{Move VFramework to Methology and explain it in more detail}
 Data citation is a key issue of reproducing results of past experiments, because they are the backbone of the execution. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. 
 That is why there is an official working group named Working Group on Data Citation (WGDC) created 14 recommendations on data citation further explained in section \ref{Data Identification}.
 
@@ -323,7 +323,7 @@ There is also the possibility to upload files to the back end that can be used w
 
 \subsection{Back end Overview}\label{Back end Overview}
 Even though the back ends implement the OpenEO core API standard, they are still very diverse behind the abstraction layer. Some back ends has already an API, where the OpenEO calls have to be adapted to. There are 7 partners within the OpenEO project that are implementing a back end driver. The back ends have to manage the translation of the process graph to the actual code that executes the defined process chain. Also the billing of the users is completely different on every back end. 
-\todo{Explain different back ends -> neccessary in detail ?}
+\todo{Create overview of the different Back ends of the project}
 
 \section{Existing Tools}\label{Existing Tools}
 In this section tools that are designed to solve similar problems like this thesis get summarized and described further. There is also an explanation why the specific tool was not used for the purpose of this thesis. 
@@ -379,7 +379,7 @@ PROV Ontology (PROV-O), which is a standard language used to describe OWL2 Web O
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{prov}
-	\caption{\cite{733f89c65e4844f9aabcae1c276a5602}}
+	\caption{Overview of the main components of PROV-O \cite{733f89c65e4844f9aabcae1c276a5602}}
 	\label{fig:prov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
@@ -426,7 +426,8 @@ Data identification and citation is a main concern in many computer relying scie
 
 \section{EODC Back End}\label{EODC Back End}
  
- The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses some virtualisation technologies for the job executions. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer of accessing the back end is build with the python library Flask. Even though EODC has a lot of preprocessed data, so satellite data that is already processed in a certain way, in OpenEO only the data from Sentinel 2 is proved by the time this thesis is written. So the underlying data are satellite images preprocessed by ESA from the raw data coming directly from the Sentinel 2 satellite. 
+ The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses some virtualisation technologies for the job executions. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer of accessing the back end is build with the python library Flask. Even though EODC has a lot of already processed data, so satellite data that is already processed in a certain way, in OpenEO only the data from Sentinel 2 is proved by the time this thesis is written. So the underlying data are satellite images provided by the European Space Agency (ESA) from the raw data coming directly from the Sentinel 2 satellite. 
+ \todo{Maybe add more detailed view on the Setup}
  
 \chapter{Design}\label{Design}
 In this chapter the design of the provenance capturing gets described. First the architecture of the OpenEO project gets described further. Especially the job execution path throughout the parts of OpenEO gets described, because it is the key element for the context capturing. Therefore the back end, where the jobs get executed get described in more detail. After that the context model gets presented. 
@@ -451,7 +452,7 @@ In this chapter the design of the provenance capturing gets described. First the
 	\item \textbf{R13: Technology Migration}
 	\item \textbf{R14: Migration Verification}
 \end{itemize}
-\todo{do it ;-) see data citation drive...}
+\todo{ToDo after Data Identification discussion with eodc}
 
 \section{Context Model}\label{Design:Context Model}
 In this section the concept of the provenance capturing is described. The aim of the capturing is to be easy to implement on the OpenEO back ends, but also powerful enough to make the reproduction of the workflows possible. The whole capturing process can be structured in three thematic parts.
@@ -565,12 +566,12 @@ The API has to add an end point for making it possible to compare two different 
 
 \section{Overview of Changes}\label{Design:Overview of Changes}
 In this section the changes described in this chapter get summarized and assigned to the parts of OpenEO responsible for the tasks.
-
+\todo{Make lists in the sections for better readability}
 \subsection{OpenEO back end}\label{Design:OpenEO back end}
 The openeo back ends need to implement the job dependent capturing as described in the section \ref{Design:Job dependent provenance} and implemented in section \ref{Implementation:Job dependent provenance}. The job dependent capturing is recommended to be implemented in the same programming language as the back end provider uses. The advantage of this is that the usage of the programming language is maintained anyway by the back ends to preserve the functionality of the processes and if the back end switches to a different location the setup of the capturing tool needs no further effort. 
 The back end also need to run the job independent capturing described in section \ref{Design:Back end provenance}. This has to be run in a cron job or other automation tools so that the changes get notices by the tool. In section \ref{Implementation:Back end provenance} there is also an implemented tool doing so. 
 In addition the backends need to implement the endpoints changes and additions of the OpenEO core API described in the next section.
-\todo{add data identification changes}   
+\todo{add data identification changes}
 \subsection{OpenEO core API}\label{Design:OpenEO core API}
 The core API needs to add the endpoint for the version retrieval (e.g. at /version) end point. It is also possible to extend an existing endpoint for this purpose. 
 There needs also an additional endpoint for comparing two different jobs. 
@@ -586,8 +587,7 @@ In this chapter the prototype of the concept described in \ref{Design} gets pres
 The implementation can be divided in four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance creation tool defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
 
 \section{Data Identification}\label{Implementation:Data Identification}
-\todo{Add info from EODC here and make a “how it was” and “how it will be”}
-\todo{Develop Concept for the Meeting or ask Tomasz about it...}
+\todo{Add info from EODC here and make a “how it was” and “how it will be/is now”}
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
@@ -667,7 +667,7 @@ The context model get persisted as a JSON file in the job execution directory. A
 	\caption{Design Overview of capturing the job context model.}
 	\label{fig:job_context_model} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{Update input\_data identifier to the query store PID.}
+\todo{Update figure \ref{fig:job_context_model} input\_data identifier to the query store PID}
 
 In figure \ref{fig:job_context_model} there is an example context model of a job execution. It consists of all points described for the context model in the Design section. In the following table there is the mapping between the context model definition defined in section \ref{Design} and key of the JSON context model file. 
 
@@ -686,11 +686,18 @@ In figure \ref{fig:job_context_model} there is an example context model of a job
 
 The mapping described in the table above is implemented by both solution systems. 
 
-\textbf{Benchmarking Mode} \\
+\subsection{Benchmarking Mode}\label{Implementation:Benchmarking Mode}
 As defined in section \ref{Design:Job dependent provenance} there is also the optional possibility to capture not only the overall process, but also every process and the data in between for comparison reasons. 
-If the process executed is not the first one and the benchmarking capturing mode is on, the input data identifier gets replaced by the output hash of the previous process. The scope of the benchmarking is just to make it able to see differences in the executions, but not to be able to identify the differences. Hence, a hash of the previous output data is sufficient. The hash gets created after the execution, by creating the hash of the execution at temporary output directory of the previous process. The EODC back end creates for each process execution a temporary folder where the output data of every process is stored, after the execution the temporary folder gets deleted. Between the finished execution and the deletion of the temporary folders a self provided python function gets called to make an SHA-256 hash over the results. In the benchmarking mode not only the data gets captured between the processes but also the timing of the single process executions. This is done by adding logging messages for the start and end of the process execution. The logging file is afterwards parsed and the timestamps are copied to the context model. Both implementations have the benchmarking realized as described before.    
-\todo{Add Git commit to process capturing and implement it with Git}
-\\
+If the process executed is not the first one and the benchmarking capturing mode is on, the input data identifier gets replaced by the output hash of the previous process. The scope of the benchmarking is just to make it able to see differences in the executions, but not to be able to identify the differences. Hence, a hash of the previous output data is sufficient. The hash gets created after the execution, by creating the hash of the execution at temporary output directory of the previous process. The EODC back end creates for each process execution a temporary folder where the output data of every process is stored, after the execution the temporary folder gets deleted. Between the finished execution and the deletion of the temporary folders a self provided python function gets called to make an SHA-256 hash over the results. In the benchmarking mode not only the data gets captured between the processes but also the timing of the single process executions. This is done by adding logging messages for the start and end of the process execution. The logging file is afterwards parsed and the timestamps are copied to the context model. Last but not least the identifier of the code is captured, by reading the git information out of the back end provenance. For the user convenience the url of the process code on GitHub with the currently checked out commit is added to the context model. Both implementations have the benchmarking realized as described before.    
+%\todo{Implement an switch to make it optional with the time stamps of the processing}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{benchmarking_pg}
+	\caption{Example of an benchmarking mode snipped out of the process graph.}
+	\label{fig:benchmarking_pg} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
 In the following two sections the process of capturing the context model in two different implementation approaches get explained further. First the approach of using noworkflow as capturing tool and second the implementation with plain python and logging. 
 
 \subsection{Noworkflow Implementation}\label{Implementation:Noworkflow Implementation}
@@ -718,7 +725,7 @@ now show --dir=JOB_DIR
 
 \textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
 The programming language gets captured with the modules of the python packages in the noworkflow database. To retrieve the modules the command line interface is used with the command “-m” (see code block below) that returns all used python modules including the version of python used to execute the code. In the context model the python version is in the list of used python tools returned by the noworkflow command. The data is restructured to fit in the JSON output file and represented by a list. 
-\todo{Add programming language to code capturing + noworkflow version see pkg\_resources and sys.version\_info[0]}
+%\todo{Add programming language to code capturing + noworkflow version see pkg\_resources and sys.version\_info[0]}
 
 \begin{lstlisting}[frame=single]
 now show -m --dir=JOB_DIR
@@ -753,7 +760,7 @@ To make a more detailed comparison possible there gets also the hash of the exec
 
 \textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
 The programming language of the EODC back end is python and also the capturing tool is written in python. To list all installed packages in python “pip” can be used. With the python module “pip” the installed python modules can be managed. The EODC back end GitHub repository has a python environment file to automatically install all needed dependencies of python via “pip”. A feature of that tool is the “pip freeze” call, which returns all installed python packages including their versions. This gets translated to a JSON list object and saved to the context model. In addition to this the python version gets captured by the "sys.version" call of the python capturing tool.    
-\todo{Add programming language to code capturing see sys.version\_info[0]}
+%\todo{Add programming language to code capturing see sys.version\_info[0]}
 
 \textbf{J5: Start and End time of process execution} \\
 The start and end time capturing is the same as described in the noworkflow implementation see section \ref{Implementation:Noworkflow Implementation}.
@@ -769,16 +776,16 @@ The user interface implementation is done by adding endpoints to the existing Op
 
 \textbf{U1: Back end version} \\
 Retrieving additional information about the back end was added into a new defined end point of the API. The new endpoint is a GET request called “/version”. The user does not have to be logged in to access this endpoint. Response of the version endpoint is in the implementation the whole job independent provenance information of the back end, like defined in section \ref{Implementation:Back end provenance}. In a productive version the data may be filtered for information marked as a security risk. This endpoint was added to the EODC back end and to the python client so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python environment. 
-
+\todo{explain in detail what info was included here and how it got captured}
 
 \textbf{U2: Detailed Job Information} \\
 There is already an endpoint to get detailed information about the job status. It is the existing “GET /jobs/<job\_id>” endpoint of the core API, which by the version of 0.0.2 only contains the execution state of the job and the job id. In addition to the already available information the whole job dependent provenance gets added to this endpoint in the implementation of this thesis. The python client got also changed to match the end point changes described before.  
-
+\todo{explain in detail what info was included here and how it got captured}
 
 \textbf{U3: Comparing two Jobs} \\
 The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any. So a new one has to be defined in a manner of the existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced. In the url of the request you define the base job id that has to be compared with other jobs. In the body of the request the job ids that the base job shall be compared with are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every job in the request body list. The result consists of for every item in the base job context model the term “EQUAL”, if the item is the same in both jobs, “DIFF”, if the items are not the same in both jobs, or “MISSING”, if the item is in the base job, but not in the target job of the request list. This can occur if the context model was modified in the future and some additional fields of it are not in the context models of the past or in the benchmarking mode if one process graph has mode processes defined than another one. The response consists of the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature was added and in addition there got an visualisation implemented to make the differences of the context models more visible to the users.
 
-\todo{Maybe also add image of the client difference result / request \& response.}
+\todo{Maybe also add image of REST request \& response.}
 \todo{Add image of the client visualisation}
 
 In addition to the implementations defined before, a translation tool for the context model got implemented. It transforms the job dependent context model into a PROV-O specified file. This is only realized in the benchmarking mode of the back end and it describes the job execution steps. The mapping of the context model to the PROV-O standard is as follows.
@@ -791,7 +798,7 @@ In addition to the implementations defined before, a translation tool for the co
 \subsection{Changes to Client}
 \subsection{Changes to Core API}
 \subsection{Changes to Back end}
-\todo{Maybe instead add a big picture}
+\todo{Add the big picture of all components and their additions}
 
 \chapter{Evaluation}\label{Evaluation}
 In this chapter the implementation gets tested and evaluated. By running the use cases it gets evaluated if the implementation reaches the aim of the thesis. First the RDA data identification recommendations are checked with the implementation and how they apply or not need to apply. Then the two implementations are compared with each other. The last section in this chapter is testing the in section \ref{Use Cases} defined use cases against the implementation. 
@@ -815,7 +822,7 @@ In this chapter the implementation gets tested and evaluated. By running the use
 	\item \textbf{R14: Migration Verification}
 \end{itemize}
 
-\todo{Compare implementation with the guidelines. So how it was and how it is.}
+\todo{Compare implementation with the recommendations. So how it was and how it is.}
 
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
 The two implementation approaches are implementing the same features, even though there are major differences between them. In this sections the different implementations get compared and the advantages and disadvantages of them get discussed. Therefore three categories get confronted by both implementations. First the effort of applying the implementation gets compared, then the performance of the python and the noworkflow implementation is compared. The last comparison is about the maintenance and the extensibility of the solutions. 
@@ -867,12 +874,12 @@ Noworkflow comes with more features, especially for the back end provider to que
 \section{Use Cases}\label{Evaluation:Use Cases}
 In this section the use cases introduced in section \ref{Use Cases} are tested against the python implementation. The setup of the evaluation is on the back end side the EODC python implementation described in section \ref{Implementation:Python Implementation}. To communicate with the back end the modified python client gets used. The modifications to the python client are described in \ref{Implementation:User Interface}. The use cases get evaluated by trying to apply them on the original OpenEO setup (version 0.0.2) and comparing it to the implemented additions described in section \ref{Implementation}. The release-0.0.2 OpenEO set up is named original set up for convenience reasons and the OpenEO set up with all, in this thesis described, changes is called modified set up. An Overview of the evaluation is visualized in figure \ref{fig:usecases_eva} 
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{usecases_eva}
-	\caption{Overview of the evaluation setup}
-	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{usecases_eva}
+%	\caption{Overview of the evaluation setup }
+%	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
 
 \subsection{Capturing the Back-end environment}\label{Evaluation:Use Case1}
 The first Use Case can be seen from two perspectives. From the back end providers point of view and from the users point of view. The user wants to get information about the back ends provenance and the current version. The back end provider wants to have an automated tool to capture the provenance data and to create automatically back end versions. This is done in the implementation by running the BackendMonit tool described in section \ref{Implementation:Back end provenance}. The back end provider has just to start the service of BackendMonit and the capturing and back end version creation will be done automatically. 
@@ -910,8 +917,8 @@ Users will use an OpenEO client to access the back end. Therefore, in the follow
 9.	Describe improvements
 
 \section{Future Work}
-In this thesis a concept for applying reproducibility in the OpenEO project is purposed. Still there are major issues to be addressed in the future of the OpenEO project. There are several ways to improve the concept and many open questions, which are open for the future. 
-OpenEO is still evolving until the project end 2021 and also afterwards. There are a lot of features that have to be defined and may interfere with the concept proposed in this thesis. User defined functions are part of the project and to be capable of reproduce them can lead to adaptations to the concept. Another main issue of the OpenEO project is the billing concept that has to be apply-able to a diverse set of back ends. Since the capturing process and the generation of the context model takes time it has to be considered in the billing plan of the back ends. The growing diversity of the back ends applying the OpenEO standard is a huge challenge to the design of the context model of this thesis.
+In this thesis a concept for applying reproducibility in the OpenEO project is purposed. Still there are major issues to be addressed in the future of the OpenEO project. There are several ways to improve the concept and many open questions, which are open for the future. \\
+OpenEO is still evolving until the project end 2021 and also afterwards. There are a lot of features that have to be defined and may interfere with the concept proposed in this thesis. User defined functions are part of the project and to be capable of reproduce them can lead to adaptations to the concept. Another main issue of the OpenEO project is the billing concept that has to be apply-able to a diverse set of back ends. Since the capturing process and the generation of the context model takes time it has to be considered in the billing plan of the back ends. The growing diversity of the back ends applying the OpenEO standard is a huge challenge to the design of the context model of this thesis.\\
 The storage of the context models in JSON files was used in this thesis , but has definitely limitations that have to be addressed in the future e.g. the querying over the data sets. 
 In the solution of this work the data is captured for identifying how jobs are executed and to be able to identify how the job was executed. An addition to this can be a way to automatically apply the reproduction of an executed jobs of the past. To achieve this a method of validating the output of a job execution needs to be introduced. The possibility to get automated data and process citation to researchers of OpenEO interfaces is also a possible future work. Special users may need a finer granularity of the process capturing, leading to a definition of scalability of the processing capturing.      
 

@@ -18,7 +18,6 @@ OS_ENV_CMD = "dpkg -l"
 
 SYSTEM_CM_OUT = '/data/system_context_model.json'
 
-
 app = Flask(__name__)
 
 LOGFILENAME = "job.log"
@@ -62,19 +61,6 @@ PROCESS_GRAPH = {
       }
    }
 }
-
-# def gen_dict_extract(key, var):
-#     if hasattr(var,'iteritems'):
-#         for k, v in var.iteritems():
-#             if k == key:
-#                 yield v
-#             if isinstance(v, dict):
-#                 for result in gen_dict_extract(key, v):
-#                     yield result
-#             elif isinstance(v, list):
-#                 for d in v:
-#                     for result in gen_dict_extract(key, d):
-#                         yield result
 
 
 def get_job_cm(job_id):
@@ -226,6 +212,12 @@ def create_context_model(job_id):
 
    context_model = {}
 
+   # back end env
+   back_end_env = get_system_cm()
+   github_repo = back_end_env["git_repos"][0]
+   github_url = github_repo["url"].split(".git")[0]
+   github_url += "/tree/"+github_repo["commit"]
+
    # file_hashes
    process_graph = open(process_graph_file).read()
    file_hashes = processgraph_add_hashes(json.loads(process_graph))
@@ -234,6 +226,7 @@ def create_context_model(job_id):
 
    for key in file_hashes:
         if key in proc_timings:
+            file_hashes[key]['code_id'] = github_url+"/release-0.0.2/"+key
             file_hashes[key]['timing'] = proc_timings[key]
 
    # read process graph
@@ -286,7 +279,7 @@ def create_context_model(job_id):
    #context_model['hw'] = hw_hash
    context_model['code'] = code_hash
    context_model['code_env'] = python_modules
-   context_model['backend_env'] = get_system_cm()
+   context_model['backend_env'] = back_end_env
 
    # cm = get_job_cm(job_id)
 

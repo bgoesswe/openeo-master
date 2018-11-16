@@ -1,44 +1,50 @@
 {
     "backend_env": {
-        "backend_version": 5,
+        "backend_version": 102,
         "git_repos": [
             {
                 "branch": "master",
-                "commit": "58391baf05ff184cf4b1d510f803a80cd757baa7",
-                "diff": "7ed7da043871dd956bf5206de26631fd",
+                "commit": "e164494a282fa8c716483f42a988bb8af8434df2",
+                "diff": "0acaffa5581d62a70b91ead1df43f784ee1998bdd626ddbf21dbf8818efd9ccb",
                 "url": "https://github.com/bgoesswe/openeo-master.git"
             }
         ],
-        "working_dir_changes": null
+        "linux_packages": "db686540a314cc7aef34f78fd4d5d704a878c5040b5e1c11e99295cb40c47bb9",
+        "linux_release": "73884798e310afe9291afd944c5d2223b47bc35f72de9ac5db0cbe5740bdc9eb",
+        "working_dir_changes": "86a4862fe98477f9c880ad066ee517fc00c06bb1ef50056dac3987c61e9a3055"
     },
-    "code": "4175122ce8ef3244f94d54e359835d61519d948c8acc19a60903a841503f1187",
+    "code": "b052bb94f04095fc49ab95c65e36fafdb0443c9bb17fd669fb2458530f1079e7",
     "code_env": [
         "alabaster==0.7.11",
+        "apted==1.0.3",
+        "asn1crypto==0.24.0",
+        "atomicwrites==1.2.1",
+        "attrs==18.2.0",
         "Babel==2.6.0",
         "backcall==0.1.0",
-        "bkcharts==0.2",
         "bleach==2.1.3",
-        "bokeh==0.12.7",
-        "certifi==2018.4.16",
+        "certifi==2018.8.13",
+        "cffi==1.11.5",
         "chardet==3.0.4",
         "click==6.7",
         "cloudpickle==0.5.5",
+        "cryptography==2.3.1",
         "decorator==4.3.0",
+        "Django==2.1.1",
         "docutils==0.14",
         "entrypoints==0.2.3",
-        "Flask==0.12.2",
+        "Flask==1.0.2",
         "future==0.16.0",
         "GDAL==2.2.4",
         "graphviz==0.9",
-        "gunicorn==19.9.0",
         "html5lib==1.0.1",
         "idna==2.7",
+        "image==1.5.24",
         "imagesize==1.0.0",
         "ipykernel==4.8.2",
         "ipython==6.5.0",
         "ipython-genutils==0.2.0",
-        "ipywidgets==7.3.1",
-        "isodate==0.6.0",
+        "ipywidgets==7.4.1",
         "itsdangerous==0.24",
         "jedi==0.12.1",
         "Jinja2==2.10",
@@ -47,47 +53,54 @@
         "jupyter-client==5.2.3",
         "jupyter-console==5.2.0",
         "jupyter-core==4.4.0",
-        "lxml==4.2.5",
         "MarkupSafe==1.0",
         "mistune==0.8.3",
+        "mkl-fft==1.0.4",
+        "mkl-random==1.0.1",
+        "mock==2.0.0",
+        "more-itertools==4.3.0",
         "nbconvert==5.3.1",
         "nbformat==4.4.0",
-        "networkx==2.2",
         "notebook==5.6.0",
         "noworkflow-alpha==2.0.0a0",
-        "numpy==1.14.3",
+        "numpy==1.15.0",
         "-e git+https://github.com/bgoesswe/openeo-python-client.git@23a1de5a94c91d6a956f7e7f1c6c68652cfa8c72#egg=openeo_api",
         "packaging==17.1",
-        "pandas==0.20.3",
+        "pandas==0.23.4",
         "pandocfilters==1.4.2",
         "parso==0.3.1",
+        "pbr==4.2.0",
         "pexpect==4.6.0",
         "pickleshare==0.7.4",
+        "Pillow==5.2.0",
+        "pluggy==0.7.1",
         "prometheus-client==0.3.1",
         "prompt-toolkit==1.0.15",
-        "prov==1.5.2",
         "ptyprocess==0.6.0",
+        "py==1.6.0",
         "py-cpuinfo==4.0.0",
-        "pydot==1.2.4",
+        "pycparser==2.18",
         "Pygments==2.2.0",
+        "pyOpenSSL==18.0.0",
         "pyparsing==2.2.0",
-        "PyPosAST==1.2.0",
-        "pyswip==0.2.7",
+        "PyPosAST==1.4.1",
+        "PySocks==1.6.8",
+        "pytest==3.8.0",
         "python-dateutil==2.7.3",
         "pytz==2018.5",
-        "PyYAML==3.13",
-        "pyzmq==17.1.0",
-        "qtconsole==4.3.1",
-        "rdflib==4.2.2",
+        "pyzmq==17.1.2",
+        "qtconsole==4.4.1",
         "requests==2.19.1",
+        "requests-mock==1.5.2",
         "Send2Trash==1.5.0",
         "Shapely==1.6.4",
         "simplegeneric==0.8.1",
         "six==1.11.0",
         "snowballstemmer==1.2.1",
-        "Sphinx==1.7.6",
+        "Sphinx==1.7.7",
+        "sphinx-autodoc-annotation==1.0.post1",
         "sphinxcontrib-websupport==1.1.0",
-        "SQLAlchemy==1.2.10",
+        "SQLAlchemy==1.2.11",
         "terminado==0.8.1",
         "testpath==0.3.1",
         "tornado==5.1",
@@ -96,41 +109,45 @@
         "wcwidth==0.1.7",
         "webencodings==0.5.1",
         "Werkzeug==0.14.1",
-        "widgetsnbextension==3.3.1"
+        "widgetsnbextension==3.4.1"
     ],
     "input_data": [
-        "57dbd9435113c65a3e47c0186da18e30bac832aaa43cbc99db6b0fcce9e9a051"
+        "gb5511fce256cb2985699a82249d4133kj9b7875b0b7b67fd7f379fh6740039f"
     ],
-    "job_id": "test9",
+    "job_id": "example4",
     "openeo_api": "0.0.3",
     "output_data": "c448e6f8cd027bf0af70bab8d8372b339e70858ffc9f19854d5ea38bf401b856",
     "process_details": {
         "0_filter_bbox": {
+            "code_id": "https://github.com/bgoesswe/openeo-master/tree/e164494a282fa8c716483f42a988bb8af8434df2/release-0.0.2/0_filter_bbox",
             "output": "89ad98f264cfde64c086a3c314fcdfeb8896b0112276611be7596fce0e660fba",
             "timing": {
-                "end": "2018-10-17 18:02:17,303",
-                "start": "2018-10-17 18:02:15,722"
+                "end": "2018-10-21 11:27:47,552",
+                "start": "2018-10-21 11:27:46,33"
             }
         },
         "1_filter_daterange": {
+            "code_id": "https://github.com/bgoesswe/openeo-master/tree/e164494a282fa8c716483f42a988bb8af8434df2/release-0.0.2/1_filter_daterange",
             "output": "89ad98f264cfde64c086a3c314fcdfeb8896b0112276611be7596fce0e660fba",
             "timing": {
-                "end": "2018-10-17 18:02:17,303",
-                "start": "2018-10-17 18:02:15,722"
+                "end": "2018-10-21 11:27:47,552",
+                "start": "2018-10-21 11:27:46,33"
             }
         },
         "2_NDVI": {
+            "code_id": "https://github.com/bgoesswe/openeo-master/tree/e164494a282fa8c716483f42a988bb8af8434df2/release-0.0.2/2_NDVI",
             "output": "9003ad2c78f982c30ee63552a7c04488e22199514ad10a4c376c7eeb0523af52",
             "timing": {
-                "end": "2018-10-17 18:02:17,315",
-                "start": "2018-10-17 18:02:17,303"
+                "end": "2018-10-21 11:27:47,644",
+                "start": "2018-10-21 11:27:47,552"
             }
         },
         "3_min_time": {
+            "code_id": "https://github.com/bgoesswe/openeo-master/tree/e164494a282fa8c716483f42a988bb8af8434df2/release-0.0.2/3_min_time",
             "output": "c448e6f8cd027bf0af70bab8d8372b339e70858ffc9f19854d5ea38bf401b856",
             "timing": {
-                "end": "2018-10-17 18:02:17,321",
-                "start": "2018-10-17 18:02:17,315"
+                "end": "2018-10-21 11:27:47,653",
+                "start": "2018-10-21 11:27:47,644"
             }
         }
     },
@@ -141,21 +158,21 @@
                     "args": {
                         "imagery": {
                             "args": {
-                                "from": "2018 -01 -01",
+                                "from": "2017 -01 -01",
                                 "imagery": {
                                     "args": {
                                         "bottom": 5181000,
                                         "imagery": {
                                             "product_id": "s2a_prd_msil1c"
                                         },
-                                        "left": 650000,
+                                        "left": 652000,
                                         "right": 672000,
                                         "srs": "EPSG:32632",
                                         "top": 5161000
                                     },
                                     "process_id": "filter_bbox"
                                 },
-                                "to": "2018 -01 -08"
+                                "to": "2017 -01 -08"
                             },
                             "process_id": "filter_daterange"
                         },
