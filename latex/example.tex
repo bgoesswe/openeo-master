@@ -139,8 +139,8 @@
 
 \chapter{Introduction}\label{Introduction}
 \section{Motivation}\label{Motivation}
-Over the last decades remote sensing agencies have increased the variations of data processing and therefore the amount of resulting data. To preserve the data for further usage in the future it is necessary to have citable data and processes on the data to ensure repeatability in a long-term.\cite{6352411} Reproducibility is discussed in many science areas such as computer science, biology and also in computational geoscience. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open reproducible research is different among the participating scientists, so the interpretation was more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are insufficiently method descriptions, persistence of data identifier, legal concerns, the general impression that it is not necessary and also too time consuming. 
-The reproduction of other papers failed by the different individual interpretations and different software versions that produce unequal results. The main amount of issues on reproducing results were issues that required changing the code or required a deeper understanding of the procedures. Also a view system dependent issues occurred related to the usage of random access memory and installation libraries of the operating system. \cite{Thestateofreproducibility}
+Over the last decades remote sensing agencies have increased the variations of data processing and therefore the amount of resulting data. To preserve the data for further usage in the future it is necessary to have citable data and processes on the data to ensure repeatability in a long-term.\cite{6352411} Reproducibility is discussed in many science areas such as computer science, biology and also in computational geoscience. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open reproducible research is different among the participating scientists in a way that the interpretation is more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are, according to \cite{Thestateofreproducibility}, insufficiently method descriptions, persistence of data identifier, legal concerns, the general impression that it is not necessary and too time consuming. 
+Reproducing geoscientific papers failed by the different individual interpretation of the approach and alternative software versions that produce unequal results. The vast majority of issues on reproducing results are required changes of code and a deeper understanding of the procedures. In some cases there occur system dependent issues related to the usage of random access memory and installation libraries of the operating system. \cite{Thestateofreproducibility}
 
 \section{Problem Description}\label{Problem}
 Already most of the the data used in earth observation sciences are retrieved or provided via Service Oriented Architecture (SOA) interfaces. Provider like Google Earth Engine and EODC provide an Web API for retrieving and processing data. Due to a different range of functionality and a difference between the endpoints of the providers it is hard to create a workflow for more than one provider. The OpenEO project has the goal to be an abstraction layer above different EO data providers. The underlying structure consists of three parts:
@@ -271,7 +271,7 @@ The geoscience paper of the future is according to \cite{Gil2016TowardTG} a prop
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{gpf}
+	\includegraphics[scale=0.5]{gpf}
 	\caption{Comparison between reproducible publications and geoscientific papers of the future \cite{Gil2016TowardTG}}
 	\label{fig:gpf} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -279,6 +279,8 @@ The geoscience paper of the future is according to \cite{Gil2016TowardTG} a prop
 In figure \ref{fig:gpf} the differences with a reproducible paper gets visualised. In addition to the characteristics of the reproducible paper the GPF focuses on publishing the data publicly with open licences including citable persistent identifiers.
 The GPF consists of a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility and also provenance information. 
 
+\subsection{Climate Change Centre Austria}
+\todo{ccca related work}
 
 \section{OpenEO}\label{OpenEO}
 The OpenEO project contains of three modules, the client modules written in the programming language of the users, the back end drivers that makes it possible for every backend to understand the calls from the clients and the core API that specifies how the communication should take place. So the core API is a standard that the back end providers accepted to implement on their systems. The back end drivers are the translation of the client calls to the back end specific API. This architecture decouples the clients from the back ends so that every client can connect to every back end that applies to the OpenEO core API standard see figure \ref{fig:api2} \cite{openeo}.   
@@ -301,7 +303,7 @@ The main part of the job execution is based on the description of what the back 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{process_graph}
+	\includegraphics[scale=1]{process_graph}
 	\caption{Proof of Concept process graph of the EODC back end for the OpenEO core API version 0.0.2 . \cite{openeo}}
 	\label{fig:process_graph} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -310,21 +312,33 @@ The back ends interpret the process graph from inside out. Inside figure \ref{fi
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{process_graph_diagram}
+	\includegraphics[scale=0.5]{process_graph_diagram}
 	\caption{TODO figure number combine the two figures? -> maybe use official ones ...}
 	\label{fig:process_graph_diagram} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
+\todo{make new diagram}
 There are two different kinds of process executions depending on the back ends capabilities, synchronous and asynchronous calls. Synchronous calls are directly executed after they got received from the back end and the user that sends the process graph has to wait until the job is finished. For example on the python client the program waits after sending the process graph to the back end until the back end returns the result and the results are directly returned to the user. On the asynchronous call the user sends the process graph, but it does not get executed until the user starts the execution on the back end through an additional endpoint. When the processing is finished the user can download the result at another endpoint of the back end. For the asynchronous calls there is also the possibility to subscribe to a notification system on the backend, so that the user gets notified when the job execution finishes.     
 The processes are defined at the OpenEO core API and therefore independent from the back end they get called, other than the data identifier, which is different for every back end.  
 \\
 The previous example shows a process graph that only uses predefined processes and data. Within the OpenEO project there is the possibility to define individual processes and execute them on the back end. In the project they are called “user defined functions” and are at the writing of this thesis not well defined, but are basically code written by the OpenEO user that gets sent to the back end and executed at a secure environment. The user can define processes and can run them with the data provided at the back end, using the infrastructure of the back end. Every back end has to individually define what the restrictions on user defined functions are. 
-There is also the possibility to upload files to the back end that can be used within the process graph. The user can upload the file through an explicit endpoint of the back end. After the upload finished, the file can be referenced inside the process graph.\todo{[TODO: Quelle Github Docu Release Version 0.0.2]}
+There is also the possibility to upload files to the back end that can be used within the process graph. The user can upload the file through an explicit endpoint of the back end. After the upload finished, the file can be referenced inside the process graph.\cite{eodc_github}
 
 \subsection{Back end Overview}\label{Back end Overview}
-Even though the back ends implement the OpenEO core API standard, they are still very diverse behind the abstraction layer. Some back ends has already an API, where the OpenEO calls have to be adapted to. There are 7 partners within the OpenEO project that are implementing a back end driver. The back ends have to manage the translation of the process graph to the actual code that executes the defined process chain. Also the billing of the users is completely different on every back end. 
-\todo{Create overview of the different Back ends of the project}
+Even though the back ends implement the OpenEO core API standard, they are still very diverse behind the abstraction layer. Some back ends have already an API, where the OpenEO calls have to be adapted to. There are 7 partners within the OpenEO project that are implementing a back end driver. The back ends have to manage the translation of the process graph to the actual code that executes the defined process chain. Also the billing of the users is completely different on every back end. 
 
+\begin{table}[]
+	\begin{tabular}{l|l}
+		\textbf{Organisation} & \textbf{GitHub}  \\ \hline
+		EODC & \url{https://github.com/Open-EO/openeo-openshift-driver} \\ \hline 
+		VITO & \url{https://github.com/Open-EO/openeo-geopyspark-driver} \\ \hline  
+		Google  & \url{https://github.com/Open-EO/openeo-earthengine-driver} \\ \hline  
+		Mundialis & \url{https://github.com/Open-EO/openeo-grassgis-driver} \\ \hline 
+		JRC & \url{https://github.com/Open-EO/openeo-jeodpp-driver} \\ \hline
+		WWU & \url{https://github.com/Open-EO/openeo-r-backend} \\ \hline
+		Sinergise & \url{https://github.com/Open-EO/openeo-sentinelhub-driver} \\ \hline
+		EURAC & \url{https://github.com/Open-EO/openeo-wcps-driver} \\ 
+	\end{tabular}
+\end{table}
 \section{Existing Tools}\label{Existing Tools}
 In this section tools that are designed to solve similar problems like this thesis get summarized and described further. There is also an explanation why the specific tool was not used for the purpose of this thesis. 
 
@@ -391,7 +405,7 @@ In one of the process provenance capturing implementation is noworkflow used. Th
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{noworkflow}
+	\includegraphics[scale=1]{noworkflow}
 	\caption{Architecture of noWorkflow \cite{c9e0604becba42af96a9cb0a6f60018b}}
 	\label{fig:noworkflow} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -432,9 +446,16 @@ Data identification and citation is a main concern in many computer relying scie
 \chapter{Design}\label{Design}
 In this chapter the design of the provenance capturing gets described. First the architecture of the OpenEO project gets described further. Especially the job execution path throughout the parts of OpenEO gets described, because it is the key element for the context capturing. Therefore the back end, where the jobs get executed get described in more detail. After that the context model gets presented. 
 
-\todo{Image of general Design (Input data identification -> code identification (github) -> output hash}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{overview}
+	\caption{Overview of the Design}
+	\label{fig:overview} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 \section{Data Identification}\label{Design:Data Identification}
+
+\todo{Explain that it has to be implemented at the back end and reference to the implementation}
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning}
@@ -452,7 +473,7 @@ In this chapter the design of the provenance capturing gets described. First the
 	\item \textbf{R13: Technology Migration}
 	\item \textbf{R14: Migration Verification}
 \end{itemize}
-\todo{ToDo after Data Identification discussion with eodc}
+
 
 \section{Context Model}\label{Design:Context Model}
 In this section the concept of the provenance capturing is described. The aim of the capturing is to be easy to implement on the OpenEO back ends, but also powerful enough to make the reproduction of the workflows possible. The whole capturing process can be structured in three thematic parts.
@@ -490,14 +511,14 @@ To  provide long term stability of the capturing, there shall be a tool to autom
 
 
 \subsection{Job dependent provenance}\label{Design:Job dependent provenance}
-In this section the job dependent provenance of the context model gets described. The data captured is tied to an specific job execution, so for every job execution a new context model gets created. The structure of the capturing is using the defined process graph structure of OpenEO. The process graph is already a description of the processes that run at the back end. So sending the same process graph to the same back end again shall result in the same outcome. To assure that the process graph results in the same way of processing the processing itself gets captured. After receiving the job the back end will transform the process graph into code that actually does the processing. Figure \ref{fig:design_overview_common} shows the structure of the workflow capturing. 
+In this section the job dependent provenance of the context model gets described. The data captured is tied to an specific job execution, so for every job execution a new context model gets created. The structure of the capturing is using the defined process graph structure of OpenEO. The process graph is already a description of the processes that run at the back end. So sending the same process graph to the same back end again shall result in the same outcome. To assure that the process graph results in the same way of processing the processing itself gets captured. After receiving the job the back end will transform the process graph into code that actually does the processing. %Figure \ref{fig:design_overview_common} shows the structure of the workflow capturing. 
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{design_overview_common}
-	\caption{Design Overview of capturing the job context model.}
-	\label{fig:design_overview_common} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{design_overview_common}
+%	\caption{Design Overview of capturing the job context model.}
+%	\label{fig:design_overview_common} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
 
 The single parts of the capturing are described more in detail in the following sections. 
 
@@ -551,17 +572,17 @@ That is how the benchmarking context model gets introduced. The idea is that not
 
 \subsection{User Interface}\label{Design:User Interface}
 
-In this section the information for the users and how they are provided gets described. The capturing described in the previous sections consists of a lot of  information about the back ends that shall not be completely passed to the users in detail. For example it can be a security risk to provide specific programming language packages. On the other hand the users need to be able to see the differences of job executions and get environment information about the backends. Therefore there has to be a filter on which data can be shown to the user and what not. Every captured information is also not necessary interesting for the users. Data that is not secure to the user has to be defined by the different back ends themselves. The OpenEO project has a very diverse set of back ends and every one has a unique company security guideline. The important thing is that all of the information has to be captured and taken into account for the comparisons and they have to be open to the user.
-Provenance information has to be provided to the user. Therefore there have to be new additions to to the core api specification. Additional endpoints for the users to get information about the back end has to be created in the Core API, back end and client. The following points summarize the the set of needed additions. 
+In this section the information for the users and how it is provided gets described. The capturing described in the previous sections consists of  information about the back ends that shall not be completely passed to the users in detail. For example it can be a security risk to provide specific programming language packages. On the other hand the users need to be able to see the differences of job executions and get environment information about the backends. Therefore there has to be a filter on which data can be shown to the user and what not. Every captured information is also not necessarily interesting for the users. Data that is not secure to the user has to be defined by the different back ends themselves. The OpenEO project has a very diverse set of back ends and every one has an unique company security guideline. The important thing is that all of the information has to be captured and taken into account for the comparisons and the result of the comparisons have to be open for users.
+Provenance information has to be provided to the user. Therefore there have to be additions to the core api specification. Additional endpoints for the users to get information about the back end has to be created in the Core API, back end and client. The following points summarize the set of needed additions. 
 
 \textbf{U1: Back end version}
 There has to be an endpoint for users to retrieve back end specific information. The aim of it is to present the users with information about the current state of the back end and to help OpenEO users to decide which back end they want to use. There is already an endpoint defined in the OpenEO core API specification for the capabilities of the back end, where the back end information can be added. This addition to the API has of course to be implemented by every back end and client.
 
 \textbf{U2: Detailed Job Information}
-There is already an endpoint to get detailed information about the job status. But the provenance of the job is not in there yet, so it has to be specified in the API what information of the context model has to be provided there. At least the identifier of the input data and the identifier of the execution code has to be provided including the output hash for comparison.   
+There is already an endpoint to get detailed information about the job status. But the provenance of the job is not in there yet, so it has to be specified in the API what information of the context model has to be provided there. At least the identifier of the input data and the identifier of the execution code has to be provided including the output hash for comparison. To make it more human readable the resolvable identifier URL of the input data and the GitHub repository and used commit identifier must be provided.   
 
 \textbf{U3: Comparing two Jobs}
-The API has to add an end point for making it possible to compare two different jobs. There does not exist an endpoint for this in the 0.0.2 core API specification. The response of the comparison request needs to consist of what are the differences between two jobs. 
+The API has to add an end point for making it possible to compare two different jobs. There does not exist an endpoint for this in the current(version 0.0.2) core API specification. The response of the comparison request consists of the differences in the context model between two jobs. 
 
 
 \section{Overview of Changes}\label{Design:Overview of Changes}
@@ -582,12 +603,30 @@ The OpenEO clients need to implement the changes described above in the core API
 \todo{maybe add overview picture}
 
 \chapter{Implementation}\label{Implementation}
-In this chapter the prototype of the concept described in \ref{Design} gets presented. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the implementation. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One client and one of the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis and for the back end the EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used. Since python is the most used programming styles at the contributing back ends of the OpenEO project these implementations get used, because both of the chosen implementations are using python as the main programming language. So the adaptations described in \ref{Design} are implemented for the usage of the python client with the EODC back end. Both of the implementations are open source and can therefore be used by other backend providers with a similar setup.  
+In this chapter the prototype of the concept described in \ref{Design} gets presented on the EODC back end. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the implementation. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One client and one of the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis and for the back end the EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used. Since python is the most used programming styles at the contributing back ends of the OpenEO project these implementations get used, because both of the chosen implementations are using python as the main programming language. So the adaptations described in \ref{Design} are implemented for the usage of the python client with the EODC back end. Both of the implementations are open source and can therefore be used by other backend providers with a similar setup.  
 
 The implementation can be divided in four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance creation tool defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
 
 \section{Data Identification}\label{Implementation:Data Identification}
-\todo{Add info from EODC here and make a “how it was” and “how it will be/is now”}
+
+As defined in section \ref{Design:Data Identification}, implementing the RDA recommendations needs to be done by every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other openEO back end provider can use the approach as well to enable data identification on their back end setup. 
+In the next section the current EODC status on data identification is described. After that the solution to apply the RDA recommendations on the EODC back end is presented. 
+  
+\subsection{EODC Status}
+Data management on the EODC back end is file system based. All earth observation data that can be retrieved and used on the back end is stored as a zip archive file on EODCs file system. EODC only provides Sentinel 2 and Sentinel 1 data, directly retrieved from the ESA, for the OpenEO project. Additionally to the file system directory a PostgreSQL database with the PostGIS extension is used to save the meta data of the files. To query the data sets a OGC standard named CSW is used as an interface. CSW uses XML based queries to e.g. filter the data. The data from ESA gets rarely updated, but if it gets updated a new filename gets created. EODC automatically syncs the data from ESA and gets also the new versions of the data records. So the version of the data is described by the filename and file path. In the PostgreSQL database there are the timestamps of changes on the files stored. Queries are not stored by the EODC back end and there are no data identifiers on query results generated. For the user executing jobs at EODC via the OpenEO back end driver there is no possibility to identify the input data.            
+\todo{Maybe move to eodc section at the methods.}
+
+\subsection{EODC Solution}
+
+ 
+\todo{Describe solution}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{implementation_dataidentification}
+	\caption{Overview of the proposed data identification workflow at the EODC back end}
+	\label{fig:impldataid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
@@ -701,6 +740,7 @@ If the process executed is not the first one and the benchmarking capturing mode
 In the following two sections the process of capturing the context model in two different implementation approaches get explained further. First the approach of using noworkflow as capturing tool and second the implementation with plain python and logging. 
 
 \subsection{Noworkflow Implementation}\label{Implementation:Noworkflow Implementation}
+\todo{Move to "additional implementation" and describe it a little bit less}
 Noworkflow is a python module used to capture the provenance of a python script execution. The main aim of it is that the program itself does not have to be changed, it only has to be executed with the noworkflow interpreter instead of python. It then automatically creates a provenance database on every execution of the script called “trial”. Every execution creates a new trial. A trail in the past can be re-executed with the same conditions and the trails itself can be easily compared and visualized with noworkflow \cite{c9e0604becba42af96a9cb0a6f60018b}. Noworkflow and its capabilities are described in section \ref{Noworkflow}. 
 For the purpose of the job dependent provenance capturing described in the Design section, only parts of the provenance capturing functionality that noworkflow offers gets used.    
 
@@ -823,6 +863,7 @@ In this chapter the implementation gets tested and evaluated. By running the use
 \end{itemize}
 
 \todo{Compare implementation with the recommendations. So how it was and how it is.}
+\todo{Test Cases}
 
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
 The two implementation approaches are implementing the same features, even though there are major differences between them. In this sections the different implementations get compared and the advantages and disadvantages of them get discussed. Therefore three categories get confronted by both implementations. First the effort of applying the implementation gets compared, then the performance of the python and the noworkflow implementation is compared. The last comparison is about the maintenance and the extensibility of the solutions. 
@@ -943,7 +984,7 @@ In the solution of this work the data is captured for identifying how jobs are e
 \printglossaries
 
 % Add a bibliography.
-\bibliographystyle{alpha}
+\bibliographystyle{abbrv}
 \bibliography{intro}
 
 \end{document}
