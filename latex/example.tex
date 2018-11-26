@@ -143,21 +143,18 @@ Over the last decades remote sensing agencies have increased the variations of d
 Reproducing geoscientific papers failed by the different individual interpretation of the approach and alternative software versions that produce unequal results. The vast majority of issues on reproducing results are required changes of code and a deeper understanding of the procedures. In some cases there occur system dependent issues related to the usage of random access memory and installation libraries of the operating system. \cite{Thestateofreproducibility}
 
 \section{Problem Description}\label{Problem}
-Already most of the the data used in earth observation sciences are retrieved or provided via Service Oriented Architecture (SOA) interfaces. Provider like Google Earth Engine and EODC provide an Web API for retrieving and processing data. Due to a different range of functionality and a difference between the endpoints of the providers it is hard to create a workflow for more than one provider. The OpenEO project has the goal to be an abstraction layer above different EO data providers. The underlying structure consists of three parts:
+The vast majority of data used in earth observation sciences are retrieved and provided via Service Oriented Architecture (SOA) interfaces. Data Provider like Google Earth Engine\footnote{https://earthengine.google.com} and EODC\footnote{https://www.eodc.eu} host an Web Application Programming Interface (API) for data download and processing data. Due to a different range of functionality and a difference between the endpoints of the providers it is great afford to create a workflow for more than one provider. The OpenEO project has the goal to be an abstraction layer above different EO data providers. The underlying structure of OpenEO consists of three parts:
 
 \begin{itemize}
-	\item Client Module: Is written in the program language of the user and transfers the users commands to the backends.
-	\item Core Module: A standard on how the communication should take place between client and backend.
-	\item Backend Module: The provider of the data and the services, which gets the instructions from the clients and returns the results.
+	\item \textbf{Client Module}: Is written in the program language of the user and transfers the users commands to the backends.
+	\item \textbf{Core Module}: A standard on how the communication should take place between client and backend.
+	\item \textbf{Backend Module}: The provider of the data and the services, which gets the instructions from the clients and returns the results.
 \end{itemize}   
-Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}). Until now there is no consideration of repeatability verification of workflows for users in the OpenEO architecture.Generalised layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, because it handles data and processes on the data in a standardised way on different providers. Even though the range of functionality and the API endpoints are well defined in the OpenEO coreAPI the contributing content providers (OpenEO backends) will have different underlying software types and versions. The underlying technology of an OpenEO backend will also change over time and can lead to different results on the same workflow executions. Consider the following: A scientist runs an experiment using OpenEO as his research tool and gets results. The same scientist runs the same experiment with the same input some months later and gets slightly different results.The question occurs, why are the results different? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the backend provider changed. Adding a possibility for the users of OpenEO to gain this information is an important
-feature for the scientific community. The aim of this thesis is to provide a possibility for users
-of OpenEO to verify and validate a job re-execution on different underlying technologies of an OpenEO backend provider.\cite{openeo}
-\todo{Read through and improve above text.}
+Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}) and in section \ref{Methodology}. On the creation time of this thesis there is no consideration of repeatability in the OpenEO architecture. Verification of work-flows for users of OpenEO is not in the agenda of the OpenEO project. Generalized layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, because it handles data and processes on the data in a standardized way for different providers. Even though the range of functionality and the API endpoints are well-defined in the OpenEO core-API, the contributing content providers (OpenEO back ends) will have different underlying software execution environments. The used technology of an OpenEO back end will evolve in the future, hence it can lead to different results on the same workflow execution. Considering the following: A scientist runs an experiment using OpenEO as research tool and gets an arbitrary result. The same scientist runs the same experiment with the same input data some months later and gets a slightly different result. The question occurs, why are the results distinct? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the back end provider changed. Adding a possibility for the users of OpenEO to gain this information is an important feature for the scientific community. The aim of this thesis is to design an extension to OpenEO, so that users are able to retrieve provenance data about a job re-execution. \cite{openeo}
 
 \section{Aim of the Work}\label{Aim}
 
-The expected outcome of this thesis is to discover and develop a possible framework for providing repeatability in the OpenEO project. This enables users to re-execute workflows and validate the results, so that differences on the process or data are accessible for the users. To achieve this goal a model for repeatability within the project has to be discovered and implemented to evaluate the ability of the model. The model shall then conclude recommendations for the OpenEO project on how to improve re-execution validation for the user and how it can be achieved. Considering the problem description and the recommendations above, the following research questions can be formulated:
+The expected outcome of this thesis is to discover and develop a possible framework for making repeatability conceivable in the OpenEO project. This enables users to re-execute work-flows and validate the result, so that differences on the process or data are visible for the users. To achieve this goal a model for capturing the provenance of the back ends within the project has to be discovered and implemented to evaluate the ability of the model. The solution shall then conclude recommendations for the OpenEO project on how to improve re-execution validation for the users and how it can be achieved. Considering the problem description and the recommendations above, the following research questions can be formulated:
 
 \begin{itemize}
 	\item \textbf{How can an OpenEO job re-executed be applied like the initial execution?}
@@ -177,31 +174,33 @@ The expected outcome of this thesis is to discover and develop a possible framew
 \end{itemize}
 
 \section{Use Cases}\label{Use Cases}
-\subsection{Capturing the Back-end environment}\label{UseCase1}
+To validate the design proposed in this thesis, there are use cases defined in the following sections. They describe scenarios about stakeholders of the OpenEO project that are currently not possible, but will be accomplish-able with the work of this thesis.
+    
+\subsection{Providing Back End Information}\label{UseCase1}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase1}
 	\caption{Overview of the first Use Case}
 	\label{fig:usecase1} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-In order to make a job execution in the OpenEO project reproducible, the environment of the back end has to be captured and persisted. It has to be specified in detail and should only contain job independent information about the back end like the used operating system, programming language or used OpenEO API version. The process of capturing has to be applied automatically on each change of the back end environment. To keep track of the changes of the server and the current status, a back end version shall be introduced, which has to be updated for every change made on the back end. The point of this use case is to add the possibility to the back end provider to get automatically captured and persisted provenance data about the back end. 
-The above section was describing the use case from the providers perspective and the other part is from the users perspective. It should give the user the possibility to receive information about the back ends current state. Here only data have to be shown that are not a security threat to the back end provider, but are relevant to the user. This can help the users to understand if something changed on server site. An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase1}.
-\subsection{Capturing job dependent environments}\label{UseCase2}
+In order to make a job execution in the OpenEO project reproducible, the environment of the back end has to be well-defined and communicated to the users. It has to be specified in detail and should only contain job independent information about the back end. The data about the back end provenance needs to be available for the users of OpenEO. It improves the usability for users to know the state of the back end they want to use. The information can be used to decide, which back end suits best for a user. Here only data have to be shown that are not a security threat to the back end provider, but are relevant to the user. The back end provider gets the information and history about the environment. This can improve error findings between versions.An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase.1}.
+
+\subsection{Providing Job Execution Information}\label{UseCase2}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase2}
 	\caption{Overview of the second Use Case}
 	\label{fig:usecase2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-This use case is like the first one, but is only about job dependent environment information. The back end provider shall automatically get provenance data about the job execution, like used software packages and their versions. For the user additional information on a job execution has to be introduced. Calling the job endpoint, shall result in additional information interesting to the typical EO user e.g. the used GDAL\footnote{https://www.gdal.org} version. So other than the back end provider, who gets automatically all provenance data, the users only get filtered and for them relevant provenance data. The motivation for this is to add transparency of the job processing for the users, so that researchers can describe their processes in more detail. It can also help OpenEO users to understand why results differ from executions in the past. An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase2}. 
-\subsection{Getting differences of job executions}\label{UseCase3}
+This use case is like the first one, but is only about job dependent environment information. The back end provider can automatically get provenance data about the job execution, like used software packages and their versions. The user gets additional information on a job execution. Motivation for this is to add transparency of the job processing for the users, so that researchers can describe their processes in more detail. It can also help OpenEO users to understand why results differ from executions in the past. An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase2}. 
+\subsection{Compare different Job executions}\label{UseCase3}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase3}
 	\caption{Overview of the third Use Case}
 	\label{fig:usecase3} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-The third use case is dedicated to the OpenEO users. The goal is to add a possibility for users of OpenEO to compare different jobs not only by their results, but also on the way they were executed. The comparison is between a job execution and another job executions on the same back end. Therefore, the processing and the input data has to be identifiable. To make the comparison interesting to the users there also has to be additional information. For usability the comparison needs to be easy to apply and therefore accessible in the environment of the user, so the OpenEO client. In addition to the previous conditions a visualization of the differences for the users can lower the access barrier for users to use the feature. An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase3}.
+The third use case is dedicated to the OpenEO users. The goal is to add a possibility for users of OpenEO to compare different jobs not only by their results, but also on the way they were executed. The comparison is between a job execution and another one on the same back end. Therefore, the processing and the input data has to be identifiable. To make the comparison interesting to the users there also has to be additional information. For usability the comparison needs to be easy to apply and easy to understand, therefore accessible in the environment of the user at the OpenEO client. In addition to the previous conditions a visualization of the differences for the users can lower the access barrier for users to use the feature. An overview of the architecture of this use case can be viewed in figure \ref{fig:usecase3}.
 
 \section{Methodological Approach}\label{Method}
 The use cases defined in the previous section require specific changes to the back end. In the following list the parts of the suggested solution are briefly described. 
@@ -215,20 +214,20 @@ The use cases defined in the previous section require specific changes to the ba
 	To accomplish the verification of different process executions, the process has to be identifiable. Therefore, a versioning of the process code can be used to persist different states of the code. The thesis is for an OpenSource project and the code of the back ends are published at Github, so Git is used as the tool to capture the code state. 
 	
 	\item \textbf{Additional Information}
-	In order to gain a interesting description for users of OpenEO some additional information about the data and the code has to be persisted. This information is forwarded to the user at the job verification use case.   
+	In order to gain an interesting description for users of OpenEO some additional environment information about the data and the code has to be persisted. This information is forwarded to the user and visualized.   
 	
 	\item \textbf{User Endpoints}
-	The interface for the user has to be implemented so that the use cases can be executed by the users. Therefore, the OpenEO client and core API has to be modified. The client modified in this thesis is the python client. 
+	The interface for the user has to be implemented so that the use cases can be executed by the users. Therefore, the OpenEO client and core API has to be modified. The adapted client in this thesis is the python client. 
 \end{enumerate}
 
 \section{Structure of Work}\label{Structure}
-The following sections are structured as follows:
-Chapter 2 gives an overview of related scientific activities in the area of reproducibility in the earth observation sciences and reproducibility in other areas with similar objectives.
-Chapter 3  describes the technologies and concepts that are used in the implementation of this thesis. This chapter also provides an overview of the EODC back end used for the implementation
-Chapter 4 provides the concept to address the research questions defined in section \ref{Aim}.  This is the theoretical definition of what has to be implemented in the OpenEO project.
-Chapter 5 has a detailed explanation to the proof of concept prototype implementation and how the concept of chapter 4 was realized for the EODC back end. 
-Chapter 6 dives into the evaluation of the implementation by applying the use cases to the implementation of chapter 5.
-Chapter 7 summarizes the outcome of the implementation and evaluation. It contains a discussion about possible flaws and future work. 
+The following sections are structured as follows:\\
+Chapter 2 gives an overview of related scientific activities in the area of reproducibility in the earth observation sciences and reproducibility in other areas with similar objectives.\\
+Chapter 3  describes the technologies and concepts that are used in the implementation of this thesis. This chapter also provides an overview of the EODC back end used for the implementation.\\
+Chapter 4 provides the concept to address the research questions defined in section \ref{Aim}.  This is the theoretical definition of what has to be implemented in the OpenEO project.\\
+Chapter 5 has a detailed explanation to the proof of concept prototype implementation and how the concept of chapter 4 was realized for the EODC back end. \\
+Chapter 6 dives into the evaluation of the implementation by applying the use cases to the implementation of chapter 5.\\
+Chapter 7 summarizes the outcome of the implementation and evaluation. It contains a discussion about possible flaws and future work. \\
 
 \chapter{Related Work}\label{Related Work}
 
