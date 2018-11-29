@@ -399,7 +399,7 @@ PROV Ontology (PROV-O), which is a standard language used to describe OWL2 Web O
 In figure \ref{fig:prov} there is the basic setup of the PROV concept. It consists of three main elements. The Entity is any physical, digital, conceptual thing. Provenance records describe entities and entities can consist of references to other entities. Another element is the Agent, which is responsible for activities and that activities are taking place. Examples for Agents are software, persons or organisations. The association of an Agent to an Activity defines the responsibility of the Agent to the Activity. An Activity describes what happened that the Entity has come to existence and how attributes of an Entity changed.\cite{f06eee9045b445be89cf07100b3ce05c} In this thesis the PROV-O standard is used by a feature of the back end to transform the context model of a process graph to an PROV-O description (see section \ref{Implementation:User Interface}). 
 
 \section{Noworkflow}\label{Noworkflow}
-
+\todo{Move to Related Work}
 In one of the process provenance capturing implementation is noworkflow used. Therefore it gets introduced in this section. Noworkflow was introduced in \cite{c9e0604becba42af96a9cb0a6f60018b} as a script provenance capturing tool with the aim to not affect the way users implement their experiments. As proof of concept the noWorkflow command line tool got implemented for python. The provenance is captured in SQLite database by different trials, which are executions of the experiment. The main benefits of noWorkflow is that it does not instrument the code and it automatically captures the definition, deployment and execution provenance in a local SQLite database. The provenance data can then be accessed via the command line interface of noWorkflow and there are also some analyses features added.\cite{c9e0604becba42af96a9cb0a6f60018b}
 
 \begin{figure}[h]
@@ -417,6 +417,7 @@ Data identification and citation is a main concern in many computer relying scie
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning} 
+	\todo{explain in more detail}
 	Changes on a data record needs to result in new versions of the data record and the persistence of the deprecated data records. All data record versions need to be identifiable and accessible. 
 	\item \textbf{R2: Timestamping} 
 	All changes to the database have to be comprehensible via timestamps. So every time changes are applied to the data, there needs to be a timestamp when it happened. 
@@ -441,10 +442,11 @@ Data identification and citation is a main concern in many computer relying scie
  
  The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses some virtualisation technologies for the job executions. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer of accessing the back end is build with the python library Flask. Even though EODC has a lot of already processed data, so satellite data that is already processed in a certain way, in OpenEO only the data from Sentinel 2 is proved by the time this thesis is written. So the underlying data are satellite images provided by the European Space Agency (ESA) from the raw data coming directly from the Sentinel 2 satellite. 
  \todo{Maybe add more detailed view on the Setup}
- 
+ \todo{Like: Database structure, Process Graph -> Processing}
 \chapter{Design}\label{Design}
 In this chapter the design of the provenance capturing gets described. First the architecture of the OpenEO project gets described further. Especially the job execution path throughout the parts of OpenEO gets described, because it is the key element for the context capturing. Therefore the back end, where the jobs get executed get described in more detail. After that the context model gets presented. 
 
+\todo{simpler overview --> data ID - Code ID - Output Hash}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{overview}
@@ -453,8 +455,8 @@ In this chapter the design of the provenance capturing gets described. First the
 \end{figure}
 
 \section{Data Identification}\label{Design:Data Identification}
-
-\todo{Explain that it has to be implemented at the back end and reference to the implementation}
+\todo{maybe inside of Context Model}
+\todo{Explain that it has to be implemented at the back end and reference to the implementation, maybe explain the additiones to the coreAPI needed}
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning}
@@ -480,6 +482,7 @@ In this section the concept of the provenance capturing is described. The aim of
 \begin{enumerate}
 	\item \textbf{Data identification} \\
 	This part describes the needed implemented data identification recommendations based on the RDA guidelines (see \cite{rauber2016identification}). To make the processes theoretically reproducible the input data has to be identifiable. So different versions of the same data has to be distinctable and data needs to be persisted or specified in a way that it can be recreated. A description of all steps necessary for the OpenEO back ends can be viewed at section \ref{Design:Data Identification}.
+	\todo{maybe remove back end provenance and merge it with Job dependent provenance}
 	\item \textbf{Back end provenance} \\
 	This part describes the provenance of the back end, that is not depending on a job execution. There has to be an automated process running on the process machine to capture every change that influences the execution of OpenEO jobs. A description of more detail can be viewed on section \ref{Design:Back end provenance} .     
 	\item\textbf{Job dependent provenance} \\
@@ -489,6 +492,7 @@ In this section the concept of the provenance capturing is described. The aim of
 \end{enumerate}
 
 \subsection{Back end provenance}\label{Design:Back end provenance}
+\todo{Maybe merge it with Job dependent provenance}
 The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent from a job execution, so does not change regardless of how much jobs were processed. It can only change from inside of the back ends by their maintainers. In the OpenEO project there are a great variety of different back end providers with very different setups, so the challenge of this part is to make it as simple and generic as possible. The data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following data gets suggested to be the minimal set of static provenance data that has to be captured. 
 
 \textbf{B1: Code Identification}
@@ -545,7 +549,7 @@ To identify the environment of the code execution, the installed packages of the
 On the beginning of the process execution a time-stamp shall  be created and at the end of the process execution. These timestamps have to be persisted in the context model.
 
 \subsubsection{Output Data}\label{Job:Output Data}
-The output data of the processing has to be captured as well. In the OpenEO project the results can be rather big, that is why a simple generated hash of the output result is enough in this context model. The output data does not have to be identifiable within the scope of this thesis, but just comparable with other executions. Therefore a hash of the output data is sufficient. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. 
+The output data of the processing has to be captured as well. In the OpenEO project the results can be rather big, that is why a simple generated hash value of the output result is enough in this context model. The output data does not have to be identifiable within the scope of this thesis, but just comparable with other executions. Therefore a hash of the output data is sufficient. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. 
 
 \textbf{J6: Result Hash}
 The output result of the process need to be verifiable and therefore need to be persisted. An easy way to achieve this is to take a hash over the sorted output files. 
@@ -570,7 +574,7 @@ To make the comparison of different execution behaviors more informative, the gr
 That is how the benchmarking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
 
 \subsection{User Interface}\label{Design:User Interface}
-
+\todo{should not be part of the context model section}
 In this section the information for the users and how it is provided gets described. The capturing described in the previous sections consists of  information about the back ends that shall not be completely passed to the users in detail. For example it can be a security risk to provide specific programming language packages. On the other hand the users need to be able to see the differences of job executions and get environment information about the backends. Therefore there has to be a filter on which data can be shown to the user and what not. Every captured information is also not necessarily interesting for the users. Data that is not secure to the user has to be defined by the different back ends themselves. The OpenEO project has a very diverse set of back ends and every one has an unique company security guideline. The important thing is that all of the information has to be captured and taken into account for the comparisons and the result of the comparisons have to be open for users.
 Provenance information has to be provided to the user. Therefore there have to be additions to the core api specification. Additional endpoints for the users to get information about the back end has to be created in the Core API, back end and client. The following points summarize the set of needed additions. 
 
@@ -607,7 +611,7 @@ In this chapter the prototype of the concept described in \ref{Design} gets pres
 The implementation can be divided in four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance creation tool defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
 
 \section{Data Identification}\label{Implementation:Data Identification}
-
+\todo{add concept discussed with Andi}
 As defined in section \ref{Design:Data Identification}, implementing the RDA recommendations needs to be done by every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other openEO back end provider can use the approach as well to enable data identification on their back end setup. 
 In the next section the current EODC status on data identification is described. After that the solution to apply the RDA recommendations on the EODC back end is presented. 
   
@@ -629,7 +633,7 @@ Data management on the EODC back end is file system based. All earth observation
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
-
+\todo{Maybe merge with Job provenance}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{backendprov}
@@ -725,6 +729,7 @@ In figure \ref{fig:job_context_model} there is an example context model of a job
 The mapping described in the table above is implemented by both solution systems. 
 
 \subsection{Benchmarking Mode}\label{Implementation:Benchmarking Mode}
+\todo{may not be implemented... --> Future work}
 As defined in section \ref{Design:Job dependent provenance} there is also the optional possibility to capture not only the overall process, but also every process and the data in between for comparison reasons. 
 If the process executed is not the first one and the benchmarking capturing mode is on, the input data identifier gets replaced by the output hash of the previous process. The scope of the benchmarking is just to make it able to see differences in the executions, but not to be able to identify the differences. Hence, a hash of the previous output data is sufficient. The hash gets created after the execution, by creating the hash of the execution at temporary output directory of the previous process. The EODC back end creates for each process execution a temporary folder where the output data of every process is stored, after the execution the temporary folder gets deleted. Between the finished execution and the deletion of the temporary folders a self provided python function gets called to make an SHA-256 hash over the results. In the benchmarking mode not only the data gets captured between the processes but also the timing of the single process executions. This is done by adding logging messages for the start and end of the process execution. The logging file is afterwards parsed and the timestamps are copied to the context model. Last but not least the identifier of the code is captured, by reading the git information out of the back end provenance. For the user convenience the url of the process code on GitHub with the currently checked out commit is added to the context model. Both implementations have the benchmarking realized as described before.    
 %\todo{Implement an switch to make it optional with the time stamps of the processing}
@@ -843,7 +848,7 @@ In addition to the implementations defined before, a translation tool for the co
 In this chapter the implementation gets tested and evaluated. By running the use cases it gets evaluated if the implementation reaches the aim of the thesis. First the RDA data identification recommendations are checked with the implementation and how they apply or not need to apply. Then the two implementations are compared with each other. The last section in this chapter is testing the in section \ref{Use Cases} defined use cases against the implementation. 
 
 \section{Data Identification}\label{Evaluation:Data Identification}
-
+\todo{Describe Test Cases, introduce new Use Cases}
 \begin{itemize}
 	\item \textbf{R1: Data Versioning}
 	\item \textbf{R2: Timestamping}
