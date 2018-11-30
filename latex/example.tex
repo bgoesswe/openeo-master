@@ -174,21 +174,22 @@ The expected outcome of this thesis is to discover and develop a possible framew
 \end{itemize}
 
 \section{Use Cases}\label{Use Cases}
-To validate the design proposed in this thesis, there are use cases defined in the following sections. They describe scenarios about stakeholders of the OpenEO project that are currently not possible, but will be accomplish-able with the work of this thesis.
+To validate the design proposed in this thesis, there are use cases defined in the following sections. They describe scenarios about stakeholders of the OpenEO project that are currently not possible, but may be accomplish-able with the solution of this thesis.
     
-\subsection{Providing Back End Information}\label{UseCase1}
+\subsection{Re-Use of Input Data}\label{UseCase1}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{usecase1}
+	\includegraphics[width=\textwidth]{usecase1_new}
 	\caption{Overview of the first Use Case}
 	\label{fig:usecase1} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-In order to make a job execution in the OpenEO project reproducible, the environment of the back end has to be well-defined and communicated to the users. It has to be specified in detail and should only contain job independent information about the back end. The data about the back end provenance needs to be available for the users of OpenEO. It improves the usability for users to know the state of the back end they want to use. The information can be used to decide, which back end suits best for a user. Here only data have to be shown that are not a security threat to the back end provider, but are relevant to the user. The back end provider gets the information and history about the environment. This can improve error findings between versions.An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase.1}.
+The first use case is about the re-use of input data between job executions. Reproducible methods are especially important for the scientific community. Since scientists are likely to build on results or methods of publications, it is an opportunity for OpenEO to make the re-use simple. In this case a scientist creates a publication by using OpenEO and citing the method and data accordingly. Another scientist in a similar area of research wants to use the same input data but use a different approach of processing it. Hence there needs to be a possibility to cite the input data in a way, that another user can re-use it in a different processing chain. 
+An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase1}.
 
 \subsection{Providing Job Execution Information}\label{UseCase2}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{usecase2}
+	\includegraphics[scale=0.8]{usecase2}
 	\caption{Overview of the second Use Case}
 	\label{fig:usecase2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -918,7 +919,7 @@ Noworkflow comes with more features, especially for the back end provider to que
 
 \section{Use Cases}\label{Evaluation:Use Cases}
 In this section the use cases introduced in section \ref{Use Cases} are tested against the python implementation. The setup of the evaluation is on the back end side the EODC python implementation described in section \ref{Implementation:Python Implementation}. To communicate with the back end the modified python client gets used. The modifications to the python client are described in \ref{Implementation:User Interface}. The use cases get evaluated by trying to apply them on the original OpenEO setup (version 0.0.2) and comparing it to the implemented additions described in section \ref{Implementation}. The release-0.0.2 OpenEO set up is named original set up for convenience reasons and the OpenEO set up with all, in this thesis described, changes is called modified set up. An Overview of the evaluation is visualized in figure \ref{fig:usecases_eva} 
-
+\todo{Explain set up in more Detail (EODC Back end , python client, maybe github urls)}
 %\begin{figure}[h]
 %	\centering
 %	\includegraphics[width=\textwidth]{usecases_eva}
@@ -926,7 +927,7 @@ In this section the use cases introduced in section \ref{Use Cases} are tested a
 %	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 %\end{figure}
 
-\subsection{Capturing the Back-end environment}\label{Evaluation:Use Case1}
+\subsection{Re-Use of Input Data}\label{Evaluation:Use Case1}
 The first Use Case can be seen from two perspectives. From the back end providers point of view and from the users point of view. The user wants to get information about the back ends provenance and the current version. The back end provider wants to have an automated tool to capture the provenance data and to create automatically back end versions. This is done in the implementation by running the BackendMonit tool described in section \ref{Implementation:Back end provenance}. The back end provider has just to start the service of BackendMonit and the capturing and back end version creation will be done automatically. 
 Users will use an OpenEO client to access the back end. Therefore, in the following the use case gets visualized by the view of an OpenEO user using the python client: 
 
