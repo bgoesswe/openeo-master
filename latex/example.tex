@@ -204,7 +204,7 @@ This use case is like the first one, but is only about job dependent environment
 The third use case is dedicated to the OpenEO users. The goal is to add a possibility for users of OpenEO to compare different jobs not only by their results, but also on the way they were executed. The comparison is between a job execution and another one on the same back end. Therefore, the processing and the input data has to be identifiable. To make the comparison interesting to the users there also has to be additional information. For usability the comparison needs to be easy to apply and easy to understand, therefore accessible in the environment of the user at the OpenEO client. In addition to the previous conditions a visualization of the differences for the users can lower the access barrier for users to use the feature. An overview of the architecture of this use case can be viewed in figure \ref{fig:usecase3}.
 
 \section{Methodological Approach}\label{Method}
-The use cases defined in the previous section require specific changes to the back end. In the following list the parts of the suggested solution are briefly described. 
+The use cases defined in the previous section require specific changes to the components of OpenEO. In the following list parts of the suggested solution are briefly described. 
 
 
 \begin{enumerate}
@@ -215,7 +215,7 @@ The use cases defined in the previous section require specific changes to the ba
 	To accomplish the verification of different process executions, the process has to be identifiable. Therefore, a versioning of the process code can be used to persist different states of the code. The thesis is for an OpenSource project and the code of the back ends are published at Github, so Git is used as the tool to capture the code state. 
 	
 	\item \textbf{Additional Information}
-	In order to gain an interesting description for users of OpenEO some additional environment information about the data and the code has to be persisted. This information is forwarded to the user and visualized.   
+	In order to gain an description of interest for users of OpenEO some additional environment information about the data and the code gets persisted. This information is forwarded to the user and visualized.   
 	
 	\item \textbf{User Endpoints}
 	The interface for the user has to be implemented so that the use cases can be executed by the users. Therefore, the OpenEO client and core API has to be modified. The adapted client in this thesis is the python client. 
@@ -235,33 +235,35 @@ Chapter 7 summarizes the outcome of the implementation and evaluation. It contai
 
 \section{Reproducibility}\label{Reproducibility}
 According to \cite{6064509} reproducibility is defined as the re-run of an experiment by a different researcher in the manner of the original experiment. Repetition on the other hand is the re-run of the exact same experiment with the same method, same environment and very similar result. 
-Reproducibility is a common problem in all scientific areas. It is an issue of the whole scientific community to produce results that are reproducible. Therefore in \cite{10.1371/journal.pcbi.1003285} there are ten rules defined to gain a common sense about reproducibility in all science areas. They consist of the basic idea that every result of interest has to be associated with a process and data of how it was produced. External programs have to be persisted as well as custom script versions. So the usage of version control is recommended. There is also a rule to make the scripts and the results publicly available. \cite{10.1371/journal.pcbi.1003285} 
-Reproducibility is also the key element of The Fourth Paradigm \cite{noauthororeditorfourth} which is leads to the term eScience, which has the aim of bringing science and computer technologies closer together. The basic idea is to enable science in the new information technologies with data intensive sciences. The expected result of eScience is to get all scientific papers publicly available including the necessary data and processes so that scientists are able to interoperate with each other. \cite{noauthororeditorfourth}
-The eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and workflows citable. In \cite{Rauber2015RepeatabilityAR} is a common way of reaching this goal formulated. It describes an approach to look at whole research processes, other than only data citation by introducing Process Management Plans. The capturing, verification and validation of the needed data for a computational process is also demonstrated within the paper.\cite{Rauber2015RepeatabilityAR}
-The main problem of computer sciences is that a lot of published papers are not provided by enough information so that they are reproducible. The problem will not be solved by the scientists that need to do additional afford to make reproducibility possible, but by providing new tools for scientists that do it for them automatically as stated in \cite{MIKSA201725}. One major problem is that the used software technologies are deprecated and not available any more, so the context of the execution has to be persisted to make a re-execution of the experiment possible. One proposed concept of doing so is the VFramwork described in \cite{Miksa2013FrameworkFV}. 
+Reproducibility is a common problem in all scientific areas. It is an issue of the whole scientific community to produce results that are reproducible. Therefore in \cite{10.1371/journal.pcbi.1003285} there are ten rules defined to gain a common sense about reproducibility in all science areas. They consist of the basic idea that every result of interest has to be associated with a process and data used. External programs have to be persisted as well as custom script versions. The usage of version control is recommended. In addition there is a rule defined to make the scripts and their results publicly available. \cite{10.1371/journal.pcbi.1003285} 
+Reproducibility is also the key element of The Fourth Paradigm published in \cite{noauthororeditorfourth}. It leads to the term eScience, which has the aim of bringing science and computer technologies closer together. The general concept is to enable scientific procedures in the new information technologies used by data intensive sciences. The expected result of eScience is to get all scientific papers publicly available including the necessary data and processes so that scientists are able to have a fast interaction with each other. \cite{noauthororeditorfourth}
+eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and work-flows citable. In \cite{Rauber2015RepeatabilityAR} is a common way of reaching the goal formulated above. It describes an approach to look at whole research processes, other than only data citation by introducing Process Management Plans. The capturing, verification and validation of the input data for a computational process is also demonstrated within the paper.\cite{Rauber2015RepeatabilityAR}
+Computer sciences have the issue of a high amount of published papers that are not provided by enough information to make them reproducible. The problem will not be solved by the scientists that need to do additional afford to make reproducibility possible, but by providing new tools for scientists that allow it automatically as stated in \cite{MIKSA201725}. There are some additional issues on reproducibility in computer science like that the used software technologies are deprecated and not available any more. Therefore persisting the execution context is critical to make a re-execution of the experiment possible. One proposed concept of doing so is the VFramwork described in in more detail in the method section \ref{Methodology}.
+\\
+Data citation is a key issue of reproducing results of past experiments. Preserving the exact process without persisting the original data is no real gain for the scientific community. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. In earth observation persisting the data for reproducibility in the future is an issue discussed in \ref{6352411}.Gaining data identification in digital sciences has an official working group named Working Group on Data Citation (WGDC), which created 14 recommendations on data citation further explained in section \ref{Data Identification}.
+ \subsection{PROV-O}\label{PROV}
+In 2003 the World Wide Web Consortium published the PROV model as a standard for provenance definitions. It is defined by twelve different documents. In the context of this thesis the PROV Ontology (PROV-O) is the most relevant. \cite{f06eee9045b445be89cf07100b3ce05c}
+PROV-O is a standard language used to describe OWL2 Web Ontology. It is designed as a lightweight concept to be used in a broad spectrum of applications. 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{vframework}
-	\caption{Overview of the Concept of the VFramework \cite{Miksa2013FrameworkFV}}
-	\label{fig:vframework} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+	\includegraphics[scale=0.6]{prov}
+	\caption{Overview of the main components of PROV-O \cite{733f89c65e4844f9aabcae1c276a5602}}
+	\label{fig:prov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data that is divided into the static and the dynamic data. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution.\cite{Miksa2013FrameworkFV}
-\todo{Move VFramework to Methology and explain it in more detail}
-Data citation is a key issue of reproducing results of past experiments, because they are the backbone of the execution. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. 
-That is why there is an official working group named Working Group on Data Citation (WGDC) created 14 recommendations on data citation further explained in section \ref{Data Identification}.
+In figure \ref{fig:prov} there is the basic setup of the PROV concept. It consists of three main elements. The Entity is any physical, digital, conceptual thing. Provenance records describe Entities that can consist of references to other Entities. Another element is the Agent, which is responsible for Activities and that they are taking place. Examples for Agents are software, persons or organizations. The association of an Agent to an Activity defines the responsibility of the Agent to the Activity. An Activity describes what happened that the Entity has come to existence and how attributes of an Entity changed.\cite{f06eee9045b445be89cf07100b3ce05c} In this thesis the PROV-O standard is not implemented, but since it is a reasonable extension it is mentioned in the future work section \ref{FutureWork}.
 
 \section{Earth Observation Science}\label{EOScience}
 
-Reproducibility is a well discussed issue of the computational geoscience. The big data of earth observation science leads to complex research programs and therefore a lot of complexity in the papers.  According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. Nevertheless there are publications to address this lack of reproducibility in the earth observation science. 
+Reproducibility is a well discussed topic of the computational geoscience. The high amount of earth observation data leads to complex research programs and therefore high complexity in the papers.  According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience are tested, only half of the test group publications are replicable and none of them reproducible. There are publications to address this lack of reproducibility in the earth observation science. The sections below summarize some examples of earth observation communities progresses in terms of the lack of reproducibility. 
 
 \subsection{Vadose Zone Journal (VZJ)}\label{VZJ}
-To design solutions to the lack of reproducibility the VZJ started a Reproducibility Research (RR) program in 2015. \cite{doi:10.2136/vzj2015.06.0088}
-The earth observation science is a big part of VZJ publications and most of them are not conform with the open computational science guidelines. The main reasons are behaviors of scientists that do not see the overall benefit of putting effort into documentation. Therefore the VZJ started the RR program to publish alongside the scientific paper also the code and data used by the scientists for he publication, to make it easy for the scientists to publish their research work. The aim of the project is to create a community of researchers with a common sense of reproducibility and data citation on the platform and to animate other scientists to join the approach. \cite{doi:10.2136/vzj2015.06.0088}
+In order to face the issue of lacking reproducibility in geoscience the Vadose Zone Journal (VZJ) started a Reproducibility Research (RR) program in 2015. \cite{doi:10.2136/vzj2015.06.0088}
+The earth observation science is a big part of VZJ publications and most of them are not conform with the open computational science guidelines. The main reasons are behaviors of scientists that do not see the overall benefit of putting effort into documentation. Therefore the VZJ started an RR program to publish alongside the scientific paper also the code and data used by the scientists for evaluating the publication. This shall lower the access barrier for scientists to publish their research work entirely. Aim of the project is to create a community of researchers with a common sense of reproducibility and data citation on the platform and to animate other scientists to join the approach.\cite{doi:10.2136/vzj2015.06.0088}
 
 \subsection{The Geoscience Paper of the Future (GPF)}\label{GPF}
-The geoscience paper of the future is according to \cite{Gil2016TowardTG} a proposed standard to help geoscientists to make reproducible publications. The gain of is is applying concepts of open science and reproducibility to geoscientific papers. A GPF needs to apply the following requirements:
+The geoscience paper of the future (GPF) is according to \cite{Gil2016TowardTG} a proposed standard to help geographical scientists to make reproducible publications. The gain of it is applying concepts of open science and reproducibility to earth observation papers. A GPF needs to apply the following requirements:
 
 \begin{itemize}
 	\item \textbf{Reusable data} in a public repositories and persistent identifiers.
@@ -279,7 +281,7 @@ The geoscience paper of the future is according to \cite{Gil2016TowardTG} a prop
 In figure \ref{fig:gpf} the differences with a reproducible paper gets visualised. In addition to the characteristics of the reproducible paper the GPF focuses on publishing the data publicly with open licences including citable persistent identifiers.
 The GPF consists of a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility and also provenance information. 
 
-\subsection{Climate Change Centre Austria}
+\subsection{Climate Change Centre Austria (CCCA)}
 \todo{ccca related work}
 
 \section{OpenEO}\label{OpenEO}
@@ -386,18 +388,17 @@ The inotify service enables monitoring folders on the file system. It is capable
 \textbf{cron}
 Cron is used to call periodical jobs in a linux based system. It is accessed via the crontab tool that functions as a configuration file for the cron service. Inside of the crontab there it is possible to call a shell script periodically. Every line in the crontab is a different script that gets called by the cron service. A line in the crontab specifies the time in which the script has to be executed. Therefore the every minute, hour, day of month, month and day of week gets specified on which it shall be called. If there is a ”*” character, it will be called on every occasion of the time or date type. \cite{crontab}
 
-\section{PROV}\label{PROV}
-In 2003 the World Wide Web Consortium published the PROV model as a standard for provenance definitions.  The standard is defined by twelve different documents. In this thesis only the PROV Ontology document is used in the implementation. \cite{f06eee9045b445be89cf07100b3ce05c}
-PROV Ontology (PROV-O), which is a standard language used to describe OWL2 Web Ontology. It is designed as a lightweight concept to be used in a broad spectrum of applications. 
-
+\section{VFramework}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{prov}
-	\caption{Overview of the main components of PROV-O \cite{733f89c65e4844f9aabcae1c276a5602}}
-	\label{fig:prov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+	\includegraphics[width=\textwidth]{vframework}
+	\caption{Overview of the Concept of the VFramework \cite{Miksa2013FrameworkFV}}
+	\label{fig:vframework} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-In figure \ref{fig:prov} there is the basic setup of the PROV concept. It consists of three main elements. The Entity is any physical, digital, conceptual thing. Provenance records describe entities and entities can consist of references to other entities. Another element is the Agent, which is responsible for activities and that activities are taking place. Examples for Agents are software, persons or organisations. The association of an Agent to an Activity defines the responsibility of the Agent to the Activity. An Activity describes what happened that the Entity has come to existence and how attributes of an Entity changed.\cite{f06eee9045b445be89cf07100b3ce05c} In this thesis the PROV-O standard is used by a feature of the back end to transform the context model of a process graph to an PROV-O description (see section \ref{Implementation:User Interface}). 
+The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data that is divided into the static and the dynamic data. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution.\cite{Miksa2013FrameworkFV}
+
+
 
 \section{Noworkflow}\label{Noworkflow}
 \todo{Move to Related Work}
@@ -962,12 +963,12 @@ Users will use an OpenEO client to access the back end. Therefore, in the follow
 8.	Describe possibilities
 9.	Describe improvements
 
-\section{Future Work}
+\section{Future Work}\label{FutureWork}
 In this thesis a concept for applying reproducibility in the OpenEO project is purposed. Still there are major issues to be addressed in the future of the OpenEO project. There are several ways to improve the concept and many open questions, which are open for the future. \\
 OpenEO is still evolving until the project end 2021 and also afterwards. There are a lot of features that have to be defined and may interfere with the concept proposed in this thesis. User defined functions are part of the project and to be capable of reproduce them can lead to adaptations to the concept. Another main issue of the OpenEO project is the billing concept that has to be apply-able to a diverse set of back ends. Since the capturing process and the generation of the context model takes time it has to be considered in the billing plan of the back ends. The growing diversity of the back ends applying the OpenEO standard is a huge challenge to the design of the context model of this thesis.\\
 The storage of the context models in JSON files was used in this thesis , but has definitely limitations that have to be addressed in the future e.g. the querying over the data sets. 
 In the solution of this work the data is captured for identifying how jobs are executed and to be able to identify how the job was executed. An addition to this can be a way to automatically apply the reproduction of an executed jobs of the past. To achieve this a method of validating the output of a job execution needs to be introduced. The possibility to get automated data and process citation to researchers of OpenEO interfaces is also a possible future work. Special users may need a finer granularity of the process capturing, leading to a definition of scalability of the processing capturing.      
-
+\todo{Talk about PROV-O}
 
 \backmatter
 
