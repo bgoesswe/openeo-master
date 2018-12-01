@@ -240,7 +240,7 @@ Reproducibility is also the key element of The Fourth Paradigm published in \cit
 eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and work-flows citable. In \cite{Rauber2015RepeatabilityAR} is a common way of reaching the goal formulated above. It describes an approach to look at whole research processes, other than only data citation by introducing Process Management Plans. The capturing, verification and validation of the input data for a computational process is also demonstrated within the paper.\cite{Rauber2015RepeatabilityAR}
 Computer sciences have the issue of a high amount of published papers that are not provided by enough information to make them reproducible. The problem will not be solved by the scientists that need to do additional afford to make reproducibility possible, but by providing new tools for scientists that allow it automatically as stated in \cite{MIKSA201725}. There are some additional issues on reproducibility in computer science like that the used software technologies are deprecated and not available any more. Therefore persisting the execution context is critical to make a re-execution of the experiment possible. One proposed concept of doing so is the VFramwork described in in more detail in the method section \ref{Methodology}.
 \\
-Data citation is a key issue of reproducing results of past experiments. Preserving the exact process without persisting the original data is no real gain for the scientific community. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. In earth observation persisting the data for reproducibility in the future is an issue discussed in \ref{6352411}.Gaining data identification in digital sciences has an official working group named Working Group on Data Citation (WGDC), which created 14 recommendations on data citation further explained in section \ref{Data Identification}.
+Data citation is a key issue of reproducing results of past experiments. Preserving the exact process without persisting the original data is no real gain for the scientific community. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. In earth observation persisting the data for reproducibility in the future is an issue discussed in \cite{6352411}.Gaining data identification in digital sciences has an official working group named Working Group on Data Citation (WGDC), which created 14 recommendations on data citation further explained in section \ref{Data Identification}.
  \subsection{PROV-O}\label{PROV}
 In 2003 the World Wide Web Consortium published the PROV model as a standard for provenance definitions. It is defined by twelve different documents. In the context of this thesis the PROV Ontology (PROV-O) is the most relevant. \cite{f06eee9045b445be89cf07100b3ce05c}
 PROV-O is a standard language used to describe OWL2 Web Ontology. It is designed as a lightweight concept to be used in a broad spectrum of applications. 
@@ -263,7 +263,7 @@ In order to face the issue of lacking reproducibility in geoscience the Vadose Z
 The earth observation science is a big part of VZJ publications and most of them are not conform with the open computational science guidelines. The main reasons are behaviors of scientists that do not see the overall benefit of putting effort into documentation. Therefore the VZJ started an RR program to publish alongside the scientific paper also the code and data used by the scientists for evaluating the publication. This shall lower the access barrier for scientists to publish their research work entirely. Aim of the project is to create a community of researchers with a common sense of reproducibility and data citation on the platform and to animate other scientists to join the approach.\cite{doi:10.2136/vzj2015.06.0088}
 
 \subsection{The Geoscience Paper of the Future (GPF)}\label{GPF}
-The geoscience paper of the future (GPF) is according to \cite{Gil2016TowardTG} a proposed standard to help geographical scientists to make reproducible publications. The gain of it is applying concepts of open science and reproducibility to earth observation papers. A GPF needs to apply the following requirements:
+The geoscience paper of the future (GPF) is according to \cite{Gil2016TowardTG} a proposed standard to help geographical scientists by making reproducible publications. It defines recommendations on data management and software management, by introducing the reader to available repositories. The gain of it is applying concepts of open science and reproducibility to earth observation papers. A GPF needs to apply the following requirements:
 
 \begin{itemize}
 	\item \textbf{Reusable data} in a public repositories and persistent identifiers.
@@ -278,11 +278,126 @@ The geoscience paper of the future (GPF) is according to \cite{Gil2016TowardTG} 
 	\label{fig:gpf} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-In figure \ref{fig:gpf} the differences with a reproducible paper gets visualised. In addition to the characteristics of the reproducible paper the GPF focuses on publishing the data publicly with open licences including citable persistent identifiers.
+In figure \ref{fig:gpf} the differences with a reproducible paper gets visualized. In addition to the characteristics of the reproducible paper the GPF focuses on publishing the data publicly with open licenses with citable persistent identifiers.
 The GPF consists of a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility and also provenance information. 
 
 \subsection{Climate Change Centre Austria (CCCA)}
-\todo{ccca related work}
+The Climate Change Centre Austria (CCCA) is a research network for Austrian climate research online available since 2016 and has 28 members. The main tasks are the provision of climate relevant information, the inter-operable interfaces and long term archiving of scientific data. In 2017 the NetCDF data citation was added to the project. The set up of the data service and the technology used in the background is similar to the set up of the EODC back end. Therefore the process of enabling data identification was similar to this thesis. The concept used for gaining data citation was the RDA recommendations defined in \cite{rauber2016identification} and can be viewed in figure \ref{fig:ccca}. The main difference is the more complex architecture of the CCCA service compared to the EODC back end used for the OpenEO project. File formats also differ, because EODC uses GeoTiff instead of NetCDF at their back end. Nevertheless the concept of enabling data identification is similar in both projects.\cite{ccca} CCCA is Open-source and available at GitHub, see \cite{ccca_github}.  
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.25]{ccca}
+	\caption{Concept of the CCCA NetCDF Cata Citation \cite{ccca}}
+	\label{fig:ccca} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+
+\section{Existing Tools}\label{Existing Tools}
+In this section tools that are designed to solve similar problems like this thesis get summarized and described further. There is also an explanation why the specific tool was not used for the solution of this thesis. 
+
+\subsection{Noworkflow}\label{Noworkflow}
+Noworkflow is introduced in \cite{c9e0604becba42af96a9cb0a6f60018b} as a script provenance capturing tool with the aim to not influence the way researchers implement experiments. As proof of concept the noWorkflow command line tool got implemented for python. The provenance is captured in a SQLite database by different trials. A trial represents the environment information about one execution of the experiment.The main benefits of noWorkflow is that it does not instrument the code and it automatically captures the definition, deployment and execution provenance in a local SQLite database. The stored meta-data can be accessed via the command line interface of noWorkflow. In addition to just retrieving the information about the execution environment there is also analyses features added.\cite{c9e0604becba42af96a9cb0a6f60018b}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1]{noworkflow}
+	\caption{Architecture of noWorkflow \cite{c9e0604becba42af96a9cb0a6f60018b}}
+	\label{fig:noworkflow} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+The noWorkflow framework got improved regularly after the first announcement. In \cite{Pimentel2016TrackingAA} an additional feature of tracking the evolution of the experiment execution is added. It improves the possibility to compare different trials of an experiment and to visualize the history of past executions. In \cite{Pimentel:2016:FPC:3090188.3090214} the fine-graned provenance tracking extension of noWorkflow is implemented. With it the execution of the python script can be viewed as a set of execution lines. It also adds a visualization of all called functions with some limitations on multiple function calls in one line, dictionaries and lists. In \cite{69bac1252a684629baa43b48e350068d} the provenance capturing of noWorkflow in combination of yesWorkflow, which gathers information about the provenance using comments and annotations (see \cite{192094}), got combined. The combination enabled a broader provenance information, querying and visualizations. 
+In this thesis noworkflow is used in an alternative attempt of the implementation described in section \ref{Implementation:Noworkflow Implementation}, but is not part of the final solution due to reasons provided in \ref{Evaluation:NvsP}.
+
+\subsection{ReproZip}\label{ReproZip}
+ReproZip is a packaging tool to enable the reproducibility of computational executions of any kind. It automatically tracks the dependencies of an experiment and saves it to a package that can be executed on another machine by ReproZip. It is even capable of letting the re-executor modify the original experiment. It was developed for the SIGMOD Reproducibility Review. In figure \ref{fig:reprozip} the architecture of ReproZip is shown in detail. It traces the system calls to create a package defined in the configuration file. So that a single file with the extension “.rpz” gets produced. These type of files can then be unpacked on a different machine and re-executed. The aim of ReproZip is to make reproducible science easy to apply for single experiments. \cite{29c5846926a4497d95f276604cb0368c} The reason why it is not used in the solution of this thesis, is that the capturing is very fine granulated and takes too much performance from the back ends, which is a key selling point for back end providers. The payment for users of OpenEO, depending on the back end, may have to pay by the duration time of the processing. Another issue with ReproZip in the context of this thesis is that it is not possible to capture the big data of the back ends within the package, because it would take too much space.  
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{reprozip}
+	\caption{Overview of the ReproZip concept. \cite{29c5846926a4497d95f276604cb0368c}}
+	\label{fig:reprozip} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\subsection{Docker / Smartcontainer}\label{Smartcontainer}
+Docker containers are very common in geoscience executions. The advantages on reproducible research and cost savings by using docker containers is discussed in \cite{rs9030290} for the Geographic Object-Based Image Analysis (GEOBIA). The docker implementation of the image analysis was implemented with a docker image including a user interface that can be used by non-experts. There are experiments for the more general Object-Based Image Analysis (OBIA) with docker containers presented in \cite{proceedings456}. Conclusion of the previous mentioned paper is very positive with only little shortcomings in the usability. The two papers mentioned above are using the docker images to make it easy to re-run an experiment on the OBIA system. Remaining question is how the docker configuration can be preserved in a manner so that it can be reproduced in different environments. The aim of \cite{emsley2017a} is to answer this question by introducing in addition to the Docker description file a workflow record saving the environment and entities involved. A SPARQL query got introduced to create the possibility to use the container as a repository of metadata.\\ 
+Another approach of preserving a docker container are smart container introduced in \cite{Huo2015SmartCA}. The aim of smart container is an ontology and software to preserve docker metadata. It uses the PROV-O standard to define the provenance. 
+Docker containers are not part of the solution of this thesis, because the impact of the implementation shall not be too big for the back end providers. The solution has to be simple and general to be applied on all different back ends. Other back end implementations may use docker containers to apply the defined context model in \ref{Design}.
+
+\chapter{Methodology}\label{Methodology}
+
+In this chapter the methodology used in the development of the solution of the thesis gets presented. In the following the reader gets informed about basic concepts used in the prototype implementation. The information is structured in subsections, where each is presenting different technologies or concepts. \\In the first two sections there are technologies presented that are crucial for the concept of the design in section \ref{Design}.\\
+After that there are two sections presenting concepts used in the solution of this thesis. \\
+The last section of this chapter describes the OpenEO project further and more specifically the EODC back end, which is used for the proof of concept implementation.    
+
+\section{Version Control Systems}\label{Version Control Systems}
+Version control systems (VCS) became a very important part in all computational sciences. It enables to persist versions of code and the possibility to head back to a certain version of it. Before that programmers tend to have multiple directories to version the code. The basic idea of VCS is that via a command line interface it is possible to set a version of the current state of the code. These versions can be accessed in future, without changing other versions of the code and without multiple folders. \cite{10.1109/MCSE.2009.194}
+In this thesis Gitorious (Git) is used as version control system. Versions in git are defined as commits and are stored locally, but can be published to an external server, where, depending on the user rights, they are accessible for other users. The commits are stored locally and remotely. \cite{QuickGit} In OpenEO Git is defined as the used versioning tool and GitHub is used as the publicly available server. Since OpenEO is an open source project, the code of every back end, core API and client is available at GitHub. In this thesis the Git commit and the GitHub repository is used as the identifier of code versions running at the back end. 
+
+\section{Hash}\label{Hash}
+Hash functions are used to validate the data without having to save the whole data. They have three important properties to work properly. First it has to be difficult that two different inputs have the same hash outcome. Second is has to be difficult to recreate the original input data from only the hash information. Last but not least it needs to be hard to find a message with the same hash value as an already known message. The properties described above makes the hash functionality a common tool to identify data without having to save the original one. \cite{3b412889270f46f59740fbf1ca8cd7e0} There are different hash functions available. In this thesis the SHA-256 is used for the metadata of the context model, mostly to compare differences in data outcomes.
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{sha}
+%	\caption{\cite{shapaper}}
+%	\label{fig:sha} % \label has to be placed AFTER \caption (or %\subcaption) to produce correct cross-references.
+%\end{figure}
+%The SHA-256 is chosen in the implementation, because of the best combination of performance and security of the above described properties of the hash. 
+
+\section{VFramework}
+
+The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data. During the original execution evidence gets collected into a repository. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution. The provenance data is divided into static and dynamic data. Static data defined in the VFramework is data that is not dependent on the execution of the experiment. The static environment information is therefore independent from the set up and the configuration of the execution. Dynamic data on the other hand has to be captured during the execution of the original experiment. It is the information specific for the workflow. \cite{Miksa2013FrameworkFV}
+In figure \ref{fig:vframework} there is an overview of the VFramework concept.  
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{vframework}
+	\caption{Overview of the Concept of the VFramework \cite{Miksa2013FrameworkFV}}
+	\label{fig:vframework} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\section{Data Identification}\label{Data Identification}
+Data identification and citation is a main concern in many computer relying sciences. For the aim of this work, the input data is a key element of the capturing. If the input data can not be identified correctly, the capturing of the processing on it does not gain useful information. Therefore the identity of the data has to be guaranteed. The Research Data Alliance (RDA) presents general solutions to achieve data identifications. There are 14 recommendations defined to achieve the identification of an exact version and subset of input data. The recommendations are independent of the type of data and database.  In the following the most important recommendations for this thesis get briefly introduced.\cite{rauber2016identification}
+\begin{itemize}
+	\item \textbf{R1: Data Versioning}
+	Changes on a data record needs to result in new versions of the data record and the persistence of the deprecated data records. All data record versions need to be identifiable and accessible. 
+	\item \textbf{R2: Timestamping}
+	All changes to the database have to be comprehensible via timestamps. So every time changes are applied to the data, there needs to be a timestamp when it happened. 
+	\item \textbf{R3: Query Store Facilities}
+	There needs to be a query store implemented at the data provider to store queries including their metadata to be able to re-execute them in the future. The database has to store, according to \cite{rauber2016identification} the following things: 
+	\begin{itemize}
+		\item The original query as posed to the database
+		\item A potentially re-written query created by the system (R4, R5)
+		\item Hash of the query to detect duplicate queries (R4)
+		\item Hash of the result set (R6)
+		\item Query execution timestamp (R7)
+		\item Persistent identifier of the data source
+		\item Persistent identifier for the query (R8)
+		\item Other metadata (e.g. author or creator information) required by the landing page (R11)
+	\end{itemize}
+	\item \textbf{R4: Query Uniqueness}
+	Since there should not be equal queries with the same result stored at the query store, there needs to be a normalized query that can be directly compared to other queries. Hence there needs to be a programming logic to normalize the queries and to enable their uniqueness.
+	\item \textbf{R5: Stable Sorting}
+	The sorting of the resulting data needs to be unambiguous and therefore reproducible.
+	\item \textbf{R6: Result Set Verification}
+	To ensure that the resulting data of the query is comparable there needs to be a checksum or hash key of it. 
+	\item \textbf{R7: Query Timestamping}
+	There needs to be a timestamp assigned to every query in the query store, which represents the last update of the entire database or the query dependent data of the database.
+	\item \textbf{R8: Query PID}
+	Every query record in the query store needs to have a Persistent Identifier (PID). There must not be a query with the same normalized query and the same result checksum. 
+	\item \textbf{R9: Store the Query}
+	The data described in previous recommendations have to be persisted in the query store.
+	\item \textbf{R10: Automated Citation Texts}
+	To make the citation of the data more convenient for researchers, there shall a generation of the citation text snipped including the query PID.
+	\item \textbf{R11: Landing Page}
+	The PID need to be resolvable in a human readable landing page, where all the data mentioned in the previous recommendations is provided to the scientist.
+	\item \textbf{R12: Machine Actionability}
+	Providing an API landing page so that not only humans, but also machines can access the metadata by query re-execution.
+	\item \textbf{R13: Technology Migration}
+	If the database where the query store is implemented needs to be mi grated to a new system, the queries need to be transferred too and have to be updated according to the new setup.
+	\item \textbf{R14: Migration Verification}
+	There shall be a service so automatically verify a data and query migration, to prove that the queries in the query store are still correct. 
+\end{itemize}
+ The implementation of the recommendations in this thesis are described in section \ref{Implementation:Data Identification}. 
 
 \section{OpenEO}\label{OpenEO}
 The OpenEO project contains of three modules, the client modules written in the programming language of the users, the back end drivers that makes it possible for every backend to understand the calls from the clients and the core API that specifies how the communication should take place. So the core API is a standard that the back end providers accepted to implement on their systems. The back end drivers are the translation of the client calls to the back end specific API. This architecture decouples the clients from the back ends so that every client can connect to every back end that applies to the OpenEO core API standard see figure \ref{fig:api2} \cite{openeo}.   
@@ -309,7 +424,7 @@ The main part of the job execution is based on the description of what the back 
 	\caption{Proof of Concept process graph of the EODC back end for the OpenEO core API version 0.0.2 . \cite{openeo}}
 	\label{fig:process_graph} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
+\todo{Maybe change picture to 0.3.0 version if that is used in the future}
 The back ends interpret the process graph from inside out. Inside figure \ref{fig:process_graph} the element in the middle defines the input data identifier in the \"imagery\" block, with the \"product\_id\". In this case the \"s2a\_prd\_msil1c\" is the chosen input data identifier. Now the back end goes one step up in the hierarchy of the process graph and calls the process \"filter\_bbox\" with the parameters \"left\", \"right\" and so on using the input data. The output data of the previous process is also the input data of the next process. It is possible that the input of a process is a whole new process graph. In figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, so how it gets interpreted. 
 
 \begin{figure}[h]
@@ -341,110 +456,13 @@ Even though the back ends implement the OpenEO core API standard, they are still
 		EURAC & \url{https://github.com/Open-EO/openeo-wcps-driver} \\ 
 	\end{tabular}
 \end{table}
-\section{Existing Tools}\label{Existing Tools}
-In this section tools that are designed to solve similar problems like this thesis get summarized and described further. There is also an explanation why the specific tool was not used for the purpose of this thesis. 
 
-\subsection{ReproZip}\label{ReproZip}
-ReproZip is a packaging tool to enable the reproducibility of computational executions of any kind. It automatically tracks the dependencies of an experiment and saves it to a package that can be executed on another machine by ReproZip. It is even capable letting the reexecuter modify the original experiment. It was developed for the SIGMOD Reproducibility Review. In figure \ref{fig:reprozip} the architecture of ReproZip is shown in detail. It traces the system calls to create a package defined in the configuration file. So that a single file of file type “.rpz” gets produced. This can be unpacked on a different machine or by a different user and then be re-executed. The aim of the tool is to make reproducibility easy to apply for single experiments. \cite{29c5846926a4497d95f276604cb0368c} That is the reason why it is not used in the solution of this thesis, the captoring  is to fine granulated and takes too much performance from the back ends, which is a key selling point for back end providers. The payment for users of OpenEO, depending on the back end, may have to pay by the duration time of the processing. Another issue with ReproZip is that it is not possible on to capture the big data of the back ends within the package, because it would take too much space.  
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{reprozip}
-	\caption{TODO figure number combine the two figures? -> maybe use official ones… }
-	\label{fig:reprozip} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-\subsection{Docker / Smartcontainer}\label{Smartcontainer}
-Docker containers are very common in geoscience executions. The advantages on reproducibility and cost savings by using docker containers is discussed in \cite{rs9030290} for the Geographic Object-Based Image Analysis (GEOBIA). The docker implementation of the image analysis was implemented with an docker image including a user interface that can be used by non-experts. There are also experiments for the more general Object-Based Image Analysis (OBIA) with docker containers presented in \cite{proceedings456}. The conclusion of the experiment is very positive with only little shortcomings in the usability. The two papers mentioned above are using the docker images to make it easy to re-run an experiment on the OBIA system, but the remaining question is how the docker configuration can be preserved in a manner so that it can be reproduced in different environments. The aim of \cite{emsley2017a} is to answer this question by introducing in addition to the Dockerfile a workflow file saving the environment and entities involved. A SPARQL query got introduced to create the possibility to use the container as a repository of metadata regarding the container. 
-Another approach of preserving a docker container is smart container introduced in \cite{Huo2015SmartCA}. The aim of smart container is an ontology and software to preserve docker metadata. It uses the PROV-O standard to define the docker provenance. 
-Docker containers are not part of the solution of this thesis, because the impact of the implementation shall not be too big for the back end providers, because reproducibility is not a main goal of OpenEO and the afford on implementing it on the back ends is limited. The solution has to be simpler and more general to be applied on all different back ends. Even so can docker containers be used to apply the defined context model in \ref{Design}.
-
-\chapter{Methodology}\label{Methodology}
-
-\section{Version Control Systems}\label{Version Control Systems}
-Version control systems (VCS) became a very important part in all computational sciences. It enables to save different versions of a piece of code and the possibility to jump back to a certain version of it. Before that programmers tend to have multiple directories to version the code. The basic idea of VCS is that via a command line interface it is possible to set a version of the current state of the code. These versions can be accessed in future, without changing other versions of the code and without multiple folders. \cite{10.1109/MCSE.2009.194}
-In this thesis Gitorious (Git) is used as version control system. Versions in git are defined as commits and are stored locally, but can be published to an external server, where, depending on the user rights, they are accessible for other users. So the commits are stored locally and remotely. \cite{QuickGit} In OpenEO Git is used as the versioning tool and GitHub is used as the publicly available server. Since OpenEO is an open source project, the code of every back end, core API and client is available at GitHub. In this thesis the Git commit and the GitHub repository is used as an identifier of the code running at the back end. 
-
-\section{Hash}\label{Hash}
-Hash functions are used to validate the data without having to save the whole data. They have three important properties to work properly. First it has to be difficult that two different input data has the same hash outcome. Second is should be difficult to get back to the original data from the hash information. Last but not least is has to be hard to find a message with the same hash value as a already known message. The above properties makes the hash functionality common to identify data without having to save the original one. \cite{3b412889270f46f59740fbf1ca8cd7e0} There are a lot of different hash functions available. In this thesis the SHA-256 gets used for the metadata of the context model, mostly to compare different data outcomes.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{sha}
-	\caption{\cite{shapaper}}
-	\label{fig:sha} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-The SHA-256 is chosen in the implementation, because of the best combination of performance and security of the above described properties of the hash. 
-
-\section{Linux Tools}\label{Linux Tools}
-In the solution a view linux tools are used for capturing the provenance of the back end, therefore the used tools get described in this section. 
-
-\textbf{dpkg}
-The host system was a debian based system and therefore the dpkg tool was used to get the installed packages of the system. All packages installed by the debian system are installed through this package manager. It has a command line interface to access all installed packages. This is used to get all installed packages of the system as part of the metadata of the back end host.\cite{dpkg}
-
-\textbf{inotify}
-The inotify service enables monitoring folders on the file system. It is capable of monitoring single files or whole directories.\cite{inotify} It consists of a lot of different tools to manage the change monitoring. In this thesis the inotifywait service is used. It waits for in the config file specified changes made to a specific directory. The changes in the config file that have to occur can be read, write or modify operations and much finer granulated operations on the directory. Every time an event happens to the directory, it get checked if it is one of the events defined in the inotify configuration and if so it gets written to an output file or the console. \cite{inotifywait} In this thesis it is used to capture changes made to the working directory of the back end. 
-
-\textbf{cron}
-Cron is used to call periodical jobs in a linux based system. It is accessed via the crontab tool that functions as a configuration file for the cron service. Inside of the crontab there it is possible to call a shell script periodically. Every line in the crontab is a different script that gets called by the cron service. A line in the crontab specifies the time in which the script has to be executed. Therefore the every minute, hour, day of month, month and day of week gets specified on which it shall be called. If there is a ”*” character, it will be called on every occasion of the time or date type. \cite{crontab}
-
-\section{VFramework}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{vframework}
-	\caption{Overview of the Concept of the VFramework \cite{Miksa2013FrameworkFV}}
-	\label{fig:vframework} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data that is divided into the static and the dynamic data. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution.\cite{Miksa2013FrameworkFV}
-
-
-
-\section{Noworkflow}\label{Noworkflow}
-\todo{Move to Related Work}
-In one of the process provenance capturing implementation is noworkflow used. Therefore it gets introduced in this section. Noworkflow was introduced in \cite{c9e0604becba42af96a9cb0a6f60018b} as a script provenance capturing tool with the aim to not affect the way users implement their experiments. As proof of concept the noWorkflow command line tool got implemented for python. The provenance is captured in SQLite database by different trials, which are executions of the experiment. The main benefits of noWorkflow is that it does not instrument the code and it automatically captures the definition, deployment and execution provenance in a local SQLite database. The provenance data can then be accessed via the command line interface of noWorkflow and there are also some analyses features added.\cite{c9e0604becba42af96a9cb0a6f60018b}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=1]{noworkflow}
-	\caption{Architecture of noWorkflow \cite{c9e0604becba42af96a9cb0a6f60018b}}
-	\label{fig:noworkflow} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-The noWorkflow framework got improved over time so that in \cite{Pimentel2016TrackingAA} an additional feature of tracking the evolution of the experiment execution. It adds the possibility to compare different trials of an experiment and to visualize the history of past executions. In \cite{Pimentel:2016:FPC:3090188.3090214} the fine-graned provenance tracking got added to noWorkflow, so that the execution of the python script can be viewed of a set of execution lines. It also adds a visualization of all called functions with some limitations on multiple function calls in one line, dictionaries and lists. In \cite{69bac1252a684629baa43b48e350068d} the provenance capturing of noWorkflow in combination of yesWorkflow, which gatheres information about the provenance using comments and annotations (see \cite{192094}), got combined. The combination enabled a broader provenance information, querying and visualizations. 
-In this thesis noworkflow is used in the first attempt of the implementation of the context model capturing described in section \ref{Implementation:Noworkflow Implementation}.
-
-\section{Data Identification}\label{Data Identification}
-Data identification and citation is a main concern in many computer relying sciences. For the aim of this work, the input data is a key element of the capturing. If the input data can not be identified correctly, the capturing of the process on it does not make sense. Therefore the identity of the data has to be guaranteed. The Research Data Alliance (RDA) presents general solutions to achieve data identifications. There are 14 recommendations defined to achieve the identification of an exact version and subset of input data. The recommendations are independent of the type of data and database.  In the following the most important recommendations for this thesis get briefly introduced.\cite{rauber2016identification}
-
-\begin{itemize}
-	\item \textbf{R1: Data Versioning} 
-	\todo{explain in more detail}
-	Changes on a data record needs to result in new versions of the data record and the persistence of the deprecated data records. All data record versions need to be identifiable and accessible. 
-	\item \textbf{R2: Timestamping} 
-	All changes to the database have to be comprehensible via timestamps. So every time changes are applied to the data, there needs to be a timestamp when it happened. 
-	\item \textbf{R3: Query Store Facilities} 
-	There needs to be a query store implemented at the data provider to store queries including their metadata to be able to re-execute them in the future. The database has to store, according to \cite{rauber2016identification} the following things: 
-	\begin{itemize}
-		\item The original query as posed to the database
-		\item A potentially re-written query created by the system (R4, R5)
-		\item Hash of the query to detect duplicate queries (R4)
-		\item Hash of the result set (R6)
-		\item Query execution timestamp (R7)
-		\item Persistent identier of the data source
-		\item Persistent identier for the query (R8)
-		\item Other metadata (e.g. author or creator information) required by the landing page (R11)
-	\end{itemize}
-	
-\end{itemize}
-
- The recommendations in the context of the thesis are defined in more detail in section \ref{Design:Data Identification}. 
-
-\section{EODC Back End}\label{EODC Back End}
+\subsection{EODC Back End}\label{EODC Back End}
  
  The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses some virtualisation technologies for the job executions. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer of accessing the back end is build with the python library Flask. Even though EODC has a lot of already processed data, so satellite data that is already processed in a certain way, in OpenEO only the data from Sentinel 2 is proved by the time this thesis is written. So the underlying data are satellite images provided by the European Space Agency (ESA) from the raw data coming directly from the Sentinel 2 satellite. 
  \todo{Maybe add more detailed view on the Setup}
  \todo{Like: Database structure, Process Graph -> Processing}
+ \todo{Overview --> data ID - Code ID - Output Hash}
 \chapter{Design}\label{Design}
 In this chapter the design of the provenance capturing gets described. First the architecture of the OpenEO project gets described further. Especially the job execution path throughout the parts of OpenEO gets described, because it is the key element for the context capturing. Therefore the back end, where the jobs get executed get described in more detail. After that the context model gets presented. 
 
