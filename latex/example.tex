@@ -284,13 +284,13 @@ The GPF consists of a set of 20 recommendations for geoscientists regarding data
 \subsection{Climate Change Centre Austria (CCCA)}
 The Climate Change Centre Austria (CCCA) is a research network for Austrian climate research online available since 2016 and has 28 members. The main tasks are the provision of climate relevant information, the inter-operable interfaces and long term archiving of scientific data. In 2017 the NetCDF data citation was added to the project. The set up of the data service and the technology used in the background is similar to the set up of the EODC back end. Therefore the process of enabling data identification was similar to this thesis. The concept used for gaining data citation was the RDA recommendations defined in \cite{rauber2016identification} and can be viewed in figure \ref{fig:ccca}. The main difference is the more complex architecture of the CCCA service compared to the EODC back end used for the OpenEO project. File formats also differ, because EODC uses GeoTiff instead of NetCDF at their back end. Nevertheless the concept of enabling data identification is similar in both projects.\cite{ccca} CCCA is Open-source and available at GitHub, see \cite{ccca_github}.  
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.25]{ccca}
-	\caption{Concept of the CCCA NetCDF Cata Citation \cite{ccca}}
-	\label{fig:ccca} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[scale=0.25]{ccca}
+%	\caption{Concept of the CCCA NetCDF Cata Citation \cite{ccca}}
+%	\label{fig:ccca} % \label has to be placed AFTER \caption (or \subcaption) to produce %correct cross-references.
+%\end{figure}
+\todo{add ccca figure to git}
 
 \section{Existing Tools}\label{Existing Tools}
 In this section tools that are designed to solve similar problems like this thesis get summarized and described further. There is also an explanation why the specific tool was not used for the solution of this thesis. 
@@ -358,11 +358,11 @@ In figure \ref{fig:vframework} there is an overview of the VFramework concept.
 \section{Data Identification}\label{Data Identification}
 Data identification and citation is a main concern in many computer relying sciences. For the aim of this work, the input data is a key element of the capturing. If the input data can not be identified correctly, the capturing of the processing on it does not gain useful information. Therefore the identity of the data has to be guaranteed. The Research Data Alliance (RDA) presents general solutions to achieve data identifications. There are 14 recommendations defined to achieve the identification of an exact version and subset of input data. The recommendations are independent of the type of data and database.  In the following the most important recommendations for this thesis get briefly introduced.\cite{rauber2016identification}
 \begin{itemize}
-	\item \textbf{R1: Data Versioning}
+	\item \textbf{R1: Data Versioning} \\
 	Changes on a data record needs to result in new versions of the data record and the persistence of the deprecated data records. All data record versions need to be identifiable and accessible. 
-	\item \textbf{R2: Timestamping}
+	\item \textbf{R2: Timestamping} \\
 	All changes to the database have to be comprehensible via timestamps. So every time changes are applied to the data, there needs to be a timestamp when it happened. 
-	\item \textbf{R3: Query Store Facilities}
+	\item \textbf{R3: Query Store Facilities} \\
 	There needs to be a query store implemented at the data provider to store queries including their metadata to be able to re-execute them in the future. The database has to store, according to \cite{rauber2016identification} the following things: 
 	\begin{itemize}
 		\item The original query as posed to the database
@@ -374,76 +374,86 @@ Data identification and citation is a main concern in many computer relying scie
 		\item Persistent identifier for the query (R8)
 		\item Other metadata (e.g. author or creator information) required by the landing page (R11)
 	\end{itemize}
-	\item \textbf{R4: Query Uniqueness}
+	\item \textbf{R4: Query Uniqueness} \\
 	Since there should not be equal queries with the same result stored at the query store, there needs to be a normalized query that can be directly compared to other queries. Hence there needs to be a programming logic to normalize the queries and to enable their uniqueness.
-	\item \textbf{R5: Stable Sorting}
+	\item \textbf{R5: Stable Sorting} \\
 	The sorting of the resulting data needs to be unambiguous and therefore reproducible.
-	\item \textbf{R6: Result Set Verification}
+	\item \textbf{R6: Result Set Verification} \\
 	To ensure that the resulting data of the query is comparable there needs to be a checksum or hash key of it. 
-	\item \textbf{R7: Query Timestamping}
+	\item \textbf{R7: Query Timestamping} \\
 	There needs to be a timestamp assigned to every query in the query store, which represents the last update of the entire database or the query dependent data of the database.
-	\item \textbf{R8: Query PID}
+	\item \textbf{R8: Query PID}\\
 	Every query record in the query store needs to have a Persistent Identifier (PID). There must not be a query with the same normalized query and the same result checksum. 
-	\item \textbf{R9: Store the Query}
+	\item \textbf{R9: Store the Query} \\
 	The data described in previous recommendations have to be persisted in the query store.
-	\item \textbf{R10: Automated Citation Texts}
+	\item \textbf{R10: Automated Citation Texts} \\
 	To make the citation of the data more convenient for researchers, there shall a generation of the citation text snipped including the query PID.
-	\item \textbf{R11: Landing Page}
+	\item \textbf{R11: Landing Page} \\
 	The PID need to be resolvable in a human readable landing page, where all the data mentioned in the previous recommendations is provided to the scientist.
-	\item \textbf{R12: Machine Actionability}
+	\item \textbf{R12: Machine Actionability} \\
 	Providing an API landing page so that not only humans, but also machines can access the metadata by query re-execution.
-	\item \textbf{R13: Technology Migration}
+	\item \textbf{R13: Technology Migration} \\
 	If the database where the query store is implemented needs to be mi grated to a new system, the queries need to be transferred too and have to be updated according to the new setup.
-	\item \textbf{R14: Migration Verification}
+	\item \textbf{R14: Migration Verification} \\
 	There shall be a service so automatically verify a data and query migration, to prove that the queries in the query store are still correct. 
 \end{itemize}
- The implementation of the recommendations in this thesis are described in section \ref{Implementation:Data Identification}. 
+ The implementation of the recommendations for the purpose of this thesis is described in section \ref{Implementation:Data Identification}. 
 
 \section{OpenEO}\label{OpenEO}
-The OpenEO project contains of three modules, the client modules written in the programming language of the users, the back end drivers that makes it possible for every backend to understand the calls from the clients and the core API that specifies how the communication should take place. So the core API is a standard that the back end providers accepted to implement on their systems. The back end drivers are the translation of the client calls to the back end specific API. This architecture decouples the clients from the back ends so that every client can connect to every back end that applies to the OpenEO core API standard see figure \ref{fig:api2} \cite{openeo}.   
+The OpenEO project contains of three modules, the client module written in the programming language of the users, the back end drivers that enables for every back end to understand the calls from the clients and the core API that specifies how the communication takes place. The core API is a standard that the back end providers accepted to implement on their systems. The back end drivers are the translation of the client calls to the back end specific API. This architecture decouples the clients from the back ends so that every client can connect to every back end that applies to the OpenEO core API standard see figure \ref{fig:api2} . An example of a workflow would be that a scientist wants to run an experiment on the EODC back end and defines the processing with the python client in pure python code.\cite{openeo}   
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{api2}
-	\caption{Overview of the OpenEO architecture. \cite{openeo}}
+	\caption{Overview of the OpenEO architecture. \cite{openeo_github}}
 	\label{fig:api2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
 
-The communication is specified as an OpenAPI description and consists of all RESTful services that can be called at the back ends. Most of the calls are only to receive information about the processes and the data of the specific back end, but there are also endpoints to apply job executions specified by the user. In this thesis the focus lies on the job execution, because this is the core feature of the OpenEO project and needs to be reproducible. In the next chapter the job execution process is described in more detail. \cite{openeo}
-\todo{Explain RESTful and OpenAPI a little bit ... (GET, POST, PUT usw..) -> see new Literature on Google Drive}
-\todo{Explain JSON a little bit -> see new Literature on Google Drive}
+The communication is specified as an OpenAPI description, which is a way of defining RESTful communication in a standardized way. The definition consists of the possible end points at the back end and also the requests and the responses. The whole communication protocol is specified with OpenAPI.\cite{openapi} 
+In the following the relevant RESTful request types in OpenEO and the policy of choosing between them gets introduced.\cite{openeo_github}
+ 
+ \begin{itemize}
+ 	\item \textbf{GET Request} \\
+ 	GET requests are used to retrieve data from the back ends. The functionality is limited to read operations on the data records. \\(e.g. GET /collections returns a list of available collections at the back end.)
+ 	\item \textbf{POST Request} \\ 
+ 	POST requests are used to create new data records at the back end.  \\(e.g. POST /jobs creates a new processing job at the back end.)  
+ 	\item \textbf{PATCH Request} \\
+ 	PATCH requests are used to update an existing record at the back end. \\(e.g. /PATCH /job/{job\_id} modifies an existing job at the back-end but maintains the identifier.)
+ 	\item \textbf{DELETE Request} \\ 
+ 	DELETE requests are used to remove existing data records from the back end. \\(e.g. /DELETE /job/{job\_id} removes an existing job from the back end.)
+ \end{itemize}
 
 \subsection{Job Execution}\label{Job Execution}
-The job execution workflow in OpenEO starts at a client application that let the user define what has to be processed in the specific programming language.
-The main part of the job execution is based on the description of what the back end needs to do with what data. Therefore OpenEO introduces the process graph, which consists of a tree structure describing the processes with their data and the input data identifier, which is back end specific. The process graph is in a JSON format and gets generated by the clients in the background without the users seeing it directly. In figure \ref{fig:process_graph} there is an example of a process graph. 
+The job execution workflow in OpenEO starts at a client application that let the user define what has to be processed in the client specific programming language.
+The main part of the job execution definition is based on the description of what input data shall be used, which filters have to be applied and the processes that should be executed on the data. Therefore, OpenEO introduces the process graph, which is defined as a tree structure describing the processes with their data and the input data identifier. The input data id is back end specific. The process graph has a JSON format and gets generated by the clients in the background without users noticing it directly. In figure \ref{fig:process_graph} there is an example of a process graph. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=1]{process_graph}
-	\caption{Proof of Concept process graph of the EODC back end for the OpenEO core API version 0.0.2 . \cite{openeo}}
+	\caption{Proof of Concept process graph of the EODC back end for the OpenEO core API version 0.0.2 . \cite{openeo_api_desc}}
 	\label{fig:process_graph} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{Maybe change picture to 0.3.0 version if that is used in the future}
-The back ends interpret the process graph from inside out. Inside figure \ref{fig:process_graph} the element in the middle defines the input data identifier in the \"imagery\" block, with the \"product\_id\". In this case the \"s2a\_prd\_msil1c\" is the chosen input data identifier. Now the back end goes one step up in the hierarchy of the process graph and calls the process \"filter\_bbox\" with the parameters \"left\", \"right\" and so on using the input data. The output data of the previous process is also the input data of the next process. It is possible that the input of a process is a whole new process graph. In figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, so how it gets interpreted. 
+
+\todo{Maybe change picture to 0.3.0 version if that is used in the future and update the text below}
+The back ends interpret the process graph from inside out. In figure \ref{fig:process_graph} the element in the center of the process graph defines the input data identifier in the "imagery" block, with the "product\_id". In this case the "s2a\_prd\_msil1c" is chosen  as input data identifier. After reading the input data id, the back end iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "left", "right" and so on. Every process beginning with "filter\_" is a filter operation that specifies the selection of the input data. The output data of the previous process is the input data of the next process. In figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, so the order of how it gets executed. 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{process_graph_diagram}
-	\caption{TODO figure number combine the two figures? -> maybe use official ones ...}
+	\includegraphics[width=\textwidth]{backend_pg}
+	\caption{Action chain of the back end after receiving the process graph of figure \ref{fig:process_graph}}
 	\label{fig:process_graph_diagram} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{make new diagram}
-There are two different kinds of process executions depending on the back ends capabilities, synchronous and asynchronous calls. Synchronous calls are directly executed after they got received from the back end and the user that sends the process graph has to wait until the job is finished. For example on the python client the program waits after sending the process graph to the back end until the back end returns the result and the results are directly returned to the user. On the asynchronous call the user sends the process graph, but it does not get executed until the user starts the execution on the back end through an additional endpoint. When the processing is finished the user can download the result at another endpoint of the back end. For the asynchronous calls there is also the possibility to subscribe to a notification system on the backend, so that the user gets notified when the job execution finishes.     
-The processes are defined at the OpenEO core API and therefore independent from the back end they get called, other than the data identifier, which is different for every back end.  
+
+There are two different kinds of process executions depending on the back ends capabilities, synchronous and asynchronous calls. Synchronous calls are directly executed after the back end receives them and the user has to wait until the job is finished. For example on the python client the program waits after sending the process graph to the back end until the back end returns the result, which is directly returned to the user. An asynchronous call does not get executed until the user starts the execution on the back end through an additional endpoint call. When the processing is finished the user can download the result at another endpoint of the back end. For asynchronous calls there is also the possibility to subscribe to a notification system on the back end, so that the user gets notified when the job execution finished.     
+The processes are defined at the OpenEO core API and therefore independent of the back end they get called at, other than the data identifier, which is different for every back end.  
 \\
-The previous example shows a process graph that only uses predefined processes and data. Within the OpenEO project there is the possibility to define individual processes and execute them on the back end. In the project they are called “user defined functions” and are at the writing of this thesis not well defined, but are basically code written by the OpenEO user that gets sent to the back end and executed at a secure environment. The user can define processes and can run them with the data provided at the back end, using the infrastructure of the back end. Every back end has to individually define what the restrictions on user defined functions are. 
-There is also the possibility to upload files to the back end that can be used within the process graph. The user can upload the file through an explicit endpoint of the back end. After the upload finished, the file can be referenced inside the process graph.\cite{eodc_github}
+The previous example shows a process graph that only uses predefined processes and data. Within the OpenEO project there is the possibility to define individual processes and execute them on the back end. In the project they are called “user defined functions” and are at the writing of this thesis still not well-defined, but are basically code written by the OpenEO user that gets sent to the back end and executed there at a secure environment. The user can define processes and can run them with the data provided at the back end, using the infrastructure of the back end. Every back end has to individually define what the restrictions on user defined functions are. \cite{eodc_github}
 
 \subsection{Back end Overview}\label{Back end Overview}
-Even though the back ends implement the OpenEO core API standard, they are still very diverse behind the abstraction layer. Some back ends have already an API, where the OpenEO calls have to be adapted to. There are 7 partners within the OpenEO project that are implementing a back end driver. The back ends have to manage the translation of the process graph to the actual code that executes the defined process chain. Also the billing of the users is completely different on every back end. 
-
+Even though the back ends implement the OpenEO core API standard, they are still diverse behind this abstraction layer. Some back ends have already an API, where the OpenEO calls have to be adapted to. There are 7 partners within the OpenEO project that are implementing a back end driver. The back ends have to manage the translation of the process graph to the actual code that executes the defined process chain. The billing of the users can be completely different on every back end. In table \ref{Tab:backends} there is an overview of all contributing OpenEO back ends and the related GitHub repository. 
 \begin{table}[]
+	\caption{List of all back end providers of the OpenEO project}
 	\begin{tabular}{l|l}
 		\textbf{Organisation} & \textbf{GitHub}  \\ \hline
 		EODC & \url{https://github.com/Open-EO/openeo-openshift-driver} \\ \hline 
@@ -455,62 +465,64 @@ Even though the back ends implement the OpenEO core API standard, they are still
 		Sinergise & \url{https://github.com/Open-EO/openeo-sentinelhub-driver} \\ \hline
 		EURAC & \url{https://github.com/Open-EO/openeo-wcps-driver} \\ 
 	\end{tabular}
+\label{Tab:backends}
 \end{table}
 
 \subsection{EODC Back End}\label{EODC Back End}
  
- The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses some virtualisation technologies for the job executions. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer of accessing the back end is build with the python library Flask. Even though EODC has a lot of already processed data, so satellite data that is already processed in a certain way, in OpenEO only the data from Sentinel 2 is proved by the time this thesis is written. So the underlying data are satellite images provided by the European Space Agency (ESA) from the raw data coming directly from the Sentinel 2 satellite. 
- \todo{Maybe add more detailed view on the Setup}
- \todo{Like: Database structure, Process Graph -> Processing}
- \todo{Overview --> data ID - Code ID - Output Hash}
+ The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses virtualisation technologies for the job execution. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer for accessing the back end is accomplished by the python library Flask. Even though EODC has a lot of already processed data, it only uses data from Sentinel 2 and Sentinel 1 in OpenEO. The provided data are satellite images from the European Space Agency (ESA), which gets the raw data coming directly from the Sentinel satellites. \\
+ The data management of EODC is file-based, so every image data is stored in a unique directory and filename combination. Meta-data is provided at via a PostgreSQL database including the PostGIS\footnote{https://postgis.net} plug-in. The provided query tool for EODC users is the OGC standard interface CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html}. In figure \ref{fig:eodceer} an overview of the EODC meta-database is displayed. The structure is retrieved from the github repository of the EODC back end \cite{eodc_github}, where every database entity is defined. Every Process entity can have parameters desribed by the Parameter entity. The ProcessNode is representing one node in a process graph and is therefore related to exactly one ProcessGraph entity. Every Job has a related process graph, there may be jobs that use the same process graph, but in the current set up they are persisted both in the database.
+ \todo{Change github link and text if switch to version 0.3.0}
+ \begin{figure}[h]
+ 	\centering
+ 	\includegraphics[width=\textwidth]{eodc_eer}
+ 	\caption{Overview of the EODC meta-database structure.}
+ 	\label{fig:eodceer} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+ \end{figure}
+ 
 \chapter{Design}\label{Design}
-In this chapter the design of the provenance capturing gets described. First the architecture of the OpenEO project gets described further. Especially the job execution path throughout the parts of OpenEO gets described, because it is the key element for the context capturing. Therefore the back end, where the jobs get executed get described in more detail. After that the context model gets presented. 
+In this chapter the design of the provenance capturing in the OpenEO project gets described. The aim of this chapter is to explain the general concept of how to gain reproducibility in the OpenEO project. The chapter is structured in six parts. In the first part an overview of the concept gets presented. In the next three sections the main components presented at the overview are described in detail. These are the Data Handler, the Job Capturing and the Result Handler. The next section defines the resulting context model. In the last section of this chapter defines the user interfaces needed to use the data of the context model from an OpenEO user perspective. The following chapter \ref{Implementation} shows a proof of concept implementation of the design. 
 
-\todo{simpler overview --> data ID - Code ID - Output Hash}
+
+\section{Overview}\label{Design:Overview}
+In this section an overview of the concept is presented and in figure \ref{fig:overview} visualized. In this figure the workflow that every OpenEO  back end driver needs to implement in the white components. The green elements in the diagram are the proposed extensions of this thesis design. The typical job execution work-flow is described in the following steps.
+
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{overview}
+	\includegraphics[scale=0.6]{design_overview}
 	\caption{Overview of the Design}
-	\label{fig:overview} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+	\label{fig:overview} 
 \end{figure}
 
-\section{Data Identification}\label{Design:Data Identification}
-\todo{maybe inside of Context Model}
-\todo{Explain that it has to be implemented at the back end and reference to the implementation, maybe explain the additiones to the coreAPI needed}
-
-\begin{itemize}
-	\item \textbf{R1: Data Versioning}
-	\item \textbf{R2: Timestamping}
-	\item \textbf{R3: Query Store Facilities }
-	\item \textbf{R4: Query Uniqueness}
-	\item \textbf{R5: Stable Sorting}
-	\item \textbf{R6: Result Set Verification}
-	\item \textbf{R7: Query Timestamping}
-	\item \textbf{R8: Query PID}
-	\item \textbf{R9: Store the Query}
-	\item \textbf{R10: Automated Citation Texts}
-	\item \textbf{R11: Landing Page}
-	\item \textbf{R12: Machine Actionability}
-	\item \textbf{R13: Technology Migration}
-	\item \textbf{R14: Migration Verification}
-\end{itemize}
-
-
-\section{Context Model}\label{Design:Context Model}
-In this section the concept of the provenance capturing is described. The aim of the capturing is to be easy to implement on the OpenEO back ends, but also powerful enough to make the reproduction of the workflows possible. The whole capturing process can be structured in three thematic parts.
-
-\begin{enumerate}
-	\item \textbf{Data identification} \\
-	This part describes the needed implemented data identification recommendations based on the RDA guidelines (see \cite{rauber2016identification}). To make the processes theoretically reproducible the input data has to be identifiable. So different versions of the same data has to be distinctable and data needs to be persisted or specified in a way that it can be recreated. A description of all steps necessary for the OpenEO back ends can be viewed at section \ref{Design:Data Identification}.
-	\todo{maybe remove back end provenance and merge it with Job dependent provenance}
-	\item \textbf{Back end provenance} \\
-	This part describes the provenance of the back end, that is not depending on a job execution. There has to be an automated process running on the process machine to capture every change that influences the execution of OpenEO jobs. A description of more detail can be viewed on section \ref{Design:Back end provenance} .     
-	\item\textbf{Job dependent provenance} \\
-	This part contains the provenance of a job execution. It consists of the workflow context and the data related to one specific job. This in combination of the back end provenance is the full provenance data to make an OpenEO job theoretically re-executable.   
-	\item \textbf{User information} \\
-	This part consists of all possibilities that provides users with information they want to know about the provenance of the back end and the provenance of the job execution. The aim is to provide users with information that makes them easier to choose between back ends. On the other hand the user shall be able to retrieve the provenance data of the job in a way that the back end has no security risks. This part is not directly part of the context model, but of the implementation on the user interface. 
+ \begin{enumerate}
+	\item \textbf{OpenEO Client} \\
+	The user defines the input data, the filter operations and the processes that need to be executed at the back end via the OpenEO client. Then the user orders the job to be executed, therefore the client creates a process graph. The user identification and the process graph is sent via the RESTful endpoint defined in the OpenEO coreAPI to the back end driver.  
+	\item \textbf{Data Query} \\ 
+	The Data Query component receives the process graph and parses the data identifier and the filter operations out of it to query for the input data records needed for the job. These are forwarded to the Process Execution component.  
+	\item \textbf{Process Execution} \\
+	The Process Execution component receives the process graph and the input data from the Data Query component. It parses the processes from the process graph and executes them in the order of appearance. After every process defined in the process graph got executed, the resulting data is forwarded to the Result Handling component.   
+	\item \textbf{Result Handling} \\ 
+	The Result Handling component receives the results from the Process Execution component and persists all meta-data about the job and the result. In the meantime the resulting data is sent back to the OpenEO client, if the job was not a batch job. If it is a batch job the user has to actively order the results from the back end.  
 \end{enumerate}
 
+To make the whole workflow reproducible, the single components have to be identifiable. Hence, the following elements get introduced as additions to the back end.
+  
+ \begin{itemize}
+	\item \textbf{Query Handler} \\
+	The Query Handler component is responsible for applying data identification to the back end. The query and the resulting data generated by the Data Query component needs to be persisted and identifiable by a Persistent Identifier (PID). The Query Handler is described in more detail in section \ref{Design:Data Identification}.     
+	\item \textbf{Job Capturing} \\ 
+	The Job Capturing component is responsible for enable code identification of the used processing at the back end. Therefore, a PID of the code used for the processing has to be introduced. In addition, meta-data of the job execution environment gets captured, to gain feedback information for the users. The Job Capturing component is described in more detail in section \ref{Design:Job Capturing}.
+	\item \textbf{Result Handler} \\
+	The Result Handler component is responsible for creating a comparable result checksum or hash. The data created by the OpenEO back end can be too big to be persisted in the future, hence there need to be a checksum or hash to be at least capable of confirming equal results. The Result Handler component is described in more detail in section \ref{Design:Result Handler}.   
+	\item \textbf{Context Model} \\ 
+	The Context Model is not a component, but a data set that consists of all the meta-data mention in the previous components. One context model is related to one job execution. The details about the Context Models can be found at section \ref{Design:Context Model}. 
+\end{itemize}
+
+\section{Query Handler}\label{Design:Data Identification}
+The input data of the processing is crucial for the outcome of the job execution. Even though the process graph already contains an identifier for the input data that has to be unique for the specific back end, changes to this data might not result in a new identifier. So jobs called later in time might use another version of the input data than the previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying data identification. In the design chapter it is assumed that the back ends preserve the data as described in \ref{Design:Data Identification}. The Query Handler is the module where the data persistence is implemented and depends highly on the structure and architecture of the back end. Therefore, no common definitions can be made for all back ends in this section. In chapter \ref{Implementation} there is a proof of concept implementation on the EODC back end.  
+
+\section{Job Capturing}\label{Design:Job Capturing}
+The aim of this section is to describe the job execution capturing and a description of data that shall be captured.   
 \subsection{Back end provenance}\label{Design:Back end provenance}
 \todo{Maybe merge it with Job dependent provenance}
 The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent from a job execution, so does not change regardless of how much jobs were processed. It can only change from inside of the back ends by their maintainers. In the OpenEO project there are a great variety of different back end providers with very different setups, so the challenge of this part is to make it as simple and generic as possible. The data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following data gets suggested to be the minimal set of static provenance data that has to be captured. 
@@ -545,40 +557,19 @@ In this section the job dependent provenance of the context model gets described
 
 The single parts of the capturing are described more in detail in the following sections. 
 
-\subsubsection{Input Data}\label{Design:Input Data}
-The input data of the processing is crucial for the outcome of the process graph. Even though the process graph already contains an identifier for the input data that has to be unique for the specific back end, changes to this data might not result in a new identifier. So jobs called later in time might use another version of the input data than the previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying a data version, for this context model it is assumed that the back ends preserve the data as described in \ref{Design:Data Identification}. Nevertheless, the current core API version (v0.0.2) is not capable of letting the user choose, which version of data the user want to use. Hence, there has to be an addition to the process graph so that product identifier has an additional time-stamp. So every input data identifier has now a time-stamp for when the data was retrieved. The meaning of the time-stamp is to tell the back end that the user wants to use the data at the time of the time-stamp. This gives the back ends the possibility to design their own strategy of applying a version to the data. It has to be persisted, which version of the data was available on what date and time. This leads to the following data entries that have to be captured regarding input data.
-
-\textbf{J1:  Source Input Data Identifier}
-The source data identifiers used in the process graph, so every identifier of the “product” part of the process graph, needs to be identified by a version of the input data. The query store described in section \ref{Design:Data Identification} provides the back end with an identifier (PID) that has to be used as the input data identifier in the context model.
 
 
 \subsubsection{Process Data}\label{Job:Process Data}
 In this section the capturing of the process itself gets described. As mentioned above the process is described at the process graph, but to be certain that the same process id results in the same code, the code has to be captured. So the code running the processing has to be captured and has to result in a signature that can be compared to other executions. An example of doing so is to hash the entire resulting code. 
 The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. So the environment of the code and information about the code environment has to be added to the context model. If there are any docker image, where the job is running that is not independent on the process graph has to be captured. The programming language, its version and its used packages has also to be captured and added to the job context model. To every process executed also the start time and end time has to be captured as a timestamp. So this leads to the following capturing entries in the context model.
 
-\textbf{J2: Process Code Identifier}
-The executed  code for the process has to be identifiable, therefore there has to be an id of the code. The OpenEO project is an OpenSource project and the back end provider have the used code at the Github repository, so the link to the github repository with the currently checked out commit can be used as the identifier. 
 
-\textbf{J3: Programming Language}
-The programming language of the code has to be captured. Name and version used has to be captured and added to the context model.
 
-\textbf{J4: Installed packages of programming language}
-To identify the environment of the code execution, the installed packages of the programming language has to be captured and added to the context model. The version of the packages have also to be included in the context model. For example in python the installed models have to be added with their versions to the context model.
-
-\textbf{J5: Start and End time of process execution}
-On the beginning of the process execution a time-stamp shall  be created and at the end of the process execution. These timestamps have to be persisted in the context model.
-
-\subsubsection{Output Data}\label{Job:Output Data}
-The output data of the processing has to be captured as well. In the OpenEO project the results can be rather big, that is why a simple generated hash value of the output result is enough in this context model. The output data does not have to be identifiable within the scope of this thesis, but just comparable with other executions. Therefore a hash of the output data is sufficient. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. 
-
-\textbf{J6: Result Hash}
-The output result of the process need to be verifiable and therefore need to be persisted. An easy way to achieve this is to take a hash over the sorted output files. 
 
 \subsubsection{Back end provenance}\label{Job:Back end provenance}
 The back end provenance described in \ref{Design:Back end provenance} has to be added to the job context model. Over time the back end provenance gets updated so that every job has to keep the back end configuration at the time of the execution. There are two possible solutions to achieve this. First the  identifier of a specific version of the back end gets added to the context model. In this case the data of the back end provenance versions have to be persisted and accessible. The second solution is to put the whole back end provenance of the current version into the job execution context model.
 
-\textbf{J7: Back end provenance} 
-The version of the back end provenance during the job execution. It is recommended that  the whole back end provenance gets added to the context model.
+
 
 \subsubsection{Benchmarking Mode}\label{Job:Benchmarking}
 
@@ -591,10 +582,36 @@ To make the comparison of different execution behaviors more informative, the gr
 	\caption{Design Overview of capturing the job context model in bench marking mode.}
 	\label{fig:design_overview} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-That is how the benchmarking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
+\todo{update the picture}
+That is how the bench marking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
 
-\subsection{User Interface}\label{Design:User Interface}
-\todo{should not be part of the context model section}
+\section{Result Handler}\label{Design:Result Handler}
+The output data of the processing has to be captured as well. In the OpenEO project the results can be rather big, that is why a simple generated hash value of the output result is enough in this context model. The output data does not have to be identifiable within the scope of this thesis, but just comparable with other executions. Therefore a hash of the output data is sufficient. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. 
+
+
+ 
+\section{Context Model}\label{Design:Context Model}
+
+\textbf{J1: Input Data Persisted Identifier}
+In the context model 
+\textbf{J2: Process Code Identifier}
+The executed  code for the process has to be identifiable, therefore there has to be an id of the code. The OpenEO project is an OpenSource project and the back end provider have the used code at the Github repository, so the link to the github repository with the currently checked out commit can be used as the identifier. 
+
+\textbf{J3: Programming Language}
+The programming language of the code has to be captured. Name and version used has to be captured and added to the context model.
+
+\textbf{J4: Installed packages of programming language}
+To identify the environment of the code execution, the installed packages of the programming language has to be captured and added to the context model. The version of the packages have also to be included in the context model. For example in python the installed models have to be added with their versions to the context model.
+
+\textbf{J5: Start and End time of process execution}
+On the beginning of the process execution a time-stamp shall  be created and at the end of the process execution. These timestamps have to be persisted in the context model.
+\textbf{J6: Result Hash}
+The output result of the process need to be verifiable and therefore need to be persisted. An easy way to achieve this is to take a hash over the sorted output files.
+\textbf{J7: Back end provenance} 
+The version of the back end provenance during the job execution. It is recommended that  the whole back end provenance gets added to the context model.
+
+\section{User Interface}\label{Design:User Interface}
+
 In this section the information for the users and how it is provided gets described. The capturing described in the previous sections consists of  information about the back ends that shall not be completely passed to the users in detail. For example it can be a security risk to provide specific programming language packages. On the other hand the users need to be able to see the differences of job executions and get environment information about the backends. Therefore there has to be a filter on which data can be shown to the user and what not. Every captured information is also not necessarily interesting for the users. Data that is not secure to the user has to be defined by the different back ends themselves. The OpenEO project has a very diverse set of back ends and every one has an unique company security guideline. The important thing is that all of the information has to be captured and taken into account for the comparisons and the result of the comparisons have to be open for users.
 Provenance information has to be provided to the user. Therefore there have to be additions to the core api specification. Additional endpoints for the users to get information about the back end has to be created in the Core API, back end and client. The following points summarize the set of needed additions. 
 
@@ -607,23 +624,9 @@ There is already an endpoint to get detailed information about the job status. B
 \textbf{U3: Comparing two Jobs}
 The API has to add an end point for making it possible to compare two different jobs. There does not exist an endpoint for this in the current(version 0.0.2) core API specification. The response of the comparison request consists of the differences in the context model between two jobs. 
 
+Nevertheless, the current core API version (v0.0.2) is not capable of letting the user choose, which version of data the user want to use. Hence, there has to be an addition to the process graph so that product identifier has an additional time-stamp. So every input data identifier has now a time-stamp for when the data was retrieved. The meaning of the time-stamp is to tell the back end that the user wants to use the data at the time of the time-stamp. This gives the back ends the possibility to design their own strategy of applying a version to the data. It has to be persisted, which version of the data was available on what date and time. This leads to the following data entries that have to be captured regarding input data.
 
-\section{Overview of Changes}\label{Design:Overview of Changes}
-In this section the changes described in this chapter get summarized and assigned to the parts of OpenEO responsible for the tasks.
-\todo{Make lists in the sections for better readability}
-\subsection{OpenEO back end}\label{Design:OpenEO back end}
-The openeo back ends need to implement the job dependent capturing as described in the section \ref{Design:Job dependent provenance} and implemented in section \ref{Implementation:Job dependent provenance}. The job dependent capturing is recommended to be implemented in the same programming language as the back end provider uses. The advantage of this is that the usage of the programming language is maintained anyway by the back ends to preserve the functionality of the processes and if the back end switches to a different location the setup of the capturing tool needs no further effort. 
-The back end also need to run the job independent capturing described in section \ref{Design:Back end provenance}. This has to be run in a cron job or other automation tools so that the changes get notices by the tool. In section \ref{Implementation:Back end provenance} there is also an implemented tool doing so. 
-In addition the backends need to implement the endpoints changes and additions of the OpenEO core API described in the next section.
-\todo{add data identification changes}
-\subsection{OpenEO core API}\label{Design:OpenEO core API}
-The core API needs to add the endpoint for the version retrieval (e.g. at /version) end point. It is also possible to extend an existing endpoint for this purpose. 
-There needs also an additional endpoint for comparing two different jobs. 
-The process graph shall be extended by a timestamp to the product element so that it is possible to access deprecated data on the back ends.
-\subsection{OpenEO Client}\label{Design:OpenEO Client}
-The OpenEO clients need to implement the changes described above in the core API additions. In the OpenEO client the additional retrieved data needs to be visualized for a better user understanding.
 
-\todo{maybe add overview picture}
 
 \chapter{Implementation}\label{Implementation}
 In this chapter the prototype of the concept described in \ref{Design} gets presented on the EODC back end. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the implementation. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One client and one of the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis and for the back end the EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used. Since python is the most used programming styles at the contributing back ends of the OpenEO project these implementations get used, because both of the chosen implementations are using python as the main programming language. So the adaptations described in \ref{Design} are implemented for the usage of the python client with the EODC back end. Both of the implementations are open source and can therefore be used by other backend providers with a similar setup.  
@@ -734,6 +737,7 @@ The context model get persisted as a JSON file in the job execution directory. A
 In figure \ref{fig:job_context_model} there is an example context model of a job execution. It consists of all points described for the context model in the Design section. In the following table there is the mapping between the context model definition defined in section \ref{Design} and key of the JSON context model file. 
 
 \begin{table}[]
+	\caption{Relation of context model definition and JSON context model.}
 	\begin{tabular}{l|l}
 		\textbf{Context Model Definition} & \textbf{JSON Key} \\ \hline
 		\textbf{J1:  Source Input Data Identifier} & input\_data, process\_details \\ \hline
@@ -744,6 +748,7 @@ In figure \ref{fig:job_context_model} there is an example context model of a job
 		\textbf{J6: Result Hash} & process\_details, output\_data \\ \hline
 		\textbf{J7: Back end provenance} & backend\_env \\ 
 	\end{tabular}
+\label{Tab:contextmodel}
 \end{table}
 
 The mapping described in the table above is implemented by both solution systems. 
@@ -917,11 +922,13 @@ The python implementation adds almost no overhead to the execution. The parsing 
 The python implementation is by far much more efficient when it comes to performance. The main reason is the wrapper around python and the high amount of captured data in the noworkflow solution of data that is not needed in the context of this thesis. In the table below the timings of the proof of concept execution is recorded. The timing in the table is the time between sending the request and getting response from the server about the finished processing. 
 
 \begin{table}[]
+	\caption{Performance comparison between noworkflow and python implementation}
 \centering
 	\begin{tabular}{l|l|l}
 		\textbf{original execution} & \textbf{noworkflow solution} & \textbf{python solution} \\ \hline
 		4069 ms & 11900 ms & 4074 ms \\ 
 	\end{tabular}
+	\label{Tab:noworkflow}
 \end{table}
 
 \subsection{Maintenance and Extensibility}\label{NvsP:Maintenance and Extensibility}
