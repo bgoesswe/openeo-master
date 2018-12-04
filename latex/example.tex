@@ -522,31 +522,32 @@ To make the whole workflow reproducible, the single components have to be identi
 The input data of the processing is crucial for the outcome of the job execution. Even though the process graph already contains an identifier for the input data that has to be unique for the specific back end, changes to this data might not result in a new identifier. So jobs called later in time might use another version of the input data than the previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying data identification. In the design chapter it is assumed that the back ends preserve the data as described in \ref{Design:Data Identification}. The Query Handler is the module where the data persistence is implemented and depends highly on the structure and architecture of the back end. Therefore, no common definitions can be made for all back ends in this section. In chapter \ref{Implementation} there is a proof of concept implementation on the EODC back end.  
 
 \section{Job Capturing}\label{Design:Job Capturing}
-The aim of this section is to describe the job execution capturing and a description of data that shall be captured.   
-\subsection{Back end provenance}\label{Design:Back end provenance}
-\todo{Maybe merge it with Job dependent provenance}
-The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent from a job execution, so does not change regardless of how much jobs were processed. It can only change from inside of the back ends by their maintainers. In the OpenEO project there are a great variety of different back end providers with very different setups, so the challenge of this part is to make it as simple and generic as possible. The data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following data gets suggested to be the minimal set of static provenance data that has to be captured. 
+The aim of this section is to describe the job execution capturing and a description of data that shall be captured. The meta-data provided by the job capturing can be categorized in static and dynamic data. Where static data is defined as not dependent on job properties and dynamic data is defined as job dependent information. In the following two sections the static data (in this thesis called back end provenance) and dynamic data (in this thesis called job dependent provenance) are further described.     
 
+\subsection{Back end provenance}\label{Design:Back end provenance}
+The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent of a job execution, so does not change regardless of how many jobs were processed. It can only change from inside of the back ends by their maintainers. In the OpenEO project there are a great variety of different back end providers with very distinct setups, so the challenge of this part is to make it as simple and generic as possible. The data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following meta-data is suggested for the back end provenance.  
+\todo{Check meta-data after implementation}
+\\
 \textbf{B1: Code Identification}
-Since the project is an open source project and every back end has a github repository were at least the basic setup is stored. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends.  Therefore, at least during the project runtime, every back end provider has a github repository were the code is publically available. This information is added to the back end provenance by saving the git repository url, the used branch, the used commit and local changes to the repository.   
+Since the OpenEO project is open source, every back end has a GitHub repository were at least the basic setup is stored. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends.  Therefore every back end provider has a GitHub repository were the code is public-ally available. This information is added to the back end provenance by saving the git repository URL, the used branch, the used commit and local changes to the repository. This information can be used to identify the used code at the back end.    
 
 \textbf{B2: Used Folders}
-The back end will most probably not only use the github repository for the processing, so that other folders are involved that stores config files or additional code. This information is also crucial for the job execution and therefore needs to be stored. Changes of this directory have to be detected and stored in the context model. Temporary written folders have to be excluded to the capturing to prevent detecting changes that are not important.    
+The back end will most probably not only use the GitHub repository for the processing, so that other folders are involved. For example configuration files may not be persisted in GitHub for security reasons. This information is also crucial for the job execution and therefore needs to be stored. Changes of this directory have to be detected and stored in the context model. Therefore, a checksum or hash key of the additional folders are created and persisted in the context model.     
 
 \textbf{B3: OS and packages}
-The operating system can also have an impact on the processing and so it has to be stored to the context model too. Not only the information about the operating system, but also the installed packages have to be stored in the context model. In a linux based system it is sufficient to store the location where the packages get installed (e.g. /etc). If the whole processing is done in a virtual container the operating system of that container shall be stored. If the whole processing is done in a docker container, the docker description file has to be saved in addition. But only if the docker container description does not change on different input process graphs, otherwise it has to be added to the “job dependent provenance”. 
+The operating system can also have an impact on the processing and so it has to be stored to the context model too. Not only the information about the operating system, but also the installed packages are added to the context model. If the whole processing is done in a virtual container the operating system of that container shall be stored. If the whole processing is done in a docker container, the docker description file can be used for the environment data. 
 
 \textbf{B4: Core API Version}
-The back ends core API version is the version of the OpenEO core API version it is using. In the productive usage of the OpenEO project it can happen, that the versions of the clients and the back ends differ, so that the behavior might not compatible. So the back end server configuration depends on the core API version of OpenEO, hence it shall be added to the context model.
+The back ends core API version is the version of the OpenEO core API it currently is capable of. In the productive usage of the OpenEO project it can happen, that the versions of the clients and the back ends differ, so that the behavior might not be compatible. So the back end server configuration depends on the core API version of OpenEO, hence it shall be added to the context model.
 
 \textbf{B5: Back End Version}
 The captured data described in the previous sections will result in a back end version. The back end version shall be an identifier (e.g. a number) that gets updated on every change of the backend considering the provenance data described above. 
 \\
-To  provide long term stability of the capturing, there shall be a tool to automatically capture the provenance data to the context model. Every change on any of the previously described context data has to be detected automatically and have to result in a new back end version. This can be done by a standalone capturing tool that does not need to have detailed insights into the back end. 
+To  provide long term stability of the capturing, it is a good idea to implement a tool to automatically capture the provenance data and persist it in a back end context model. Every change on any of the previously described back end meta-data has to be detected automatically and have to result in a new back end version.  
 
 
 \subsection{Job dependent provenance}\label{Design:Job dependent provenance}
-In this section the job dependent provenance of the context model gets described. The data captured is tied to an specific job execution, so for every job execution a new context model gets created. The structure of the capturing is using the defined process graph structure of OpenEO. The process graph is already a description of the processes that run at the back end. So sending the same process graph to the same back end again shall result in the same outcome. To assure that the process graph results in the same way of processing the processing itself gets captured. After receiving the job the back end will transform the process graph into code that actually does the processing. %Figure \ref{fig:design_overview_common} shows the structure of the workflow capturing. 
+In this section the job dependent provenance of the context model gets described. The data captured is tied to a specific job execution, so for every job execution a new context model gets created. The structure of the capturing is using the defined process graph structure of OpenEO. The process graph is already a description of the processes that run at the back end. So sending the same process graph to the same back end again shall result in the same outcome. To assure that the process graph results in the same way of processing the processing itself gets captured. After receiving the job the back end will transform the process graph into code that actually does the processing. %Figure \ref{fig:design_overview_common} shows the structure of the workflow capturing. 
 
 %\begin{figure}[h]
 %	\centering
@@ -567,7 +568,7 @@ The way of executing a specific process graph is not only related to the code ru
 
 
 \subsubsection{Back end provenance}\label{Job:Back end provenance}
-The back end provenance described in \ref{Design:Back end provenance} has to be added to the job context model. Over time the back end provenance gets updated so that every job has to keep the back end configuration at the time of the execution. There are two possible solutions to achieve this. First the  identifier of a specific version of the back end gets added to the context model. In this case the data of the back end provenance versions have to be persisted and accessible. The second solution is to put the whole back end provenance of the current version into the job execution context model.
+The back end provenance described in \ref{Design:Back end provenance} has to be added to the job context model. Over time the back end provenance gets updated so that every job need to persist the back end configuration at the time of the execution. There are two possible solutions to achieve this. First the identifier of a specific version of the back end gets added to the context model. In this case the data of the back end provenance versions have to be persisted and accessible. The second solution is to put the whole back end provenance of the current version into the job execution context model.
 
 
 
@@ -646,7 +647,7 @@ Data management on the EODC back end is file system based. All earth observation
 
  
 \todo{Describe solution}
-
+\todo{add adapted ER Diagram}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{implementation_dataidentification}
