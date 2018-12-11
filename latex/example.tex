@@ -613,20 +613,42 @@ The current core API version (v0.0.2) is not capable of letting the user choose,
 \chapter{Implementation}\label{Implementation}
 In this chapter the prototype of the concept described in \ref{Design} gets presented on the EODC back end. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the presented solution. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. Since python is the most common programming language at the contributing back ends of the OpenEO project, these implementations get used. Both of the chosen implementations are using python as their main programming language. The adaptations described in \ref{Design} are implemented for the usage of the python client accessing the EODC back end. Both of the solution implementations are open source and can therefore be used by other back end providers with a similar setup.  
 
-The implementation can be divided in four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance tracking tool that captures data defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
+The implementation can be divided into four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance tracking tool that captures data defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
 
 \section{Data Identification}\label{Implementation:Data Identification}
-\todo{add concept discussed with Andi}
-As defined in section \ref{Design:Data Identification}, implementing the RDA recommendations needs to be done by every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other OpenEO back end provider can use the presented approach as well to enable data identification on their back end setup. 
- 
-\todo{Describe solution}
-\todo{add adapted ER Diagram}
+
+As defined in section \ref{Design:Data Identification}, the RDA recommendations have to be applied to every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other OpenEO back end provider can use the presented approach as well to enable data identification on their back end setup. Some parts of the implementation can be used by all back end providers.\\
+
+\subsection{Query Store}
+The main objective of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identify able and persisted. At the EODC back end the Query Store is realized with two additional tables in the PostGreSQL meta-database. In figure \ref{fig:eer_rda} the EODC database structure from figure \ref{fig:eodceer} is visualized with the proposed additional tables. The added Query table consists of the data specified by the RDA recommendations. The QueryJob table defines the relation between Job and Query. In the current version of the OpenEO core API there is always one input data query related to a job id. In the future there may be the possibility to have more than one input data query related to one job, hence the QueryJob table gets introduced. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{eodc_eer_rda}
+	\caption{Overview of the meta-database of EODC with the new introduced tables (green).}
+	\label{fig:eer_rda} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+
+\subsection{Query Handler}
+
+
+In figure \ref{fig:impldataid} there is an overview of the data identification solution of the EODC back end. The green parts of the diagram are representing the additions proposed in the thesis solution. 
+
+
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{implementation_dataidentification}
 	\caption{Overview of the proposed data identification workflow at the EODC back end}
 	\label{fig:impldataid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
+
+From the Query Generation and Query Execution components of the EODC back end the input data for the Query Handler component gets provided. The process graph is the input process graph received by the back end driver from the client application. The list of result files is the result of the query execution process. The Query Handler consists of the following components.
+  
+
+
+
+
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
