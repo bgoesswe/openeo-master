@@ -101,6 +101,7 @@
 %\setfirstreviewerdata{Affiliation, Country}
 %\setsecondreviewerdata{Affiliation, Country}
 
+\newcolumntype{L}[1]{>{\centering\arraybackslash}l{#1}}
 
 \begin{document}
 
@@ -620,7 +621,7 @@ The implementation can be divided into four independent parts. In the following 
 As defined in section \ref{Design:Data Identification}, the RDA recommendations have to be applied to every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other OpenEO back end provider can use the presented approach as well to enable data identification on their back end setup. Some parts of the implementation can be used by all back end providers.\\
 
 \subsection{Query Store}
-The main objective of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identify able and persisted. At the EODC back end the Query Store is realized with two additional tables in the PostGreSQL meta-database. In figure \ref{fig:eer_rda} the EODC database structure from figure \ref{fig:eodceer} is visualized with the proposed additional tables. The added Query table consists of the data specified by the RDA recommendations. The QueryJob table defines the relation between Job and Query. In the current version of the OpenEO core API there is always one input data query related to a job id. In the future there may be the possibility to have more than one input data query related to one job, hence the QueryJob table gets introduced. 
+The main objective of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identify able and persisted. At the EODC back end the Query Store is realized with two additional tables in the existing PostGreSQL meta-database. In figure \ref{fig:eer_rda} the EODC database structure from figure \ref{fig:eodceer} is visualized with the proposed additional tables. The added Query table consists of the data specified by the RDA recommendations. The QueryJob table defines the relation between Job and Query. In the current version of the OpenEO core API it is only possible to have one input data query used by a job. In the future there may be the possibility to have more than one input data query related to one job, hence the QueryJob table gets introduced. 
 
 \begin{figure}[h]
 	\centering
@@ -629,12 +630,8 @@ The main objective of the RDA recommendations is the implementation of a Query S
 	\label{fig:eer_rda} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-
-\subsection{Query Handler}
-
-
-In figure \ref{fig:impldataid} there is an overview of the data identification solution of the EODC back end. The green parts of the diagram are representing the additions proposed in the thesis solution. 
-
+\subsection{Query Handler Work-flow}
+In figure \ref{fig:impldataid} there is an overview of the data identification solution of the EODC back end. The green parts of the diagram are representing the additions proposed in the thesis solution. The Query Handler itself is an additional python module in the EODC back end that gets called in parallel of the job execution. 
 
 \begin{figure}[h]
 	\centering
@@ -643,12 +640,78 @@ In figure \ref{fig:impldataid} there is an overview of the data identification s
 	\label{fig:impldataid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-From the Query Generation and Query Execution components of the EODC back end the input data for the Query Handler component gets provided. The process graph is the input process graph received by the back end driver from the client application. The list of result files is the result of the query execution process. The Query Handler consists of the following components.
-  
+The Query Generation and Query Execution components of the EODC back end provide the input data of the Query Handler addition. The process graph is the input process graph received by the back end driver from the client application. The list of result files is the result of the query execution process and it comes with the execution time stamp. The Query Handler consists of the following components:
 
+ \begin{itemize}
+	\item \textbf{Process Graph Parser} \\
+	The Process Graph Parser takes the process graph as input and generates the necessary query data out of it. The output consists of the original query, the unique/normalized query, the hash of the normalized query and the persisted data identifier of the query. This information is forwarded to the Query Record Handler. The mentioned data items are described more in detail in the next section.  
+	\item \textbf{Data Handler} \\ 
+	The Data Handler is responsible of creating the result data related information. The output is the hash over the file list result, the execution time stamp and additional meta data like the number of files. Since EODC uses the OGC standard CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} to query the data the sorting of the resulting files is predefined. The order of the files has no impact on the processing and openEO users do not have a possibility to choose a specific sorting, therefore the predefined CSW sorting is used for the hash production. The results of the component is forwarded to the Query Record Handler.    
+	\item \textbf{Query Record Handler} \\
+	The Query Record Handler communicates with the meta database from EODC to see if a Query is already existing. The Work-flow of the Query Record Handler can be viewed in figure \ref{fig:queryhandler_activity}. If the Query Record already exists the Query Record Handler forwards the existing Query PID to the context model, otherwise a new Query PID gets created and persisted in the Query Table. The combination of the result-file hash and the normalized query hash must not have duplicates in the Query table. On saving the Query PID in the job context model, a QueryJob table entry gets created to store the relation between the job id and the Query PID. 
+	
+\end{itemize}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{queryhandler_activity}
+	\caption{Activity diagram of the Query Record Handler component.}
+	\label{fig:queryhandler_activity} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
+\subsection{Query Table Structure}
 
+The Query Table stores the data related to the query instance and additional result and meta data information. In table \ref{Tab:querytable} the stored datasets are displayed. To illustrate the Query data record, example input values are used to explain how the single data entries are generated. Therefore, in figure \ref{fig:processgraph_example} there is an example input process graph.   
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{dataid_example_processgraph}
+	\caption{Example Input process graph of the Query Handler component.}
+	\label{fig:processgraph_example} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\begin{table}[]
+	\caption{Structure of the Query Table in the EODC meta database.}
+	\begin{tabular}{|l|l|l|l|l|l|l|l|}
+	\hline	\textbf{Query} & \textbf{Dataset} & \textbf{Original} & \textbf{Unique} & \textbf{Hash} & \textbf{Hash} &
+		\textbf{Exec.} & \textbf{Add.}  \\ 
+		\textbf{PID} & \textbf{PID} & \textbf{Query} & \textbf{Query} & \textbf{Query} & \textbf{Result} &
+		\textbf{Timest.} & \textbf{Metad.}  \\ \hline
+		\textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} &
+		\textbf{7} & \textbf{8} \\ \hline
+		\textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} \\ \hline
+	\end{tabular}
+	\label{Tab:querytable}
+\end{table}
+
+The elements of the query data set records is described in the following list:
+
+\begin{enumerate}
+	\item \textbf{Query PID} \\
+	The Query PID gets generated by the python library uuid\footnote{https://docs.python.org/3/library/uuid.html}. The library is used to generate unique identifiers and also used in the EODC back end for generating the job ids. Since ids in the EODC back end have always in the beginning a code for the specific entity the id is for (e.g. "jb-" for Job entities) a "Q-" is added to the python UUID. \\
+	\textit{Example: "Q-16fd2706-8baf-433b-82eb-8c7fada847da"}
+	\item \textbf{Dataset PID} \\
+	The dataset PID is the identifier of the satellite in the query part of the process graph. \\
+	\textit{Example: "s1a\_csar\_grdh\_iw"}	    	
+	\item\textbf{Original Query} \\
+	The original query is extracted from the process graph by parsing only the filter elements out of it. Filters in the OpenEO project are, according to the openEO core API (see \cite{openeo_api_desc}), defined by the prefix "filter\_". In addition to the filter operations the data identifier is stored for the query. \\
+	\textit{Example: See the Original Query in figure \ref{fig:processgraph_example}}	 
+	\item \textbf{Unique Query} \\
+	The unique query is the restructured query that is comparable to other unique queries. Since the order of the filters makes no difference in the outcome of the query, the elements of the original query can be alphabetically sorted by the JSON keys to get the unique query. \\
+	\textit{Example: See the Unique Query in figure \ref{fig:processgraph_example}}	  	 	
+	\item \textbf{Unique Query Hash} \\
+	The unique query hash is the output of the SHA-256 hash function with the unique query as its input. \\
+	\textit{Example: "AE7EF888CDEDF8A9A371F3F3A492368E8C14AE8E0BBE92927E09DE0F395D6041"} 
+	\item \textbf{Result Hash} \\
+	The unique query hash is the output of the SHA-256 hash function with the result file list as its input. \\
+	\textit{Example: "565D229FCE4772869343B1F49ABB2F98D4C79345D6A2542D8063BD8203D39434"} 
+	\item \textbf{Execution Time-stamp} \\
+	The execution time stamp is the input parameter of the Query Handler and is just transformed to the data type needed by the data base. 	\\
+	\textit{Example: "2018-10-17 18:03:20,609"}  
+	\item \textbf{Additional Meta-data} \\
+	The additional meta-data column of the Query table can be used by the EODC back end to store additional information about the query execution. In the implementation of this thesis, only the number of output files are persisted in the database. The column is defined as a JSON object of additional information. \\
+	\textit{Example: "\{ "number\_of\_files": 10\}"}    	 
+\end{enumerate}
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
@@ -764,7 +827,39 @@ If the process executed is not the first one and the benchmarking capturing mode
 
 In the following two sections the process of capturing the context model in two different implementation approaches get explained further. First the approach of using noworkflow as capturing tool and second the implementation with plain python and logging. 
 
-\subsection{Noworkflow Implementation}\label{Implementation:Noworkflow Implementation}
+\subsection{Python Implementation}\label{Implementation:Python Implementation}
+The noworkflow tool needs some additional requirements to the back end provider and slows down the processing, because the granularity of the code capturing is much higher than needed. These are the reasons why back end provider might not want to use the provenance tool in a productive server. The EODC implementation proposed by this thesis is an example for other back ends and hence needs to be easy to implement. So another solution for capturing the processing is implemented in pure python. 
+The python solution uses logging messages to transfer the needed data from the process execution program to the capturing tool that reads the logs after the job is finished. This needs no additional python packages and the execution can stay the same. The only changes to the original server implementation is the new logging messages that have to be added to the already existing logging framework at the EODC back end. An overview of the logging and capturing process of this solution can be viewed at figure \ref{fig:python_impl}. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{python_impl}
+	\caption{Overview of the python implementation.}
+	\label{fig:python_impl} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\textbf{J1:  Source Input Data Identifier} \\
+The source input data identifier is the id for the input data and query provided by the EODC query store described in section \ref{Implementation:Data Identification}. 
+
+\textbf{J2: Process Code Identifier} \\
+The job identifier is defined by the back end version, which includes the current state of the locally checked out GitHub repository.\\
+To make a more detailed comparison possible there gets also the hash of the executed code added to the context model. In the python solution a SHA-256 hash gets generated over the whole source code used for the job processing. 
+
+\textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
+The programming language of the EODC back end is python and also the capturing tool is written in python. To list all installed packages in python “pip” can be used. With the python module “pip” the installed python modules can be managed. The EODC back end GitHub repository has a python environment file to automatically install all needed dependencies of python via “pip”. A feature of that tool is the “pip freeze” call, which returns all installed python packages including their versions. This gets translated to a JSON list object and saved to the context model. In addition to this the python version gets captured by the "sys.version" call of the python capturing tool.    
+%\todo{Add programming language to code capturing see sys.version\_info[0]}
+
+\textbf{J5: Start and End time of process execution} \\
+The start and end time of the processes gets captured through the logging of the processes. Every process writes to a logging file the start and end time of the execution. The data is human readable to provide the user retrieving the context model more comfort. The used format is “yyyy-MM-dd hh:mm:ss”. The seconds have three digits for more precise time stamps. All log files are in the job execution folder, where the data gets persisted. After the execution when the context model gets created the timestamps are read from the log file and added to the context model of the processes.
+
+\textbf{J6: Result Identifier } \\
+The result identifier consists in the common capturing mode of the output data of the whole process graph execution. It is a SHA-256 hash of the resulting sorted output files, which are placed in the results folder of the job execution directory. The order id is a counter that starts with zero and increments for each process executed. It describes in which order the processes get executed. It is used in the context model to get feedback about the execution order of the processes.
+
+\textbf{J7: Back end provenance} \\
+The back end provenance is read from the BackendMonit context model JSON file at the back end described in section \ref{Implementation:Back end provenance}. Provenance of the latest back end version gets copied to the context model. The whole back end provenance get included to the context model so that the environment is independent of the persistence of the back end provenance file. 
+
+
+\subsection{Alternative Implementation}\label{Implementation:Noworkflow Implementation}
 \todo{Move to "additional implementation" and describe it a little bit less}
 Noworkflow is a python module used to capture the provenance of a python script execution. The main aim of it is that the program itself does not have to be changed, it only has to be executed with the noworkflow interpreter instead of python. It then automatically creates a provenance database on every execution of the script called “trial”. Every execution creates a new trial. A trail in the past can be re-executed with the same conditions and the trails itself can be easily compared and visualized with noworkflow \cite{c9e0604becba42af96a9cb0a6f60018b}. Noworkflow and its capabilities are described in section \ref{Noworkflow}. 
 For the purpose of the job dependent provenance capturing described in the Design section, only parts of the provenance capturing functionality that noworkflow offers gets used.    
@@ -804,37 +899,6 @@ The result identifier consists in the common capturing mode of the output data o
 
 \textbf{J7: Back end provenance} \\
 The back end provenance is read from the BackendMonit context model JSON file at the back end described in section \ref{Implementation:Back end provenance}. Provenance of the latest back end version gets copied to the context model. The whole back end provenance get included to the context model so that the environment is independent of the persistence of the back end provenance file. 
-
-\subsection{Python Implementation}\label{Implementation:Python Implementation}
-The noworkflow tool needs some additional requirements to the back end provider and slows down the processing, because the granularity of the code capturing is much higher than needed. These are the reasons why back end provider might not want to use the provenance tool in a productive server. The EODC implementation proposed by this thesis is an example for other back ends and hence needs to be easy to implement. So another solution for capturing the processing is implemented in pure python. 
-The python solution uses logging messages to transfer the needed data from the process execution program to the capturing tool that reads the logs after the job is finished. This needs no additional python packages and the execution can stay the same. The only changes to the original server implementation is the new logging messages that have to be added to the already existing logging framework at the EODC back end. An overview of the logging and capturing process of this solution can be viewed at figure \ref{fig:python_impl}. 
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{python_impl}
-	\caption{Overview of the python implementation.}
-	\label{fig:python_impl} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-\textbf{J1:  Source Input Data Identifier} \\
-The source input data identifier is the id for the input data and query provided by the EODC query store described in section \ref{Implementation:Data Identification}. 
-
-\textbf{J2: Process Code Identifier} \\
-The job identifier is defined by the back end version, which includes the current state of the locally checked out GitHub repository.\\
-To make a more detailed comparison possible there gets also the hash of the executed code added to the context model. In the python solution a SHA-256 hash gets generated over the whole source code used for the job processing. 
-
-\textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
-The programming language of the EODC back end is python and also the capturing tool is written in python. To list all installed packages in python “pip” can be used. With the python module “pip” the installed python modules can be managed. The EODC back end GitHub repository has a python environment file to automatically install all needed dependencies of python via “pip”. A feature of that tool is the “pip freeze” call, which returns all installed python packages including their versions. This gets translated to a JSON list object and saved to the context model. In addition to this the python version gets captured by the "sys.version" call of the python capturing tool.    
-%\todo{Add programming language to code capturing see sys.version\_info[0]}
-
-\textbf{J5: Start and End time of process execution} \\
-The start and end time capturing is the same as described in the noworkflow implementation see section \ref{Implementation:Noworkflow Implementation}.
-
-\textbf{J6: Result Identifier } \\
-The result identifier is implemented in the same way as the noworkflow implementation see section \ref{Implementation:Noworkflow Implementation}
-
-\textbf{J7: Back end provenance} \\
-The back end provenance information is implemented in the same way as the noworkflow implementation see section \ref{Implementation:Noworkflow Implementation}
 
 \section{User Interface}\label{Implementation:User Interface}
 The user interface implementation is done by adding endpoints to the existing OpenEO core API version 0.0.2 and applying the additional endpoints to the python client and the EODC back end. The relevant additions defined in section \ref{Design:User Interface} are implemented in the following way:
