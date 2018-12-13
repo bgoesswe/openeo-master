@@ -536,17 +536,17 @@ The scope of this part of the context model is to get the static environment of 
 \\ \\
 \textbf{B1: Code Identification} \\
 Since the OpenEO project is open source, every back end has a GitHub repository were at least the basic setup is stored. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends.  Therefore every back end provider has a GitHub repository were the code is public-ally available. This information is added to the back end provenance by saving the git repository URL, the used branch, the used commit and local changes to the repository. This information can be used to identify the used code at the back end.    
+%\\ \\
+%\textbf{B2: Used Folders} \\
+%The back end will most probably not only use the GitHub repository for the processing, so that other folders are involved. For example configuration files may not be persisted in GitHub for security reasons. This information is also crucial for the job execution and therefore needs to be stored. Changes of this directory have to be detected and stored in the context model. Therefore, a checksum or hash key of the additional folders are created and persisted in the context model.     
+%\\ \\
+%\textbf{B3: OS and packages} \\
+%The operating system can also have an impact on the processing and so it has to be stored to the context model too. Not only the information about the operating system, but also the installed packages are added to the context model. If the whole processing is done in a virtual container the operating system of that container shall be stored. If the whole processing is done in a docker container, the docker description file can be used for the environment data. 
 \\ \\
-\textbf{B2: Used Folders} \\
-The back end will most probably not only use the GitHub repository for the processing, so that other folders are involved. For example configuration files may not be persisted in GitHub for security reasons. This information is also crucial for the job execution and therefore needs to be stored. Changes of this directory have to be detected and stored in the context model. Therefore, a checksum or hash key of the additional folders are created and persisted in the context model.     
-\\ \\
-\textbf{B3: OS and packages} \\
-The operating system can also have an impact on the processing and so it has to be stored to the context model too. Not only the information about the operating system, but also the installed packages are added to the context model. If the whole processing is done in a virtual container the operating system of that container shall be stored. If the whole processing is done in a docker container, the docker description file can be used for the environment data. 
-\\ \\
-\textbf{B4: Core API Version} \\
+\textbf{B2: Core API Version} \\
 The back ends core API version is the version of the OpenEO core API it currently is capable of. In the productive usage of the OpenEO project it can happen, that the versions of the clients and the back ends differ, so that the behavior might not be compatible. So the back end server configuration depends on the core API version of OpenEO, hence it shall be added to the context model.
 \\ \\
-\textbf{B5: Back End Version} \\
+\textbf{B3: Back End Version} \\
 The captured data described in the previous sections will result in a back end version. The back end version shall be an identifier (e.g. a number) that gets updated on every change of the backend considering the provenance data described above. 
 \\
 To  provide long term stability of the capturing, it is a good idea to implement a tool to automatically capture the provenance data and persist it in a back end context model. Every change on any of the previously described back end meta-data has to be detected automatically and have to result in a new back end version.  
@@ -612,7 +612,7 @@ The current core API version (v0.0.2) is not capable of letting the user choose,
 \todo{update version if needed}
 
 \chapter{Implementation}\label{Implementation}
-In this chapter the prototype of the concept described in \ref{Design} gets presented on the EODC back end. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the presented solution. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. Since python is the most common programming language at the contributing back ends of the OpenEO project, these implementations get used. Both of the chosen implementations are using python as their main programming language. The adaptations described in \ref{Design} are implemented for the usage of the python client accessing the EODC back end. Both of the solution implementations are open source and can therefore be used by other back end providers with a similar setup.  
+In this chapter the EODC prototype of the concept described in \ref{Design} gets presented. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the presented solution. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. Since python is the most common programming language at the contributing back ends of the OpenEO project, these implementations get used. Both of the chosen implementations are using python as their main programming language. The adaptations described in \ref{Design} are implemented for the usage of the python client accessing the EODC back end. Both of the solution implementations are open source and can therefore be used by other back end providers with a similar setup.  
 
 The implementation can be divided into four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance tracking tool that captures data defined in section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in \ref{Design:User Interface}.     
 
@@ -714,30 +714,30 @@ The elements of the query data set records is described in the following list:
 \end{enumerate}
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
-The aim of the automated back end provenance computation is to make an easy to implement approach to capture all changes of the back end that have an influence on the back end processing results. In addition to this the implementation generates a back end version automatically on changes at the back end. The proposed tool can be used by every OpenEO back end with a Linux system. It is completely independent of the existing back end services, so it is an additional tool that has to be executed at the back end. In this section the implemented tool is called “BackendMonit”. 
-\todo{Maybe merge with Job provenance}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{backendprov}
-	\caption{Overview of BackendMonit inside of the EODC back end}
-	\label{fig:backendprov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+The aim of the automated back end provenance computation is to implement a simple approach capturing changes on the back end. First only the parts of EODC that have an influence on the back end processing results is defined. In addition to this the implementation generates a back end version automatically, when changes happen at the back end. The proposed tool can be used by every OpenEO back end with a Linux system with some simple configuration changes. It is completely independent of an existing back end driver service, so that it is a separate tool that gets executed at the back end. In this section the tool implemented for the EODC back end is called “BackendMonit”. 
 
-BackendMonit is a stand alone capturing tool that gets called periodically as a cron job (see \cite{crontab}) by the back end hosting machine. EODC uses python as their default programming language on a Debian Linux based system, therefore the capturing tool is written in python and uses linux and debian tools. It is implemented in a way that other linux based back ends can use it to capture back end changes too, with some minor changes. The back end provenance tool uses a command line interface (CLI)  and a configuration file as a parameter. 
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{backendprov}
+%	\caption{Overview of BackendMonit inside of the EODC back end}
+%	\label{fig:backendprov} % \label has to be placed AFTER \caption (or \subcaption) to% produce correct cross-references.
+%\end{figure}
+
+BackendMonit is a standalone tool that gets called periodically via the cron daemon (see \cite{crontab}) by the back end hosting machine. EODC uses python as default programming language on a Linux machine, therefore the capturing tool is written in python and uses linux tools. It is implemented highly configurable, so that other linux based back ends can use it to capture back end changes too. The back end provenance tool uses a command line interface (CLI) and needs a configuration file as an argument. 
 The workflow of running BackendMonit is as follows: 
 
 \begin{enumerate}
 	\item \textbf{Install Requirements} \\
-	BackendMonit requires for the execution a view linux packages. First the tool runs on Python 3.6 hence it has to be installed on the system. There are no additional python packages necessary for it. Another requirement is inotify and dpkg, or any other packet management system for a Linux distribution. The version control system Git is also a requirement on the back end, since every back end has its own GitHub repository it is most probably already installed. 
+	BackendMonit requires for the execution a view linux packages. First the tool runs on Python 3.6, hence it has to be installed on the system. There are no additional python packages necessary for it. The version control system Git is a requirement on the back end, since every back end has its own GitHub repository it may be already installed anyways. 
 	
 	\item \textbf{Setup Configuration File} \\
-	To make BackendMonit adaptable for other systems there needs to be a configuration file to configure the behaviour of it. The tool comes with a default configuration file, which the back end provider has to adapt to the back end. All paths to the tools described in the previous point is in the config file specified. Additionally, the path to the GitHub Repository used for the local back end repository is set in the configuration file and a list of folders, which are used by the back end provider for the execution of jobs, excluding temporary folders.      
+	To make BackendMonit adaptable for other systems a configuration file gets introduced to describe the behavior of it. The tool comes with a default configuration file, which the back end provider adapt to their back end. All paths to the tools described in the previous point is in the config file specified. Additionally, the path to the GitHub Repository used for the local back end repository is set in the configuration file.      
 	     
-	\item\textbf{Starting Service} \\
-	After the configuration is done, BackendMonit is executed in daemon mode, where it starts all processes of inotify to run in the background. To start the tool in daemon mode the "--init" parameter has to be set on execution. 
+	\item \textbf{Starting Service} \\
+	After the configuration is done, BackendMonit gets executed in daemon mode, where it starts inotify (see \cite{inotifywait}) to run in the background. To start the tool in daemon mode the "--init" parameter has to be set on execution. Inotify is used to notify BackendMonit, if the repository of the back end has changed. It writes to a log file all writing operations on the repository.    
 	
 	\item \textbf{Start Cronjob} \\
-	Now that inotify is configured and started as a service, BackendMonit has to check periodically if something changed on back end side. Therefore, the tool needs to be started every minute adding the "--check" parameter. Every time that happens it compares the current state of the back end with the current context model and if it differs it adds a new back end version with all metadata to the context model JSON file. 	 
+	Now that inotify is configured and started as a service, BackendMonit has to check periodically if something changed on back end side. Therefore, the tool needs to be started every minute adding the "--check" parameter. Every minute it compares the current state of the back end with the current context model. If the context models differ it adds a new back end version with all defined meta-data to the context model JSON file. 	 
 \end{enumerate}
 
 \textbf{Provenance Repository} \\
@@ -860,7 +860,7 @@ The back end provenance is read from the BackendMonit context model JSON file at
 
 
 \subsection{Alternative Implementation}\label{Implementation:Noworkflow Implementation}
-\todo{Move to "additional implementation" and describe it a little bit less}
+\todo{Move to "additional implementation" and describe it a little bit less and add the problems or link to the evaluation}
 Noworkflow is a python module used to capture the provenance of a python script execution. The main aim of it is that the program itself does not have to be changed, it only has to be executed with the noworkflow interpreter instead of python. It then automatically creates a provenance database on every execution of the script called “trial”. Every execution creates a new trial. A trail in the past can be re-executed with the same conditions and the trails itself can be easily compared and visualized with noworkflow \cite{c9e0604becba42af96a9cb0a6f60018b}. Noworkflow and its capabilities are described in section \ref{Noworkflow}. 
 For the purpose of the job dependent provenance capturing described in the Design section, only parts of the provenance capturing functionality that noworkflow offers gets used.    
 
@@ -915,20 +915,8 @@ There is already an endpoint to get detailed information about the job status. I
 The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any. So a new one has to be defined in a manner of the existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced. In the url of the request you define the base job id that has to be compared with other jobs. In the body of the request the job ids that the base job shall be compared with are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every job in the request body list. The result consists of for every item in the base job context model the term “EQUAL”, if the item is the same in both jobs, “DIFF”, if the items are not the same in both jobs, or “MISSING”, if the item is in the base job, but not in the target job of the request list. This can occur if the context model was modified in the future and some additional fields of it are not in the context models of the past or in the benchmarking mode if one process graph has mode processes defined than another one. The response consists of the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature was added and in addition there got an visualisation implemented to make the differences of the context models more visible to the users.
 
 \todo{Maybe also add image of REST request \& response.}
-\todo{Add image of the client visualisation}
-
-In addition to the implementations defined before, a translation tool for the context model got implemented. It transforms the job dependent context model into a PROV-O specified file. This is only realized in the benchmarking mode of the back end and it describes the job execution steps. The mapping of the context model to the PROV-O standard is as follows.
-
-\todo{describe PROV-O  export of Context Model}
-\todo{add image of the PROV-O export} 
-
-\section{Implementation Overview}\label{Implementation Overview}
-
-\subsection{Changes to Client}
-\subsection{Changes to Core API}
-\subsection{Changes to Back end}
-\todo{Add the big picture of all components and their additions}
-
+\todo{Add image of the client visualisation --> remove it from thesis ?}
+\todo{Landing Page...}
 \chapter{Evaluation}\label{Evaluation}
 In this chapter the implementation gets tested and evaluated. By running the use cases it gets evaluated if the implementation reaches the aim of the thesis. First the RDA data identification recommendations are checked with the implementation and how they apply or not need to apply. Then the two implementations are compared with each other. The last section in this chapter is testing the in section \ref{Use Cases} defined use cases against the implementation. 
 
