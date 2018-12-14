@@ -1,0 +1,36 @@
+
+  {
+        "backend_version": 2,
+        "api_version": "0.0.2",
+        "git_repos": [
+            {
+                "branch": "master",
+                "commit": "05f4765de578467fef8e1a24404bbd7f77b61c17",
+                "diff": null,
+                "url": "https://github.com/Open-EO/openeo-openshift-driver.git"
+            }
+        ]
+  },
+  {
+        "backend_version": 1,
+        "api_version": "0.0.2",
+        "git_repos": [
+            {
+                "branch": "master",
+                "commit": "1576122009d3a9cd20015e9673156aebd9466237",
+                "diff": null,
+                "url": "https://github.com/Open-EO/openeo-openshift-driver.git"
+            }
+        ]
+  }
+  
+  
+  
+  
+  
+
+
+
+
+
+
