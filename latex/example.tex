@@ -787,7 +787,7 @@ The back end version begins with 1 and gets incremented on every change of the a
 \section{Job dependent provenance}\label{Implementation:Job dependent provenance}
 The capturing of the job dependent data is limited to the job execution modules of the EODC back end. The EODC back end of the release version "0.0.2" transforms the process graph into separate docker containers. For every process in the process graph there is a docker container created that runs python code. The input of the process is the output of the previous process. The first process docker container has the original input data as input value. The result gets into a temporary folder separated by the different process results. Every process has its own temporary output directory until the whole process graph got executed, after that the temporary folders get deleted and only the result is saved and persisted.
 To achieve the job provenance data capturing described in chapter \ref{Design:Job dependent provenance}, the processes have to provide information about the input, output data and the processing itself. Two different implementations were created to achieve the job dependent provenance capturing. The first implementation uses the python code wrapper noworkflow \cite{c9e0604becba42af96a9cb0a6f60018b}. Instead of calling the processing with python, it gets called by the noworkflow wrapper that automatically creates a meta-data database about the python execution. Since the wrapper is capturing the provenance in a very detailed way and highly influences the performance (see \ref{Evaluation:NvsP}), a second more simple implementation was done. This implementation adds the specific information of interest to the logging of the processing and reads the logging files to generate the context model. The second implementation is in plain python and is used for the evaluation of this thesis. As described in the chapter \ref{Design:Back end provenance} the programming language of the back end shall be used for the implementation of the capturing tool.  
-
+\todo{Add Figure of the Job capturing component and the output hash component}
 \subsection{Provenance Repository}\label{Implementation:Provenance Repository}
 There is a context model created for each executed job. If the job gets re-executed, the context model gets replaced by the new context model. The job re-execution is internally handled as a new job with the same process graph. The functionality of letting the same job be re-executed without creating a new job id got dropped from the agenda of the OpenEO project in version 0.0.2 \cite{openeo_api_desc}. 
 The context model gets persisted as a JSON file in the job execution meta-database. After the job is carried out in the EODC back end the results are saved in a folder named after the unique job identifier and the meta data information is stored in a PostGreSQL database. Jobs are saved in the Job table of the database and the context model is one column of this table. The context model JSON file gets created by the implementations described below. The context model has the following structure:
@@ -803,16 +803,16 @@ The context model gets persisted as a JSON file in the job execution meta-databa
 In figure \ref{fig:job_context_model} there is an example context model of a job execution. It consists of all points described for the context model in the Design section. In the following table there is the mapping between the context model definition defined in section \ref{Design} and key of the JSON context model file. 
 
 \begin{table}[]
-	\caption{Relation of context model definition and JSON context model.}
+	\caption{Relation of context model definition and EODC JSON context model.}
 	\begin{tabular}{l|l}
 		\textbf{Context Model Definition} & \textbf{JSON Key} \\ \hline
-		\textbf{J1:  Source Input Data Identifier} & input\_data, process\_details \\ \hline
-		\textbf{J2: Process Code Identifier} & code \\ \hline
-		\textbf{J3: Programming Language} & code\_env \\ \hline
-		\textbf{J4: Installed packages of programming language} & code\_env \\ \hline
-		\textbf{J5: Start and End time of process execution} & process\_details \\ \hline
-		\textbf{J6: Result Hash} & process\_details, output\_data \\ \hline
-		\textbf{J7: Back end provenance} & backend\_env \\ 
+		\textbf{J1: Input Data Persisted Identifier} & input\_data \\ \hline
+		\textbf{J2: Back end provenance / Code Identifier} & backend\_env \\ \hline
+		\textbf{J3: Programming Language} & interpreter \\ \hline
+		\textbf{J4: Installed packages of the programming language} & code\_env \\ \hline
+		\textbf{J5: Start and End time of process execution} & job\_id \\ \hline
+		\textbf{J6: Result Hash} & output\_data \\ %\hline
+	%	\textbf{J7: Back end provenance} & backend\_env \\ 
 	\end{tabular}
 \label{Tab:contextmodel}
 \end{table}
