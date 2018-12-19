@@ -435,7 +435,6 @@ The main part of the job execution definition is based on the description of wha
 	\label{fig:process_graph} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-\todo{Maybe change picture to 0.3.0 version if that is used in the future and update the text below}
 The back ends interpret the process graph from inside out. In figure \ref{fig:process_graph} the element in the center of the process graph defines the input data identifier in the "imagery" block, with the "product\_id". In this case the "s2a\_prd\_msil1c" is chosen  as input data identifier. After reading the input data id, the back end iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "left", "right" and so on. Every process beginning with "filter\_" is a filter operation that specifies the selection of the input data. The output data of the previous process is the input data of the next process. In figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, so the order of how it gets executed. 
 
 \begin{figure}[h]
@@ -472,7 +471,7 @@ Even though the back ends implement the OpenEO core API standard, they are still
  
  The EODC back end is one of the contributing back end providers of the OpenEO project. It is in general a python implemented back end that uses virtualisation technologies for the job execution. The overlaying technology is OpenShift (using Kubernetes) \cite{openshift}, which is capable of scaling docker containers and handles the execution of them. In the docker containers the python code for the processing gets executed. The docker description files and the python code is available on GitHub\footnote{https://github.com/Open-EO/openeo-openshift-driver/tree/release-0.0.2}. In this thesis the latest version of the EODC back end provided in GitHub with the version 0.0.2 is used. In this version every process of the OpenEO process graph is represented by an own docker container and python code of the processing. The service layer for accessing the back end is accomplished by the python library Flask. Even though EODC has a lot of already processed data, it only uses data from Sentinel 2 and Sentinel 1 in OpenEO. The provided data are satellite images from the European Space Agency (ESA), which gets the raw data coming directly from the Sentinel satellites. \\
  The data management of EODC is file-based, so every image data is stored in a unique directory and filename combination. Meta-data is provided at via a PostgreSQL database including the PostGIS\footnote{https://postgis.net} plug-in. The provided query tool for EODC users is the OGC standard interface CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html}. In figure \ref{fig:eodceer} an overview of the EODC meta-database is displayed. The structure is retrieved from the github repository of the EODC back end \cite{eodc_github}, where every database entity is defined. Every Process entity can have parameters desribed by the Parameter entity. The ProcessNode is representing one node in a process graph and is therefore related to exactly one ProcessGraph entity. Every Job has a related process graph, there may be jobs that use the same process graph, but in the current set up they are persisted both in the database.
- \todo{Change github link and text if switch to version 0.3.0}
+
  \begin{figure}[h]
  	\centering
  	\includegraphics[width=\textwidth]{eodc_eer}
@@ -532,7 +531,6 @@ The aim of this section is to describe the job execution capturing and a descrip
 
 \subsection{Back end provenance}\label{Design:Back end provenance}
 The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent of a job execution, so does not change regardless of how many jobs were processed. It can only change from inside of the back ends by their maintainers. In the OpenEO project there are a great variety of different back end providers with very distinct setups, so the challenge of this part is to make it as simple and generic as possible. The data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following meta-data is suggested for the back end provenance. The context model elements of the back end environment are specified with a "B" in the beginning for readability reasons. Elements of the job dependent context model are specified with a "J" in the beginning. 
-\todo{Check meta-data after implementation}
 \\ \\
 \textbf{B1: Code Identification} \\
 Since the OpenEO project is open source, every back end has a GitHub repository were at least the basic setup is stored. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends.  Therefore every back end provider has a GitHub repository were the code is public-ally available. This information is added to the back end provenance by saving the git repository URL, the used branch, the used commit and local changes to the repository. This information can be used to identify the used code at the back end.    
@@ -558,7 +556,7 @@ The single parts of the capturing are described more in detail in the following 
 
 \subsubsection{Process Environment}\label{Job:Process Data}
 In this section the capturing of the process itself gets described. As mentioned above the process is described with the incoming process graph, but to be certain that the same process id results in the same code, the code version is added to the context model. To be able to identify code from different versions a source control management needs to be installed. An example of doing so is persisting the back end source code on a public platform like GitHub. 
-The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. Therefore the programming language version and the additional used libraries of it are persisted in the context model.  To gain more meta-information about the processing the start time and end time can be added to the context model via timestamps. This leads to the following capturing elements in the job context model.
+The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. Therefore, the programming language version and the additional used libraries of it are persisted in the context model.  To gain more meta-information about the processing the start time and end time can be added to the context model via timestamps. This leads to the following capturing elements in the job context model.
 
 \textbf{J3: Programming Language}\\
 The programming language of the code that is used for the processing. In addition the version of the programming language has to be included in this information.
@@ -606,10 +604,11 @@ There is already an endpoint to get detailed information about the job status. B
 \textbf{U3: Comparing two Jobs} \\
 The API has to add an end point for making it possible to compare two different jobs. There does not exist an endpoint for this in the current(version 0.0.2) core API specification. The response of the comparison request consists of the differences in the context model between two jobs. 
 
-\textbf{U4: Re-use of Input Data} \\
-The current core API version (v0.0.2) is not capable of letting the user choose, which version of data the user want to use. Hence, there has to be an addition to the process graph so that product identifier has an additional time-stamp. So every input data identifier has now a time-stamp for when the data was retrieved. The meaning of the time-stamp is to tell the back end that the user wants to use the data at the time of the time-stamp. This gives the back ends the possibility to design their own strategy of applying a version to the data. It has to be persisted, which version of the data was available on what date and time. In addition the API can allow to include the use of an input data PID in the process graph. So that users can include cited data directly in a new created job.  
-
-\todo{update version if needed}
+\textbf{U4: Data Identifier Landing Page} \\
+After the job is executed and the input data has got an PID, the user has to be provided by a landing page. On the website the user is provided with information about the input dataset and the query gets re-executed to view the concrete input data.
+    
+\textbf{U5: Re-use of Input Data} \\
+The current core API version (v0.0.2) is not capable of letting the user choose, which version of data the user want to use. Hence, there has to be an addition to the process graph so that product identifier has an additional time-stamp. So every input data identifier has now a time-stamp for when the data was retrieved. The meaning of the time-stamp is to tell the back end that the user wants to use the data how it was accessible at the time-stamp. This gives the back ends the possibility to design their own strategy of applying a version to the data. It has to be persisted, which version of the data was available on what date and time. In addition the API can allow to include the use of an input data PID in the process graph. So that users can include cited data directly in a new created job.  
 
 \chapter{Implementation}\label{Implementation}
 In this chapter the EODC prototype of the concept described in \ref{Design} gets presented. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the clients. Thus all three parts of the OpenEO project architecture get modified in the presented solution. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. Since python is the most common programming language at the contributing back ends of the OpenEO project, these implementations get used. Both of the chosen implementations are using python as their main programming language. The adaptations described in \ref{Design} are implemented for the usage of the python client accessing the EODC back end. Both of the solution implementations are open source and can therefore be used by other back end providers with a similar setup.  
@@ -883,58 +882,48 @@ now show -m --dir=JOB_DIR
 \end{lstlisting}
 
 \section{User Interface}\label{Implementation:User Interface}
-The user interface implementation is done by adding endpoints to the existing OpenEO core API version 0.0.2 and applying the additional endpoints to the python client and the EODC back end. The relevant additions defined in section \ref{Design:User Interface} are implemented in the following way:
+In the previous sections only the technical insight of the back end is described. In this section the implementation of the interfaces to the user gets described. Therefore, endpoints are added to the current existing OpenEO core API version 0.0.2. In addition, the proposed endpoints are applied to the python client and the EODC back end. The relevant additions defined in section \ref{Design:User Interface} are implemented in the following way:
 
 \textbf{U1: Back end version} \\
-Retrieving additional information about the back end was added into a new defined end point of the API. The new endpoint is a GET request called “/version”. The user does not have to be logged in to access this endpoint. Response of the version endpoint is in the implementation the whole job independent provenance information of the back end, like defined in section \ref{Implementation:Back end provenance}. In a productive version the data may be filtered for information marked as a security risk. This endpoint was added to the EODC back end and to the python client so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python environment. 
-\todo{explain in detail what info was included here and how it got captured}
+Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see section \ref{Implementation:Back end provenance}). In a productive version the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data about it. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python environment. The result is a JSON object consisting of the back end provenance data similar to figure \ref{fig:backendprovcm}.
 
 \textbf{U2: Detailed Job Information} \\
-There is already an endpoint to get detailed information about the job status. It is the existing “GET /jobs/<job\_id>” endpoint of the core API, which by the version of 0.0.2 only contains the execution state of the job and the job id. In addition to the already available information the whole job dependent provenance gets added to this endpoint in the implementation of this thesis. The python client got also changed to match the end point changes described before.  
-\todo{explain in detail what info was included here and how it got captured}
+In the OpenEO coreAPI there is already an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.0.2 only contains the execution state of the job and the job id. In addition to this the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see \ref{fig:job_context_model}). Since the python client just returns the resulting JSON response from the back end as a python dictionary, there is no modification needed.
 
 \textbf{U3: Comparing two Jobs} \\
-The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any. So a new one has to be defined in a manner of the existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced. In the url of the request you define the base job id that has to be compared with other jobs. In the body of the request the job ids that the base job shall be compared with are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every job in the request body list. The result consists of for every item in the base job context model the term “EQUAL”, if the item is the same in both jobs, “DIFF”, if the items are not the same in both jobs, or “MISSING”, if the item is in the base job, but not in the target job of the request list. This can occur if the context model was modified in the future and some additional fields of it are not in the context models of the past or in the benchmarking mode if one process graph has mode processes defined than another one. The response consists of the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature was added and in addition there got an visualisation implemented to make the differences of the context models more visible to the users.
+The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any user interface. A new endpoint is defined in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, “DIFF” if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "compare()". 
+\todo{Add figure of example request -> response (see comparison JSON).}
 
-\todo{Maybe also add image of REST request \& response.}
-\todo{Add image of the client visualisation --> remove it from thesis ?}
-\todo{Landing Page...}
+
+\textbf{U4: Data Identifier Landing Page} \\
+Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.0.2, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<dataset-id>" endpoint is extended, by also accepting query PIDs. If the user calls the endpoint with a data PID, the result is the description of the underlying dataset and in addition the result of the query execution and the original query parameters.
+
+\textbf{U5: Re-use of Input Data} \\
+To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry. Examples of such a process graph are in section \ref{Evaluation:Use Case1}.  
+
+
 \chapter{Evaluation}\label{Evaluation}
 In this chapter the implementation gets tested and evaluated. By running the use cases it gets evaluated if the implementation reaches the aim of the thesis. First the RDA data identification recommendations are checked with the implementation and how they apply or not need to apply. Then the two implementations are compared with each other. The last section in this chapter is testing the in section \ref{Use Cases} defined use cases against the implementation. 
 
-\section{Data Identification}\label{Evaluation:Data Identification}
-\todo{Describe Test Cases, introduce new Use Cases}
-\begin{itemize}
-	\item \textbf{R1: Data Versioning}
-	\item \textbf{R2: Timestamping}
-	\item \textbf{R3: Query Store Facilities}
-	\item \textbf{R4: Query Uniqueness}
-	\item \textbf{R5: Stable Sorting}
-	\item \textbf{R6: Result Set Verification}
-	\item \textbf{R7: Query Timestamping}
-	\item \textbf{R8: Query PID}
-	\item \textbf{R9: Store the Query}
-	\item \textbf{R10: Automated Citation Texts}
-	\item \textbf{R11: Landing Page}
-	\item \textbf{R12: Machine Actionability}
-	\item \textbf{R13: Technology Migration}
-	\item \textbf{R14: Migration Verification}
-\end{itemize}
-
-\todo{Compare implementation with the recommendations. So how it was and how it is.}
-\todo{Test Cases}
+%\section{Data Identification}\label{Evaluation:Data Identification}
+%\todo{Describe Test Cases, introduce new Use Cases}
+%\todo{Compare implementation with the recommendations. So how it was and how it is.}
+%\todo{Test Cases}
 
  
 
 \section{Use Cases}\label{Evaluation:Use Cases}
 In this section the use cases introduced in section \ref{Use Cases} are tested against the python implementation. The setup of the evaluation is on the back end side the EODC python implementation described in section \ref{Implementation:Python Implementation}. To communicate with the back end the modified python client gets used. The modifications to the python client are described in \ref{Implementation:User Interface}. The use cases get evaluated by trying to apply them on the original OpenEO setup (version 0.0.2) and comparing it to the implemented additions described in section \ref{Implementation}. The release-0.0.2 OpenEO set up is named original set up for convenience reasons and the OpenEO set up with all, in this thesis described, changes is called modified set up. An Overview of the evaluation is visualized in figure \ref{fig:usecases_eva} 
-\todo{Explain set up in more Detail (EODC Back end , python client, maybe github urls)}
+
 %\begin{figure}[h]
 %	\centering
 %	\includegraphics[width=\textwidth]{usecases_eva}
 %	\caption{Overview of the evaluation setup }
 %	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 %\end{figure}
+
+\subsection{Evaluation Setup}\label{Evaluation:Setup}
+\todo{Explain set up in more Detail (EODC Back end , python client, maybe github urls)}
 
 \subsection{Re-Use of Input Data}\label{Evaluation:Use Case1}
 The first Use Case can be seen from two perspectives. From the back end providers point of view and from the users point of view. The user wants to get information about the back ends provenance and the current version. The back end provider wants to have an automated tool to capture the provenance data and to create automatically back end versions. This is done in the implementation by running the BackendMonit tool described in section \ref{Implementation:Back end provenance}. The back end provider has just to start the service of BackendMonit and the capturing and back end version creation will be done automatically. 

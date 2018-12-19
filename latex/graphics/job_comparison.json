@@ -1,0 +1,47 @@
+
+
+{
+
+	"base_job": "TEST",
+
+	"target_jobs": [
+	
+		"TEST2": {
+					"backend_env": "EQUAL",
+					"code_env": "EQUAL",
+					"interpreter": "EQUAL",
+					"input_data": "DIFF",
+					"job_id": "DIFF",
+					"start_time": "DIFF",
+					"end_time": "DIFF",
+					"output_data": "DIFF"
+					"process_graph": "DIFF"
+				}	
+	]
+}	
+	
+	
+	
+    "backend_env": {
+        "backend_version": 2,
+        "openeo_api": "0.0.2",
+        "git_repos": [
+            {
+                "branch": "master",
+                "commit": "05f4765de578467fef8e1a24404bbd7f77b61c17",
+                "diff": null,
+                "url": "https://github.com/Open-EO/openeo-openshift-driver.git"
+            }
+        ]
+    },
+    "code_env": ["surlex==0.2.0",
+                 "typing==3.6.4",
+                 ...
+                ],
+    "interpreter": "Python 3.7.1",
+    "input_data": "Q-bc4f15cc-3790-4612-9b29-0a2eb48fa1c8",
+    "job_id": "Test",
+    "start_time": "2018-10-21 11:27:47,653",
+    "end_time": "2018-10-21 11:28:44,644",
+    "output_data": "c448e6f8cd027bf0af70bab8d8372b339e70858ffc9f19854d5ea38bf401b856"
+}
