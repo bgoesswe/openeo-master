@@ -175,17 +175,25 @@ The expected outcome of this thesis is to discover and develop a possible framew
 \end{itemize}
 
 \section{Use Cases}\label{Use Cases}
-To validate the design proposed in this thesis, there are use cases defined in the following sections. They describe scenarios about stakeholders of the OpenEO project that are currently not possible, but may be accomplish-able with the solution of this thesis.
+To validate the design proposed in this thesis, use cases are defined in the following sections. They describe scenarios about stakeholders of the OpenEO project that are currently not possible, but shall be accomplish-able with the solution of this thesis.
     
 \subsection{Re-Use of Input Data}\label{UseCase1}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase1_new}
-	\caption{Overview of the first Use Case}
+	\caption{Overview of the first Use Case.}
 	\label{fig:usecase1} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 The first use case is about the re-use of input data between job executions. Reproducible methods are especially important for the scientific community. Since scientists are likely to build on results or methods of publications, it is an opportunity for OpenEO to make the re-use simple. In this case a scientist creates a publication by using OpenEO and citing the method and data accordingly. Another scientist in a similar area of research wants to use the same input data but use a different approach of processing it. Hence there needs to be a possibility to cite the input data in a way, that another user can re-use it in a different processing chain. 
-An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase1}.
+An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase1}. \\
+The scenario can be summarized in the following steps: \\
+
+\begin{enumerate}
+	\item Researcher A runs an experiment (job A) at a back end.
+	\item Researcher A retrieves the used input data of job A.
+	\item Researcher A cites the input data in a publication.
+	\item Researcher B uses the same input data of job A for job B.  
+\end{enumerate}
 
 \subsection{Providing Job Execution Information}\label{UseCase2}
 \begin{figure}[h]
@@ -195,6 +203,14 @@ An overview of the architecture of the use case can be viewed in figure \ref{fig
 	\label{fig:usecase2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 This use case is like the first one, but is only about job dependent environment information. The back end provider can automatically get provenance data about the job execution, like used software packages and their versions. The user gets additional information on a job execution. Motivation for this is to add transparency of the job processing for the users, so that researchers can describe their processes in more detail. It can also help OpenEO users to understand why results differ from executions in the past. An overview of the architecture of the use case can be viewed in figure \ref{fig:usecase2}. 
+The following steps are part of this use case:
+\begin{enumerate}
+	\item Researcher runs an experiment (job A) at a back end.
+	\item Researcher wants to describe the experiment environment.
+	\item Back End Developer releases a new version.   
+	\item Back End Developer runs test jobs to find differences.
+\end{enumerate}
+
 \subsection{Compare different Job executions}\label{UseCase3}
 \begin{figure}[h]
 	\centering
@@ -203,6 +219,13 @@ This use case is like the first one, but is only about job dependent environment
 	\label{fig:usecase3} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 The third use case is dedicated to the OpenEO users. The goal is to add a possibility for users of OpenEO to compare different jobs not only by their results, but also on the way they were executed. The comparison is between a job execution and another one on the same back end. Therefore, the processing and the input data has to be identifiable. To make the comparison interesting to the users there also has to be additional information. For usability the comparison needs to be easy to apply and easy to understand, therefore accessible in the environment of the user at the OpenEO client. In addition to the previous conditions a visualization of the differences for the users can lower the access barrier for users to use the feature. An overview of the architecture of this use case can be viewed in figure \ref{fig:usecase3}.
+The following steps describe the scenario:
+\begin{enumerate}
+	\item Researcher runs an experiment (job A) at a back end.
+	\item Researcher re-runs the same experiment (job B).
+	\item Researcher runs a different experiment (job C).   
+	\item Researcher wants to compare the jobs by their environment and outcome.
+\end{enumerate}
 
 \section{Methodological Approach}\label{Method}
 The use cases defined in the previous section require specific changes to the components of OpenEO. In the following list parts of the suggested solution are briefly described. 
@@ -917,35 +940,160 @@ The Evaluation is done from a user point of view, hence an OpenEO client needs t
 
 
 \section{Re-Use of Input Data}\label{Evaluation:Use Cases}\label{Evaluation:Use Case1}
+The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment.
 
+\begin{enumerate}
+	\item \textbf{Researcher A runs an experiment (job A) at the EODC back end.} \\
+	This step is basic OpenEO functionality and is not influenced by the solution from the user point of view. At the back end the Query Handler is generating a new data PID or returns an already existing one if the same query got executed in the past. The following python client code represents the experiment of Researcher A. The last two function calls are sending the process graph to the back end and start the job execution. After the execution the user retrieves a message that the job finished successfully.  
+	\begin{lstlisting}[frame=single, language=Python]
+	import openeo
+	session = openeo.session(EODC_USER_A, endpoint=EODC_DRIVER_URL)
+	# Authenticate with bearer token
+	token = session.auth(EODC_USER_A, EODC_PWD_A, BearerAuth)
+	
+	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
+	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
+				right=672000, top=5161000,
+				bottom=5181000, srs="EPSG:32632")
+	timeseries = timeseries.date_range_filter("2017-01-01", 
+						  "2017-01-08")
+	timeseries = timeseries.ndvi("B04", "B08")
+	composite = timeseries.min_time()
+	jobA = timeseries.send_job()
+	status = jobA.queue()
+	\end{lstlisting}
+	
+	\item \textbf{Researcher A retrieves the used input data of job A.} \\
+	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snipped shows the call using the python client.
+	
+	\begin{lstlisting}[frame=single, language=Python]
+	job_details = jobA.describe_job()
+	input_data = job_details["input_data"]
+	print(input_data)
+	# Output: EODC_DRIVER_URL/data
+	#			/Q-e5a3409e-fa48-41b2-8043-5b9c2b5a0b23
+	desc = session.describe_collection(input_data)
+	query = desc["query"]
+	files = desc["input_files"]
+	\end{lstlisting}
+	
+	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. After calling the page, the user is provided by the information of the data set (e.g. "s2a\_prd\_msil1c" ). In addition the resulting files of the query and the query (filter arguments) are also added to the website. \\
+	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.    
+	
+	\item \textbf{Researcher A cites the input data in a publication.} \\
+	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the PID from step 2 for the citation.   
+	
+	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
+	In order to use the same input data as Researcher A, Researcher B just copies the data PID from the publication and puts it into the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (different band configuration) is printed.   
+	\begin{lstlisting}[frame=single, language=Python]
+	import openeo
+	session = openeo.session(EODC_USER_B, endpoint=EODC_DRIVER_URL)
+	# Authenticate with bearer token
+	token = session.auth(EODC_USER_B, EODC_PWD_B, BearerAuth)
+	
+	s2a_prd_msil1c = session
+		     .image("Q-e5a3409e-fa48-41b2-8043-5b9c2b5a0b23")
+	timeseries = s2a_prd_msil1c.ndvi("B02", "B04")
+	composite = timeseries.min_time()
+	jobB = timeseries.send_job()
+	status = jobB.queue()
+	\end{lstlisting}
+	
+\end{enumerate}
 
-%\begin{figure}[h]
-%	\centering
-%	\includegraphics[width=\textwidth]{usecases_eva}
-%	\caption{Overview of the evaluation setup }
-%	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-%\end{figure}
+\section{Capturing job dependent environments}\label{Evaluation:Use Case2}
+In this scenario the scope is on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In addition the advantages for the back end provider gain additional information about job executions are part of the use case. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
 
-\textbf{Original Setup}
+\begin{enumerate}
+	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
+	The researcher A runs a job at the EODC back end with the following python client code. This is the default workflow of executing a job using the python client.  
+	\begin{lstlisting}[frame=single, language=Python]
+	import openeo
+	session = openeo.session(EODC_USER, endpoint=EODC_DRIVER_URL)
+	# Authenticate with bearer token
+	token = session.auth(EODC_USER, EODC_PWD, BearerAuth)
+	
+	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
+	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
+	right=672000, top=5161000,
+	bottom=5181000, srs="EPSG:32632")
+	timeseries = timeseries.date_range_filter("2017-01-01", 
+	"2017-01-08")
+	timeseries = timeseries.ndvi("B04", "B08")
+	composite = timeseries.min_time()
+	job = timeseries.send_job()
+	status = job.queue()
+	\end{lstlisting}
+	\item \textbf{Researcher wants to describe the experiment environment.}\\
+	The researcher wants to publish the result of the experiment and therefore needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
+	\begin{lstlisting}[frame=single, language=Python]
+	job_details = jobA.describe_job()
+	context_model = job_details["context_model"]
+	interpreter = context_model["interpreter"]
+	code_env = context_model["code_env"]
+	backend_version = context_model["backend_env"]["backend_version"]
+	\end{lstlisting}
+	After the execution of the lines above, the researcher is able to get the used interpreter including the version and installed packages. In addition the back end version describes the processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. 
+	
+	\item \textbf{Back End Developer releases a new version.} \\
+	This step is independent from the implementation and therefore not explained further.
+	
+	\item \textbf{Back End Developer runs test jobs to find differences.}\\
+	With the new provided information about the job execution environment, the back end provider can compare the environment to previous versions of the back end. Using the output hash of the job execution, the back end provider is able to find different outcomes compared to previous versions. 
+	\begin{lstlisting}[frame=single, language=Python]
+	jobA = testA.send_job()
+	status = jobA.queue()
+	jobA_details = jobA.describe_job()
+	jobB = testB.send_job()
+	status = jobB.queue()
+	jobB_details = jobB.describe_job()
+	#...
+	\end{lstlisting}
+\end{enumerate}
 
-\textbf{Modified Setup}
-
-
-\todo{Run Test case 1 and show how it was and how it is now.  + Python Client Results}
-
-\subsection{Capturing job dependent environments}\label{Evaluation:Use Case2}
-\todo{Run Test case 2 and show how it was and how it is now.  + Python Client Results}
-
-\textbf{Original Setup}
-
-\textbf{Modified Setup}
-
-\subsection{Getting differences of job executions}\label{Evaluation:Use Case3}
-\todo{Run Test case 3 and show how it was and how it is now.  + Python Client Results}
-
-\textbf{Original Setup}
-
-\textbf{Modified Setup}
+\section{Getting differences of job executions}\label{Evaluation:Use Case3}
+The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments.  
+\begin{enumerate}
+	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
+	The researcher A runs a job at the EODC back end with the following python client code. 
+	\begin{lstlisting}[frame=single, language=Python]
+	import openeo
+	session = openeo.session(EODC_USER_A, endpoint=EODC_DRIVER_URL)
+	# Authenticate with bearer token
+	token = session.auth(EODC_USER_A, EODC_PWD_A, BearerAuth)
+	
+	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
+	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
+	right=672000, top=5161000,
+	bottom=5181000, srs="EPSG:32632")
+	timeseries = timeseries.date_range_filter("2017-01-01", 
+	"2017-01-08")
+	timeseries = timeseries.ndvi("B04", "B08")
+	composite = timeseries.min_time()
+	jobA = timeseries.send_job()
+	status = jobA.queue()
+	\end{lstlisting}
+	\item \textbf{Researcher re-runs the same experiment (job B).}\\
+	Since re-execution of the same job id is handled internally with the re-execution of the same job configuration with a new job id, the the following code is used to create the same job again (job B):
+	\begin{lstlisting}[frame=single, language=Python]
+	jobB = timeseries.send_job()
+	status = jobB.queue()
+	\end{lstlisting}
+	
+	\item \textbf{Researcher runs a different experiment (job C).}\\
+	The third job (job C) is created with a different process configuration and input data query.
+	\begin{lstlisting}[frame=single, language=Python]
+	jobC = timeseries2.send_job()
+	status = jobC.queue()
+	\end{lstlisting}   
+	\item \textbf{Researcher wants to compare the jobs by their environment and outcome.}\\
+	Now the researcher wants to compare job B and job C with the first job A. Therefore the following code has to be executed:
+	\begin{lstlisting}[frame=single, language=Python]
+	diffAB = jobA.diff(jobB)
+	diffAC = jobA.diff(jobC)
+	\end{lstlisting}  
+	\todo{Finish it !! Add pictures of comparison to implementation section, and maybe also visualization if you are motivated...}
+\end{enumerate}
 
 
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
@@ -1026,7 +1174,7 @@ To make the comparison of different execution behaviors more informative, the gr
 	\label{fig:design_overview} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 \todo{update the picture}
-That is how the bench marking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinctable. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
+That is how the bench marking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinct-able. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
 
 \backmatter
 
