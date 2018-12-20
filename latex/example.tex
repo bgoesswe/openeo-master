@@ -903,17 +903,21 @@ To re-use the input data in a different job execution, the data PID can be used 
 
 
 \chapter{Evaluation}\label{Evaluation}
-In this chapter the implementation gets tested and evaluated. By running the use cases it gets evaluated if the implementation reaches the aim of the thesis. First the RDA data identification recommendations are checked with the implementation and how they apply or not need to apply. Then the two implementations are compared with each other. The last section in this chapter is testing the in section \ref{Use Cases} defined use cases against the implementation. 
+In this chapter the prototype implementation described in the previous section is evaluated. The work-flow of the evaluation is applying the three use cases defined in section \ref{Use Cases} to the solution of section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is getting described in section \ref{Evaluation:Setup}.\\ In the following sections the use cases are tested against the implementation solution.\\ The last section in this chapter presents a comparison between the used python implementation and the noworkflow implementation described in section \ref{Implementation:Noworkflow Implementation} on different aspects. 
 
 %\section{Data Identification}\label{Evaluation:Data Identification}
 %\todo{Describe Test Cases, introduce new Use Cases}
 %\todo{Compare implementation with the recommendations. So how it was and how it is.}
 %\todo{Test Cases}
 
- 
+ \section{Evaluation Setup}\label{Evaluation:Setup}
+ \todo{Explain set up in more Detail (EODC Back end , python client, maybe GitHub urls)}
+The evaluation setup for testing the prototype of this thesis is provided by the EODC back end providers. It is a duplicate of the productive endpoint of the OpenEO back end driver at the time when the thesis is written. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deplay the adapted back end described in section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO interface. This allows for a unrestricted evaluation of the use cases, because if the changes suit EODC, it can switch easily the productive instance with this test instance. \\
+The Evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose with the additional functionality described in section \ref{Implementation:User Interface}. \\ 
 
-\section{Use Cases}\label{Evaluation:Use Cases}
-In this section the use cases introduced in section \ref{Use Cases} are tested against the python implementation. The setup of the evaluation is on the back end side the EODC python implementation described in section \ref{Implementation:Python Implementation}. To communicate with the back end the modified python client gets used. The modifications to the python client are described in \ref{Implementation:User Interface}. The use cases get evaluated by trying to apply them on the original OpenEO setup (version 0.0.2) and comparing it to the implemented additions described in section \ref{Implementation}. The release-0.0.2 OpenEO set up is named original set up for convenience reasons and the OpenEO set up with all, in this thesis described, changes is called modified set up. An Overview of the evaluation is visualized in figure \ref{fig:usecases_eva} 
+
+\section{Re-Use of Input Data}\label{Evaluation:Use Cases}\label{Evaluation:Use Case1}
+
 
 %\begin{figure}[h]
 %	\centering
@@ -921,13 +925,6 @@ In this section the use cases introduced in section \ref{Use Cases} are tested a
 %	\caption{Overview of the evaluation setup }
 %	\label{fig:usecases_eva} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 %\end{figure}
-
-\subsection{Evaluation Setup}\label{Evaluation:Setup}
-\todo{Explain set up in more Detail (EODC Back end , python client, maybe github urls)}
-
-\subsection{Re-Use of Input Data}\label{Evaluation:Use Case1}
-The first Use Case can be seen from two perspectives. From the back end providers point of view and from the users point of view. The user wants to get information about the back ends provenance and the current version. The back end provider wants to have an automated tool to capture the provenance data and to create automatically back end versions. This is done in the implementation by running the BackendMonit tool described in section \ref{Implementation:Back end provenance}. The back end provider has just to start the service of BackendMonit and the capturing and back end version creation will be done automatically. 
-Users will use an OpenEO client to access the back end. Therefore, in the following the use case gets visualized by the view of an OpenEO user using the python client: 
 
 \textbf{Original Setup}
 
