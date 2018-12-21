@@ -75,7 +75,7 @@
 % Required data.
 \setaddress{Vorderer Ödhof 1, 3062 Kirchstetten}
 \setregnumber{01026884}
-\setdate{01}{01}{2001} % Set date with 3 arguments: {day}{month}{year}.
+\setdate{21}{12}{2018} % Set date with 3 arguments: {day}{month}{year}.
 \settitle{\thesistitle}{Entwurf eines Frameworks zur Unterstützung von Reproduzierbarkeit für die OpenEO Plattform} % Sets English and German version of the title (both can be English or German). If your title contains commas, enclose it with additional curvy brackets (i.e., {{your title}}) or define it as a macro as done with \thesistitle.
 \setsubtitle{}{} % Sets English and German version of the subtitle (both can be English or German).
 
@@ -113,20 +113,25 @@
 \addtitlepage{english} % English title page.
 \addstatementpage
 
-\begin{danksagung*}
-\todo{Ihr Text hier.}
-\end{danksagung*}
+%\begin{danksagung*}
+
+
+%\end{danksagung*}
 
 \begin{acknowledgements*}
-\todo{Enter your text here.}
+To my girlfriend Viola: Thank you very much for helping me through the stressful days of working on the thesis and for providing breaks and diversions when I needed them.\\ \\
+To my family: Thank you for supporting me through my whole process and for motivating me to go on with the thesis. \\ \\
+To my colleagues of the Remote sensing research group: Thank you for patiently waiting for me to finish my studies and letting me work on a thesis within the OpenEO project. \\ \\
+To my colleagues at EODC: Thank you for providing me all resources I requested and letting me implement the solution on your system. \\ \\
+Last but not least to my supervisors Andreas Rauber and Tomas Miksa for always quickly replying on questions and providing me with constructive feedback. 
 \end{acknowledgements*}
 
 \begin{kurzfassung}
-\todo{Ihr Text hier.}
+Publikationen in den Bereichen der Geodäsie und Geoinformation sind meist, aus diversen Gründen, nicht reproduzierbar. Daher gab es in den letzten Jahren ein Umdenken in Bezug auf reproduzierbare Publikationen in den computergestützten Geowissenschaften. Eine Problematik dieser Forschungsbereiche ist die große Anzahl an unterschiedlichen Anbietern im Bereich der Datenbeschaffung und Datenverarbeitung. Daher startete die Europäische Union das Horizon 2020 Projekt OpenEO, welches eine standardisierte Abstraktionsschicht über den diversen Anbietern darstellt. Mit diesem Projekt bekommen Geowissenschaften die Möglichkeit einer Einheitlichen Strategie der Reproduzierbarkeit. Diese Arbeit beschäftigt sich mit dem Design eines Konzeptes zur Erlangung der Reproduzierbarkeit innerhalb des OpenEO Projektes. Herausforderungen liegen hierbei an den großen Daten der Anbieter, als auch der komplexen Prozessierungen. Dabei wird eine einheitliche Lösung für alle OpenEO Anbieter erstellt indem aktuelle Datenidentifikationsstrategien und Konzepte der Reproduzierbarkeit angewandt werden. Dabei soll der Aufwand sowohl der Anbieter als auch der Benutzer von OpenEO in Grenzen gehalten werden. Zusätzlich wird in dieser Arbeit ein vollwertiger Prototyp beim EODC Anbieter implementiert. Hinzu werden die notwendigen Erweiterungen in Absprache mit dem OpenEO Team gemacht um die Änderungen in eine zukünftige Version des OpenEO Standards zu bekommen. Schlussendlich wird die Implementierung bei EODC durch Szenarios, welche die Benutzung von OpenEO durch Wissenschaftler darstellen, evaluiert.        
 \end{kurzfassung}
 
 \begin{abstract}
-\todo{Enter your text here.}
+Many areas of earth observation sciences lack on creating reproducible research papers. In the last years there was an extensive movement towards policies defining reproducibility for geoscientists. The diverse set of data providers and processing back ends are one reason for scientists not being able to reproduce experiments. The European Union has launched a Horizon 2020 project called OpenEO to create a unified abstraction layer above the processing back ends. This leads to the opportunity of a unified concept of reproducibility. The thesis provides a design to achieve this within the OpenEO project, by facing the challenges of big data and complex work-flows. In doing so a general concept for all back ends contributing to OpenEO is created. The design solution combines existing data identification strategies and work-flow capturing concepts. Part of the solution is limiting the effort for researchers using OpenEO . Additionally, we implement a complete system solution at the EODC back end and design suggestions to the OpenEO project to add the changes to a productive release of OpenEO. Finally, the implementation is evaluated by predefined scenarios of scientists using a back end that supports OpenEO for their experiments.    
 \end{abstract}
 
 % Select the language of the thesis, e.g., english or naustrian.
@@ -914,8 +919,14 @@ Retrieving additional information about the back end was added into a new end po
 In the OpenEO coreAPI there is already an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.0.2 only contains the execution state of the job and the job id. In addition to this the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see \ref{fig:job_context_model}). Since the python client just returns the resulting JSON response from the back end as a python dictionary, there is no modification needed.
 
 \textbf{U3: Comparing two Jobs} \\
-The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any user interface. A new endpoint is defined in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, “DIFF” if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "compare()". 
-\todo{Add figure of example request -> response (see comparison JSON).}
+The comparison of two jobs is not defined in the version 0.0.2 of the core API, hence there does not exist any user interface. A new endpoint is defined in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, “DIFF” if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "diff(target\_job)". In figure \ref{fig:job_comparison} an example of the dictionary output of this function is provided.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1]{job_comparison}
+	\caption{JSON Example of a job comparison result.}
+	\label{fig:job_comparison} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 
 \textbf{U4: Data Identifier Landing Page} \\
@@ -927,14 +938,13 @@ To re-use the input data in a different job execution, the data PID can be used 
 
 \chapter{Evaluation}\label{Evaluation}
 In this chapter the prototype implementation described in the previous section is evaluated. The work-flow of the evaluation is applying the three use cases defined in section \ref{Use Cases} to the solution of section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is getting described in section \ref{Evaluation:Setup}.\\ In the following sections the use cases are tested against the implementation solution.\\ The last section in this chapter presents a comparison between the used python implementation and the noworkflow implementation described in section \ref{Implementation:Noworkflow Implementation} on different aspects. 
-
+%\todo{Add communication in appendix}
 %\section{Data Identification}\label{Evaluation:Data Identification}
 %\todo{Describe Test Cases, introduce new Use Cases}
 %\todo{Compare implementation with the recommendations. So how it was and how it is.}
 %\todo{Test Cases}
 
  \section{Evaluation Setup}\label{Evaluation:Setup}
- \todo{Explain set up in more Detail (EODC Back end , python client, maybe GitHub urls)}
 The evaluation setup for testing the prototype of this thesis is provided by the EODC back end providers. It is a duplicate of the productive endpoint of the OpenEO back end driver at the time when the thesis is written. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deplay the adapted back end described in section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO interface. This allows for a unrestricted evaluation of the use cases, because if the changes suit EODC, it can switch easily the productive instance with this test instance. \\
 The Evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose with the additional functionality described in section \ref{Implementation:User Interface}. \\ 
 
@@ -1092,7 +1102,7 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 	diffAB = jobA.diff(jobB)
 	diffAC = jobA.diff(jobC)
 	\end{lstlisting}  
-	\todo{Finish it !! Add pictures of comparison to implementation section, and maybe also visualization if you are motivated...}
+	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. An example of the result can be viewed in figure \ref{fig:job_comparison}.   
 \end{enumerate}
 
 
@@ -1147,34 +1157,22 @@ Noworkflow comes with more features, especially for the back end provider to que
 
 \chapter{Conclusion and future Work}\label{Conclusion}
 
+
 \section{Conclusion}
-\todo{no separation of used packages and not used packages}
-5.	Summary of thesis
-6.	Describe limitations
-7.	Describe noworkflow and python implementation differences 
-8.	Describe possibilities
-9.	Describe improvements
+
+In this thesis, we explored the challenges of providing reproducibility in earth observation science. Solutions for data identification and code identification in the restrictions of the project framework had to be defined. Since the service is open source and an important part of the project is to motivate users to use the framework, one of the challenges was to make the solution as simple as possible. Therefore the solution is a concept for the OpenEO project on gaining reproducibility to the work-flow and input data. The suggested solution consists of light-weight recommendations to the back end design, which can be adapted to the setup of the contributing back ends of the OpenEO project. The implementation at EODC proofs that the concept can be applied. The core advantage for researchers using the features of this thesis is that it happens automatically. Scientists can run experiments on the OpenEO back end and generate automatically a data identifier that other scientist can use directly. In addition the scientists can cite the version of the back end and describe the execution environment, so that researchers wanting to reproduce the result in different environments can at least try to do so. In addition it is possible to compare different job executions to bring more transparency to the users of OpenEO. Without the additional information about the execution the back ends are just black boxes and users may be confused if results are not as expected. Applying the suggested additions is an advantage for the OpenEO project itself since back end providers get additional execution information. In addition the concept of easy to apply data citation and re-use may attract more users to use OpenEO. Still the OpenEO project will involve and the concept has to be adapted to the future changes. Hence the outcome of this thesis can be seen as a starting point of reproducibility in the OpenEO project rather than a final solution.  
+
 
 \section{Future Work}\label{FutureWork}
-In this thesis a concept for applying reproducibility in the OpenEO project is purposed. Still there are major issues to be addressed in the future of the OpenEO project. There are several ways to improve the concept and many open questions, which are open for the future. \\
-OpenEO is still evolving until the project end 2021 and also afterwards. There are a lot of features that have to be defined and may interfere with the concept proposed in this thesis. User defined functions are part of the project and to be capable of reproduce them can lead to adaptations to the concept. Another main issue of the OpenEO project is the billing concept that has to be apply-able to a diverse set of back ends. Since the capturing process and the generation of the context model takes time it has to be considered in the billing plan of the back ends. The growing diversity of the back ends applying the OpenEO standard is a huge challenge to the design of the context model of this thesis.\\
-The storage of the context models in JSON files was used in this thesis , but has definitely limitations that have to be addressed in the future e.g. the querying over the data sets. 
-In the solution of this work the data is captured for identifying how jobs are executed and to be able to identify how the job was executed. An addition to this can be a way to automatically apply the reproduction of an executed jobs of the past. To achieve this a method of validating the output of a job execution needs to be introduced. The possibility to get automated data and process citation to researchers of OpenEO interfaces is also a possible future work. Special users may need a finer granularity of the process capturing, leading to a definition of scalability of the processing capturing.      
-\todo{Talk about PROV-O}
+In this thesis a concept for applying reproducibility in the OpenEO project is purposed. Still there are major issues to be addressed in the future of the OpenEO project. There are several ways to improve the concept that need to be addressed in the future. \\
+OpenEO is still evolving until the official project end in 2021 and afterwards it will be continued. There are a lot of features that have to be defined and may interfere with the concept proposed in this thesis. User defined functions are part of the project, but not well defined yet. To be capable of reproduce them may lead to adaptations to the concept. Another main issue of the OpenEO project is the billing concept that has to be apply-able to a diverse set of back ends. Since the capturing process and the generation of the context model needs resources, it has to be considered in the billing plan of the back ends. The growing diversity of the back ends applying the OpenEO standard is a huge challenge to remain the design of the context model suitable in the future. \\
+The storage of the context models in JSON objects was used in this thesis , but has limitations that have to be addressed in the future e.g. querying over data sets. 
+In the solution of this work the data is captured for identifying how jobs are executed and to be able to identify how the job was executed. An addition to this can be a way to automatically apply the reproduction of an already executed job. To achieve this a method of fully validating the output of a job execution needs to be introduced. The possibility to get automated data and process citation texts are not part of the solution and are therefore a task for future work. Special users (e.g. back end providers) may need a finer granularity of the process capturing, leading to a definition of scalability of the processing capturing. A possible concept achieving this is presented in the section \ref{Job:Benchmarking}. Within this finer granularity is the limitations of the python environment to the actually used packages rather then the whole environment, like it is in the current implementation.       
 
 \subsection{Benchmarking Mode}\label{Job:Benchmarking}
 
-So far only the capturing of a single process, including input and output data, are described, but not how the whole process graph shall be captured. The general idea of the job dependent provenance capturing is to capture the input data of the process graph, the whole process graph and the output of the process graph like described in the sections above. This is a common concept the back end providers can agree on and is not affecting the back end providers implementations much. It is also capable of giving the OpenEO user a simple overview of how the results are generated and what are differences between different job executions. 
-To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. 
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{design_overview}
-	\caption{Design Overview of capturing the job context model in bench marking mode.}
-	\label{fig:design_overview} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-\todo{update the picture}
-That is how the bench marking context model gets introduced. The idea is that not only the input data the whole process and the output data gets captured, but also every data in between of every process in the process graph. So for every process in the process graph the input, output data gets captured and the code executing the process. This makes it easier for users to see were the execution actually changed. But it also comes with higher implementation costs at the back end side. It also will affect the performance of the execution more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to execution optimization where the execution and results of the single  processes in the process graph are not distinct-able. Nevertheless in theory the granularity does not have to stop there, the data and code could be captured for every line in the code. This flexibility of capturing makes it also a context model that  can be adapted to different use cases in the future.  
+So far only the capturing of the whole process chain, including input and output data, are described. The general idea (presented in section \ref{Implementation:Job dependent provenance}) of the job dependent provenance capturing is to capture the input data of the process graph, the whole process graph and the output of the process graph. This is a common concept the back end providers can agree on, since it is not affecting the back end providers implementations much. It is also capable of giving the OpenEO user a simple overview of how the results are generated and what are differences between different job executions.To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. \\
+Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but also every data in between of every process of the process graph. So for every process in the process graph the input data, the output data and the code executing the process gets captured. This makes it easier for users to see where in the process chain the execution actually produced different results. But it also comes with higher implementation and execution costs at the back end side. The affect on the performance of the execution will be more than the common context model. The possibility of the implementation of such a granularity is also highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of the single  processes in the process graph are not distinct-able. If a back end can support it the granularity can even be higher. In an extreme example, the data and code could be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
 \backmatter
 
