@@ -659,26 +659,26 @@ After the job is executed and the input data has a relating input data PID. The 
  The back end has to provide an endpoint to the user to re-use a specific input data in another job. Therefore, the API allows to include the use of an input data PID in the process graph. So that users can include cited data directly in a new created job description.  
 
 \chapter{Implementation}\label{Implementation}
-In this chapter the EODC prototype of the concept described in Chapter \ref{Design} gets presented. The implementation consists of all suggested changes that need to be made to the OpenEO workflow including parts of the back end, core API and the client. Thus, all three parts of the OpenEO project architecture get modified in the presented solution. There are several different back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. Since python is the most common programming language at the contributing back ends of the OpenEO project, these implementations get used. Both of the chosen implementations are using python as their main programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC back end. Both of the solution implementations are open source and can therefore be used by other back end providers with a similar setup.  
+This chapter presents the EODC prototype of the concept described in Chapter \ref{Design}. The implementation consists of all suggested changes that have to be made to the OpenEO workflow including parts of the back end, core API and the client. Thus, all three parts of the OpenEO project architecture get modified in the presented solution. In the OpenEO project there is a vast amount of back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. The motivation for choosing this options is that python is the most common programming language at the contributing back ends of the OpenEO project. Both of the chosen implementations are using python as their main programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC back end driver. The resulting prototype is open source and can therefore be used by other back end providers with a similar setup.  
 
-The implementation can be divided into four independent parts. In the following four sections these parts are described in detail. First the data identification implementation gets described, so the implementation of the RDA recommendations on the EODC back end. The next section is about the implementation of the automated back end provenance tracking tool that captures data defined in Section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in Section \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in Section \ref{Design:User Interface}.     
+The implementation is structured in four independent parts. The following four sections describe these parts in detail. The first section describes the data identification implementation, e.g. the implementation of the RDA recommendations at the EODC back end. The next section is about the implementation of the automated back end provenance tracking tool that captures data defined in Section \ref{Design:Back end provenance}. After that there is a section about the job execution provenance as defined in Section \ref{Design:Job dependent provenance}. The last section is about the implementation of user interface additions defined in Section \ref{Design:User Interface}.     
 
 \section{Data Identification}\label{Implementation:Data Identification}
 
-As defined in Section \ref{Design:Data Identification}, the RDA recommendations have to be applied to every back end provider individually. In this section the data identification solution on the EODC back end is presented. Other OpenEO back end provider can use the presented approach as well to enable data identification on their back end setup. Some parts of the implementation can be used by all back end providers. The landing page and work-flow of users getting and using the data identifier is described in detail in Section \ref{Implementation:User Interface}. \\
+As defined in Section \ref{Design:Data Identification}, the RDA recommendations have to be applied to every back end provider individually. This section presents the data identification solution for the EODC back end. Other OpenEO back end provider can use the presented approach as well to enable data identification on their back end setup. Some parts of the implementation can be used by all back end providers. The work-flow of users getting and using the data identifier including the landing page is described in Section \ref{Implementation:User Interface}. \\
 
 \subsection{Query Store}
-The main objective of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identify able and persisted. At the EODC back end the Query Store is realized with two additional tables in the existing PostGreSQL meta-database. In Figure \ref{fig:eer_rda} the EODC database structure from Figure \ref{fig:eodceer} is visualized with the proposed additional tables. The added Query table consists of the data specified by the RDA recommendations. The QueryJob table defines the relation between Job and Query. In the current version of the OpenEO core API it is only possible to have one input data query used by a job. In the future there may be the possibility to have more than one input data query related to one job, hence the QueryJob table gets introduced. 
+The centerpiece of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identify able and persisted. At the EODC back end the Query Store is realized with two additional tables in the existing PostgreSQL meta-database. In Figure \ref{fig:eer_rda} the EODC database structure from Figure \ref{fig:eodceer} is visualized with the proposed additional tables. The additional Query table consists of the query dataset specified by the RDA recommendations. The QueryJob table defines the relation between Job and Query. In the current version of the OpenEO core API it is only possible to have one input data query used by a job. In the future there may be the possibility to have more than one input data query related to one job, hence the QueryJob table gets introduced. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{eodc_eer_rda}
-	\caption{Overview of the meta-database of EODC with the new introduced tables (green).}
+	\caption{Overview of the meta-database of EODC with the proposed additional tables (green).}
 	\label{fig:eer_rda} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
 \subsection{Query Handler Work-flow}
-In Figure \ref{fig:impldataid} there is an overview of the data identification solution of the EODC back end. The green parts of the diagram are representing the additions proposed in the thesis solution. The Query Handler itself is an additional python module in the EODC back end that gets called in parallel of the job execution. 
+Figure \ref{fig:impldataid} shows an overview of the data identification solution of the EODC back end. The green parts of the diagram are representing the additions proposed in the thesis solution. The Query Handler itself is an additional python module in the EODC back end that gets called in parallel of the job execution. 
 
 \begin{figure}[h]
 	\centering
@@ -687,15 +687,15 @@ In Figure \ref{fig:impldataid} there is an overview of the data identification s
 	\label{fig:impldataid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-The Query Generation and Query Execution components of the EODC back end provide the input data of the Query Handler addition. The process graph is the input process graph received by the back end driver from the client application. The list of result files is the result of the query execution process and it comes with the execution time stamp. The Query Handler consists of the following components:
+The Query Generation and Query Execution components of the EODC back end provide the input data of the Query Handler. The process graph is the raw input process graph received by the back end driver from the client application. The list of result files is the result of the query execution process and therefore the input data of the work-flow. The Query Execution component provides the execution time stamp additionally. The Query Handler consists of the following components:
 
  \begin{itemize}
 	\item \textbf{Process Graph Parser} \\
-	The Process Graph Parser takes the process graph as input and generates the necessary query data out of it. The output consists of the original query, the unique/normalized query, the hash of the normalized query and the persisted data identifier of the query. This information is forwarded to the Query Record Handler. The mentioned data items are described more in detail in the next section.  
+	The Process Graph Parser takes the process graph as input and generates the necessary query data out of it. Since the process graph at this point also includes the processes and not only the filter operations, this step is necessary. The output consists of the original query, the unique/normalized query, the hash of the normalized query and the persisted data identifier of the query. This information is forwarded to the Query Record Handler. The mentioned resulting items are described more in detail in the section below.  
 	\item \textbf{Data Handler} \\ 
-	The Data Handler is responsible of creating the result data related information. The output is the hash over the file list result, the execution time stamp and additional meta data like the number of files. Since EODC uses the OGC standard CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} to query the data the sorting of the resulting files is predefined. The order of the files has no impact on the processing and openEO users do not have a possibility to choose a specific sorting, therefore the predefined CSW sorting is used for the hash production. The results of the component is forwarded to the Query Record Handler.    
+	The Data Handler is responsible for creating the result data dependent query information. The output is the hash over the file list result, the execution time stamp and additional meta data. In this case the Data Handler only calculates the number of files as meta-data output. Since EODC uses the OGC standard CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} to query the data, the sorting of the resulting files is predefined. The order of the files has no impact on the processing and openEO users are not able to choose a specific sorting, therefore the predefined CSW sorting is used for the hash production. The results of the component is forwarded to the Query Record Handler.    
 	\item \textbf{Query Record Handler} \\
-	The Query Record Handler communicates with the meta database from EODC to see if a Query is already existing. The Work-flow of the Query Record Handler can be viewed in Figure \ref{fig:queryhandler_activity}. If the Query Record already exists the Query Record Handler forwards the existing Query PID to the context model, otherwise a new Query PID gets created and persisted in the Query Table. The combination of the result-file hash and the normalized query hash must not have duplicates in the Query table. On saving the Query PID in the job context model, a QueryJob table entry gets created to store the relation between the job id and the Query PID. 
+	The Query Record Handler communicates with the meta database from EODC to see if a Query is already exists. The Work-flow of the Query Record Handler can be viewed in Figure \ref{fig:queryhandler_activity}. If the Query Record already exists the Query Record Handler forwards the existing Query PID to the context model, otherwise a new Query PID gets created and persisted in the Query Table. The combination of the result-file hash and the normalized query hash must not have duplicates in the Query table. On saving the Query PID in the job context model, a QueryJob table entry gets created to store the relation between the job id and the Query PID. 
 	
 \end{itemize}
 
@@ -708,7 +708,7 @@ The Query Generation and Query Execution components of the EODC back end provide
 
 \subsection{Query Table Structure}
 
-The Query Table stores the data related to the query instance and additional result and meta data information. In Table \ref{Tab:querytable} the stored datasets are displayed. To illustrate the Query data record, example input values are used to explain how the single data entries are generated. Therefore, in Figure \ref{fig:processgraph_example} there is an example input process graph.   
+The Query Table stores the data related to the query instance, additional result and meta-data information. Table \ref{Tab:querytable} visualizes the Query Table structure. To illustrate the Query data record, example input values are used to explain how the single data entries are generated. Therefore, in Figure \ref{fig:processgraph_example} there is an example input process graph.   
 
 \begin{figure}[h]
 	\centering
@@ -731,35 +731,35 @@ The Query Table stores the data related to the query instance and additional res
 	\label{Tab:querytable}
 \end{table}
 
-The elements of the query data set records is described in the following list:
+The following list describes how the elements of the query data set record are created in more detail:
 
 \begin{enumerate}
 	\item \textbf{Query PID} \\
-	The Query PID gets generated by the python library uuid\footnote{https://docs.python.org/3/library/uuid.html}. The library is used to generate unique identifiers and used in the EODC back end for generating the job ids. Since ids in the EODC back end have always in the beginning a code for the specific entity the id is for (e.g. "jb-" for Job entities) a "Q-" is added to the python UUID. \\
+	The Query PID gets generated by the python library uuid\footnote{https://docs.python.org/3/library/uuid.html}. The library is used to generate unique identifiers and used in the EODC back end for generating the job ids. In the EODC back end ids have in the beginning a code for the specific entity (e.g. "jb-UUID" for Job entities). That is why the id for a Query Table entry is structured like "Q-UUID". \\
 	\textit{Example: "Q-16fd2706-8baf-433b-82eb-8c7fada847da"}
 	\item \textbf{Dataset PID} \\
-	The dataset PID is the identifier of the satellite in the query part of the process graph. \\
+	The dataset PID is the identifier of the satellite in the process graph (e.g. the "product\_id" element). \\
 	\textit{Example: "s1a\_csar\_grdh\_iw"}	    	
 	\item\textbf{Original Query} \\
-	The original query is extracted from the process graph by parsing only the filter elements out of it. Filters in the OpenEO project are, according to the openEO core API (see \cite{openeo_api_desc}), defined by the prefix "filter\_". In addition to the filter operations the data identifier is stored for the query. \\
+	The original query is extracted from the process graph by parsing only the filter elements out of it. Filters in the OpenEO project are, according to the openEO core API (see \cite{openeo_api_desc}), defined by the prefix "filter\_". In addition to the filter operations the data identifier is added to the original query. \\
 	\textit{Example: See the Original Query in Figure \ref{fig:processgraph_example}}	 
 	\item \textbf{Unique Query} \\
-	The unique query is the restructured query that is comparable to other unique queries. Since the order of the filters makes no difference in the outcome of the query, the elements of the original query can be alphabetically sorted by the JSON keys to get the unique query. \\
+	The unique query is the restructured query that is comparable to other unique queries. Since the order of the filters makes no difference in the outcome of the query execution, the elements of the original query are alphabetically sorted by the JSON keys to get the unique query. \\
 	\textit{Example: See the Unique Query in Figure \ref{fig:processgraph_example}}	  	 	
 	\item \textbf{Unique Query Hash} \\
-	The unique query hash is the output of the SHA-256 hash function with the unique query as its input. \\
-	\textit{Example: "AE7EF888CDEDF8A9A371F3F3A492368E8C14AE8E0BBE92927E09DE0F395D6041"} 
+	The unique query hash is the output of the SHA-256 hash function (using the python module "hashlib") with the unique query as input. \\
+	\textit{Example: "AE7EF888CDEDF8A9A371\dots"} 
 	\item \textbf{Result Hash} \\
-	The unique query hash is the output of the SHA-256 hash function with the result file list as its input. \\
-	\textit{Example: "565D229FCE4772869343B1F49ABB2F98D4C79345D6A2542D8063BD8203D39434"} 
+	The result hash is the output of the SHA-256 hash function (using the python module "hashlib") with the result file list as input. \\
+	\textit{Example: "565D229FCE4772869343\dots"} 
 	\item \textbf{Execution Time-stamp} \\
 	The execution time stamp is the input parameter of the Query Handler and is just transformed to the data type needed by the data base. 	\\
 	\textit{Example: "2018-10-17 18:03:20,609"}  
 	\item \textbf{Additional Meta-data} \\
-	The additional meta-data column of the Query table can be used by the EODC back end to store additional information about the query execution. In the implementation of this thesis, only the number of output files are persisted in the database. The column is defined as a JSON object of additional information. \\
+	The additional meta-data column of the Query table can be used by the EODC back end to store additional information about the query execution. In the implementation of this thesis, only the number of output files are persisted in the database. The column is defined as a JSON object and can be extended with additional meta-data easily. \\
 	\textit{Example: "\{ "number\_of\_files": 10\}"}    	 
 \end{enumerate}
-
+\todo{state of the rereading}
 \section{Back end provenance}\label{Implementation:Back end provenance}
 The aim of the automated back end provenance computation is to implement a simple approach capturing changes on the back end. First only the parts of EODC that have an influence on the back end processing results is defined. In addition to this the implementation generates a back end version automatically, when changes happen at the back end. The proposed tool can be used by every OpenEO back end with a Linux system with some simple configuration changes. It is completely independent of an existing back end driver service, so that it is a separate tool that gets executed at the back end. In this section the tool implemented for the EODC back end is called “\textit{BackendMonit}”. 
 
