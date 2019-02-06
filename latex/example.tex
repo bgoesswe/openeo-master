@@ -127,7 +127,7 @@ Last but not least to my supervisors Andreas Rauber and Tomas Miksa for always q
 \end{acknowledgements*}
 
 \begin{kurzfassung}
-Publikationen in den Bereichen der Geodäsie und Geoinformation sind meist, aus diversen Gründen, nicht reproduzierbar. Daher fand in den letzten Jahren ein Umdenken in Bezug auf reproduzierbare Publikationen in den computergestützten Geowissenschaften statt. Die Problematik für Wissenschaftler dieser Forschungsbereiche ist die große Anzahl an unterschiedlichen Anbietern, fehlende Datenversionierung und intransparente Anbieter Services. Existierende Literatur beschränkt sich auf konkrete Anbieter und Forschungsbereiche. Dabei wird der Fokus mehr auf die Ausführung des selben Auftrages als auf Reproduzierbarkeit gelegt. Um diese zu ermöglichen ist es notwendig die Daten und die Bearbeitung dieser zu identifizieren. Dabei fehlt es der Geodäsie und Geoinformation an einem allgemeinen Konzept dies sowohl für Wissenschaftler als auch für Anbieter zu ermöglichen. Das Ziel dieser Arbeit ist es eine allgemeine Lösung zur Reproduzierbarkeit in den Geowissenschaften zu erstellen, indem die Daten und deren Bearbeitung automatisch identifizierbar gemacht werden. Dafür wird eine vollständige Lösung innerhalb des Horizon 2020 Projektes OpenEO konzipiert, welche im Earth Observation Data Centre for Water Resources Monitoring (EODC) Anbieter implementiert wird. Die Research Data Allience (RDA) Empfehlungen bezüglich Datenzitierbarkeit werden in diesem Kontext angewendet. Um die Bearbeitung der Daten einzufangen wird das VFramework Konzept angewandt. Die Implementierung in EODC wird über vordefinierter Szenarien für Geowissenschaftler evaluiert.    
+Publikationen in den Bereichen der Geodäsie und Geoinformation sind oft, aus diversen Gründen, nicht reproduzierbar. Daher fand in den letzten Jahren ein Umdenken in Bezug auf reproduzierbare Publikationen in den computergestützten Geowissenschaften statt. Die Problematik für Wissenschaftler dieser Forschungsbereiche ist die große Anzahl an unterschiedlichen Anbietern, fehlende Datenversionierung und intransparente Anbieter Services. Existierende Literatur beschränkt sich auf konkrete Anbieter und Forschungsbereiche. Dabei wird der Fokus mehr auf die Ausführung des selben Auftrages als auf Reproduzierbarkeit gelegt. Um diese zu ermöglichen ist es notwendig die Daten und die Bearbeitung dieser zu identifizieren. Dabei fehlt es der Geodäsie und Geoinformation an einem allgemeinen Konzept dies sowohl für Wissenschaftler als auch für Anbieter zu ermöglichen. Das Ziel dieser Arbeit ist es eine allgemeine Lösung zur Reproduzierbarkeit in den Geowissenschaften zu erstellen, indem die Daten und deren Bearbeitung automatisch identifizierbar gemacht werden. Dafür wird eine vollständige Lösung innerhalb des Horizon 2020 Projektes OpenEO konzipiert, welche im Earth Observation Data Centre for Water Resources Monitoring (EODC) Anbieter implementiert wird. Die Research Data Allience (RDA) Empfehlungen bezüglich Datenzitierbarkeit werden in diesem Kontext angewendet. Um die Bearbeitung der Daten einzufangen wird das VFramework Konzept angewandt. Die Implementierung in EODC wird über vordefinierter Szenarien für Geowissenschaftler evaluiert.    
 \end{kurzfassung}
 
 
@@ -527,7 +527,8 @@ The data management of EODC is file-based, so every image data is stored in a un
 %Data management on the EODC back end is file system based. All earth observation data that can be retrieved and used on the back end is stored as a zip archive file on EODCs file system. EODC only provides Sentinel 2 and Sentinel 1 data, directly retrieved from the ESA, for the OpenEO project. Additionally to the file system directory a PostgreSQL database with the PostGIS extension is used to save the meta data of the files. To query the data sets a OGC standard named CSW is used as an interface. CSW uses XML based queries to e.g. filter the data. The data from ESA gets rarely updated, but if it gets updated a new filename gets created. EODC automatically syncs the data from ESA and gets also the new versions of the data records. So the version of the data is described by the filename and file path. In the PostgreSQL database there are the timestamps of changes on the files stored. Queries are not stored by the EODC back end and there are no data identifiers on query results generated. For the user executing jobs at EODC via the OpenEO back end driver there is no possibility to identify the input data.            
 %\todo{Maybe move to eodc section at the methods.}
 
-
+\section{Summary}
+\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
 
  
 \chapter{Design}\label{Design}
@@ -657,6 +658,9 @@ After the job is executed and the input data has a relating input data PID. The 
     
 \textbf{U5: Re-use of Input Data} \\
  The back end has to provide an endpoint to the user to re-use a specific input data in another job. Therefore, the API allows to include the use of an input data PID in the process graph. So that users can include cited data directly in a new created job description.  
+
+\section{Summary}
+\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
 
 \chapter{Implementation}\label{Implementation}
 This chapter presents the EODC prototype of the concept described in Chapter \ref{Design}. The implementation consists of all suggested changes that have to be made to the OpenEO workflow including parts of the back end, core API and the client. Thus, all three parts of the OpenEO project architecture get modified in the presented solution. In the OpenEO project there is a vast amount of back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. The motivation for choosing this options is that python is the most common programming language at the contributing back ends of the OpenEO project. Both of the chosen implementations are using python as their main programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC back end driver. The resulting prototype is open source and can therefore be used by other back end providers with a similar setup.  
@@ -954,9 +958,11 @@ Depending on the back end, the input data may be restricted to the OpenEO interf
 \textbf{U5: Re-use of Input Data} \\
 To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry.Section \ref{Evaluation:Use Case1} provides an example of such a process graph.  
 
+\section{Summary}
+\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
 
 \chapter{Evaluation}\label{Evaluation}
-This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is getting described in Section \ref{Evaluation:Setup}.\\ The next section evaluates the data identification solution with the underlying RDA recommendations \\ The following sections test the use cases against the solution prototype.\\ The last section in this chapter presents a comparison between the used python implementation and the noworkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections. The complete communication protocol can be found in the appendix Chapter \ref{Appendix}. 
+This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is getting described in Section \ref{Evaluation:Setup}. \\ The following sections test the use cases against the solution prototype.\\ The last section in this chapter presents a comparison between the used python implementation and the noworkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections. The complete communication protocol can be found in the appendix Chapter \ref{Appendix}. 
 %\todo{Add communication in appendix}
 %\section{Data Identification}\label{Evaluation:Data Identification}
 %\todo{Describe Test Cases, introduce new Use Cases}
@@ -967,39 +973,39 @@ This chapter evaluates the prototype implementation described in the previous se
 The EODC back end provides the evaluation setup for testing the prototype of this thesis. It is a duplicate of the productive service running at the OpenEO back end. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deploy the adapted back end of Section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO users. This allows for an unrestricted evaluation of the use cases. If the changes suit EODC, it can switch easily the productive instance with this test instance. \\
 The Evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
 
-\section{Data Identification}
-This section provides a quick overview of the implemented data identification at the EODC back end. It revisits the RDA recommendations to evaluate the concrete implementation of the single recommendation steps.
+%\section{Data Identification}
+%This section provides a quick overview of the implemented data identification at the EODC back end. It revisits the RDA recommendations to evaluate the concrete implementation of the single recommendation steps.
 
-\begin{itemize}
-	\item \textbf{R1: Data Versioning} \\
-	The EODC back end has implemented a data versioning strategy, where every new version of a dataset results in a new filename, which is the id of the dataset.
-	\item \textbf{R2: Timestamping} \\
-	The EODC back end has implemented the timestamping of the data records in the data meta-database.  
-	\item \textbf{R3: Query Store Facilities} \\
-	The Query table in the meta-database represents the Query Store Facilities. It persists the query information described by the recommendation steps below.
-	\item \textbf{R4: Query Uniqueness} \\
-	The \textit{Process Graph Parser} of Figure \ref{fig:impldataid} achieves the query uniqueness by sorting the filter operations and the arguments of them in a new JSON object. 
-	\item \textbf{R5: Stable Sorting} \\
-	The CSW standard of the query tool used at the EODC back end provides stable sorting of the results. 
-	\item \textbf{R6: Result Set Verification} \\
-	The \textit{Data Handler} of Figure \ref{fig:impldataid} creates the data hash by hashing the resulting file list of the query.
-	\item \textbf{R7: Query Timestamping} \\
-	The Time stamp of the original query execution is persisted in the Query table.
-	\item \textbf{R8: Query PID}\\
-	The core of the query PID is generated by the UUID library of python and represents a unique pair of result hash and unique query hash, implemented by the \textit{Query Record Handler} of Figure \ref{fig:impldataid}.
-	\item \textbf{R9: Store the Query} \\
-	The Query is stored in the meta-database Query table. 
-	\item \textbf{R10: Automated Citation Texts} \\
-	The solution of this thesis is not capable of creating an automatic citation text at the EODC back end.
-	\item \textbf{R11: Landing Page} \\
-	The resolvable PID is integrated into the core API of OpenEO and implemented in the EODC back end at the endpoint "GET /data/<pid>". 
-	\item \textbf{R12: Machine Actionability} \\
-	The EODC back end endpoint where the PID resolves, returns a JSON object, which is machine readable.
-	\item \textbf{R13: Technology Migration} \\
-	This recommendation is not in the scope of the thesis.
-	\item \textbf{R14: Migration Verification} \\
-	This recommendation is not in the scope of the thesis.
-\end{itemize}
+%\begin{itemize}
+%	\item \textbf{R1: Data Versioning} \\
+%	The EODC back end has implemented a data versioning strategy, where every new version of a dataset results in a new filename, which is the id of the dataset.
+%	\item \textbf{R2: Timestamping} \\
+%	The EODC back end has implemented the timestamping of the data records in the data meta-database.  
+%	\item \textbf{R3: Query Store Facilities} \\
+%	The Query table in the meta-database represents the Query Store Facilities. It persists the query information described by the recommendation steps below.
+%	\item \textbf{R4: Query Uniqueness} \\
+%	The \textit{Process Graph Parser} of Figure \ref{fig:impldataid} achieves the query uniqueness by sorting the filter operations and the arguments of them in a new JSON object. 
+%	\item \textbf{R5: Stable Sorting} \\
+%	The CSW standard of the query tool used at the EODC back end provides stable sorting of the results. 
+%	\item \textbf{R6: Result Set Verification} \\
+%	The \textit{Data Handler} of Figure \ref{fig:impldataid} creates the data hash by hashing the resulting file list of the query.
+%	\item \textbf{R7: Query Timestamping} \\
+%	The Time stamp of the original query execution is persisted in the Query table.
+%	\item \textbf{R8: Query PID}\\
+%	The core of the query PID is generated by the UUID library of python and represents a unique pair of result hash and unique query hash, implemented by the \textit{Query Record Handler} of Figure \ref{fig:impldataid}.
+%	\item \textbf{R9: Store the Query} \\
+%	The Query is stored in the meta-database Query table. 
+%	\item \textbf{R10: Automated Citation Texts} \\
+%	The solution of this thesis is not capable of creating an automatic citation text at the EODC back end.
+%	\item \textbf{R11: Landing Page} \\
+	%The resolvable PID is integrated into the core API of OpenEO and implemented in the EODC back end at the endpoint "GET /data/<pid>". 
+	%\item \textbf{R12: Machine Actionability} \\
+	%The EODC back end endpoint where the PID resolves, returns a JSON object, which is machine readable.
+	%\item \textbf{R13: Technology Migration} \\
+	%This recommendation is not in the scope of the thesis.
+	%\item \textbf{R14: Migration Verification} \\
+	%This recommendation is not in the scope of the thesis.
+%\end{itemize}
 
 
 
@@ -1209,6 +1215,9 @@ The python solution is only capturing exactly the information that the back end 
 
 \textbf{noWorkflow vs Python} \\
 Noworkflow comes with more features, especially for the back end provider to query and visualize the provenance data, but it is much harder to add information to the provenance capturing mechanism. So the python solution is much more flexible on changes and more independent from the environment than the noworkflow implementation. 
+
+\section{Summary}
+\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
 
 \chapter{Conclusion and future Work}\label{Conclusion}
 
