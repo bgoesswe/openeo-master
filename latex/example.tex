@@ -146,9 +146,10 @@ Studies show that many areas of earth observation sciences lack in creating repr
 
 \chapter{Introduction}\label{Introduction}
 \section{Motivation}\label{Motivation}
-Over the last decades remote sensing agencies have increased the variations of data processing and therefore the amount of resulting data. The complexity of the experiments leads researchers to use external services for the workflow. This circumstances makes it hard for scientists to provide the necessary information to enable reproducibility. Scientists just create a description of the work-flow and the used satellite identifier to describe experiments. To preserve the data for further usage in the future it is necessary to have citable data and processes on the data to ensure repeatability in a long-term \cite{6352411}. Reproducibility is discussed in many scientific areas such as computer science, biology and in computational geoscience. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open reproducible research is different among the participating scientists in a way that the interpretation is more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are:
+Over the last decades remote sensing agencies have increased the variations of data processing and therefore the amount of resulting data. The complexity of the experiments leads researchers to use external services for the workflow. These circumstances makes it hard for scientists to provide the necessary information to enable reproducibility. Scientists just create a description of the work-flow and the used satellite identifier to describe experiments. To preserve the data for further usage in the future it is necessary to have citable data and processes on the data to ensure long-term repeatability \cite{6352411}. Reproducibility is discussed in many scientific areas such as computer science, biology and in computational geoscience. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open reproducible research is different among the participating scientists in a way that the interpretation is more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are:
+\todo{define repeatability, replicability and reproducibility}
 \begin{enumerate}
-	\item Insufficiently method descriptions
+	\item Insufficiently described methods 
 	\item No persistent data identifier
 	\item Legal concerns
 	\item The impression that it is not necessary
@@ -265,9 +266,9 @@ The following sections are structured as followed:\\
 Chapter 2 gives an overview of related scientific activities in the area of reproducibility in the earth observation sciences and reproducibility in other areas with similar objectives. \\
 %Chapter 3  describes the technologies and concepts that are used in the implementation of this thesis. This chapter provides an overview of the EODC back end used for the implementation.\\
 Chapter 3 provides the concept to address the research questions defined in Section \ref{Aim}.  This is the theoretical definition of what has to be implemented in the OpenEO project.\\
-Chapter 4 has a detailed explanation to the proof of concept prototype implementation and how the concept of chapter 4 was realized for the EODC back end. \\
-Chapter 5 dives into the evaluation of the implementation by applying the use cases to the implementation of chapter 5.\\
-Chapter 6 summarizes the outcome of the implementation and evaluation. It contains a discussion about flaws and future work. \\
+Chapter 4 has a detailed explanation to the proof of concept prototype implementation and how the concept of chapter 3 was realized for the EODC back end. \\
+Chapter 5 dives into the evaluation of the implementation by applying the use cases to the implementation of chapter 4.\\
+Chapter 6 summarizes the outcome of the implementation and evaluation. It contains a discussion on results achieved, open issues and future work. \\
 
 \chapter{Related Work}\label{Related Work}
 
@@ -528,6 +529,7 @@ The data management of EODC is file-based, so every image data is stored in a un
 %\todo{Maybe move to eodc section at the methods.}
 
 \section{Summary}
+
 \todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
 
  
