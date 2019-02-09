@@ -27,8 +27,8 @@ halign=left</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>870</x>
-      <y>450</y>
+      <x>880</x>
+      <y>500</y>
       <w>120</w>
       <h>40</h>
     </coordinates>
@@ -40,7 +40,7 @@ PID Info</panel_attributes>
     <id>UMLUseCase</id>
     <coordinates>
       <x>720</x>
-      <y>440</y>
+      <y>450</y>
       <w>120</w>
       <h>50</h>
     </coordinates>
@@ -54,11 +54,11 @@ PID</panel_attributes>
       <x>710</x>
       <y>390</y>
       <w>200</w>
-      <h>70</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
                             &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>120.0;10.0;70.0;50.0</additional_attributes>
+    <additional_attributes>120.0;10.0;70.0;60.0</additional_attributes>
   </element>
   <element>
     <id>UMLActor</id>
@@ -96,13 +96,13 @@ PID</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>970</x>
+      <x>980</x>
       <y>390</y>
-      <w>190</w>
-      <h>90</h>
+      <w>180</w>
+      <h>140</h>
     </coordinates>
     <panel_attributes/>
-    <additional_attributes>170.0;10.0;10.0;70.0</additional_attributes>
+    <additional_attributes>160.0;10.0;10.0;120.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
@@ -131,8 +131,8 @@ Input Data A
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1070</x>
-      <y>470</y>
+      <x>1080</x>
+      <y>500</y>
       <w>130</w>
       <h>70</h>
     </coordinates>
@@ -143,13 +143,13 @@ Input Data A
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1030</x>
-      <y>430</y>
-      <w>70</w>
-      <h>60</h>
+      <x>1050</x>
+      <y>450</y>
+      <w>60</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>50.0;40.0;10.0;10.0</additional_attributes>
+    <additional_attributes>40.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -178,8 +178,8 @@ Data</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>710</x>
-      <y>520</y>
+      <x>880</x>
+      <y>430</y>
       <w>120</w>
       <h>50</h>
     </coordinates>
@@ -190,14 +190,14 @@ Data</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>480</y>
-      <w>100</w>
+      <x>870</x>
+      <y>390</y>
+      <w>110</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;includes&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+    <additional_attributes>40.0;40.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -251,10 +251,10 @@ input data PID A
     <coordinates>
       <x>630</x>
       <y>470</y>
-      <w>130</w>
+      <w>110</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;40.0;110.0;10.0</additional_attributes>
+    <additional_attributes>10.0;40.0;90.0;10.0</additional_attributes>
   </element>
 </diagram>
