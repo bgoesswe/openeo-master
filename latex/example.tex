@@ -275,7 +275,7 @@ Chapter 5 dives into the evaluation of the implementation by applying the use ca
 Chapter 6 summarizes the outcome of the implementation and evaluation. It contains a discussion on results achieved, open issues and future work. \\
 
 \chapter{Related Work}\label{Related Work}
-\todo{STATE OF THE ART}
+
 This chapter describes the related work of the thesis. In the following the reader gets informed about basic concepts related to the prototype implementation. The information is structured in subsections, where each represents different technologies or concepts. \\The first section presents the concepts behind reproducibility in computer science. \\
 The second section describes the state of reproducibility in earth observation science. \\
 The third section presents concepts related to data identification. \\ 
@@ -284,16 +284,28 @@ The last section of this chapter describes the OpenEO project further and more s
 
 
 \section{Reproducibility}\label{Reproducibility}
-According to \cite{6064509}, reproducibility is defined as the re-run of an experiment by a different researcher in the manner of the original experiment. Repetition is the re-run of the exact same experiment with the same method, same environment and very similar result. 
+According to \cite{6064509}, reproducibility is defined as a new experiment based on an original experiment by an independent researcher in the manner of the original experiment. The aim of reproducibility is to gain additional evidence on the result of the original result, by creating an independent experiment that shows similar results. Repetition is the re-run of the exact same experiment with the same method, same environment and very similar result. The aim of the repetition is to check if the methods described in a publication are resulting in the purposed outcome. 
 Achieving reproducibility is a common problem in all scientific areas. It is an issue of the whole scientific community to produce results that are reproducible. Therefore in \cite{10.1371/journal.pcbi.1003285} there are ten rules defined to gain a common sense about reproducibility in all science areas. They consist of the basic idea that every result of interest has to be associated with a process and data used. External programs have to be persisted as well as custom script versions. The usage of version control is recommended. In addition there is a rule defined to make the scripts and their results publicly available \cite{10.1371/journal.pcbi.1003285}. 
 Reproducibility is the key element of The Fourth Paradigm published in \cite{noauthororeditorfourth}. It leads to the term eScience, which has the aim of bringing science and computer technologies closer together. The general concept is to enable scientific procedures in the new information technologies used by data intensive sciences. The expected result of eScience is to get all scientific papers publicly available including the necessary data and work-flows so that scientists are able to have a fast interaction with each other \cite{noauthororeditorfourth}. 
 eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and work-flows citable. The publication \cite{Rauber2015RepeatabilityAR} discusses a common way of reaching the goal formulated above. It describes an approach to look at whole research processes by introducing Process Management Plans, other than limiting it to data citation. The capturing, verification and validation of the input data for a computational process is demonstrated within the paper \cite{Rauber2015RepeatabilityAR}.
-Computer sciences have the issue of a high amount of published papers that are not provided by enough information to make them reproducible. The problem will not be solved by the scientists that need to do additional afford to make reproducibility doable, but by providing new tools for scientists that allow it automatically as stated in \cite{MIKSA201725}. There are some additional issues on reproducibility in computer science e.g. in the case that used software technologies are deprecated and not available any more. Therefore, persisting the execution context is critical to achieve a re-execution of the experiment. One proposed concept of doing so is the VFramework described in more detail in the method Section \ref{Related Work}.
-\\
+Computer sciences have the issue of a high amount of published papers that do not provide enough information to make them reproducible. The problem will not be solved by the scientists that need to do additional effort to make reproducibility doable, but by providing new tools for scientists that allow it automatically as stated in \cite{MIKSA201725}. There are some additional issues on reproducibility in computer science e.g. in the case that used software technologies are deprecated and not available any more. Therefore, persisting the execution context is critical to achieve a re-execution of the experiment. One proposed concept of doing so is the VFramework described in more detail in the method Section \ref{Related Work}. 
+The PRIMAD model is a method to describe if an experiment is reproducing an original one. The following variables of an experiment are used to describe the relationship to the second experiment according to \cite{primad}:
+
+\begin{itemize}
+	\item \textbf{P} Platform / Execution Environment / Context (e.g. Python 2.7, Windows 10,\dots) \\
+	\item \textbf{R or O} Research Objectives / Goals (e.g. sorting the input) \\
+	\item \textbf{I} Implementation / Code / Source-Code (e.g. script in Python) \\
+	\item \textbf{M} Methods / Algorithms (e.g. quick sort) \\
+	\item \textbf{A} Actors / Persons (e.g. user that is executing the experiment) \\
+	\item \textbf{D} Data (input data and parameter values)   (e.g. input data that is to be sorted) 
+\end{itemize}
+If there is another experiment that is different on every variable to the original one, but has the same method (M) and goal (R), then it is a reproducing experiment \cite{primad}. 
+\\  
 Data citation is a key issue of reproducing results of past experiments. Preserving the exact process without persisting the original data is no positive effect for the scientific community. If the data used in an experiment is not available anymore, or not specified explicit enough then there is no chance of reproducing it no matter how much information about the execution was persisted. In earth observation persisting the data for reproducibility in the future is an issue discussed in \cite{6352411}.Gaining data identification in digital sciences has an official working group named Working Group on Data Citation (WGDC), which created 14 recommendations on data citation further explained in Section \ref{Data Identification}.
+
  \subsection{PROV-O}\label{PROV}
 In 2003 the World Wide Web Consortium published the PROV model as a standard for provenance definitions. It is defined by twelve different documents. In the context of this thesis the PROV Ontology (PROV-O) is the most relevant \cite{f06eee9045b445be89cf07100b3ce05c}. 
-PROV-O is a standard language used to describe OWL2 Web Ontology. It is designed as a lightweight concept to be used in a broad spectrum of applications. 
+PROV-O is a standard language using OWL2 Web Ontology. It is designed as a lightweight concept to be used in a broad spectrum of applications. 
 
 \begin{figure}[h]
 	\centering
@@ -302,8 +314,8 @@ PROV-O is a standard language used to describe OWL2 Web Ontology. It is designed
 	\label{fig:prov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-In Figure \ref{fig:prov} there is the basic setup of the PROV-O concept. It consists of three main elements. The Entity is any physical, digital, conceptual thing. Provenance records describe Entities that can consist of references to other Entities. Another element is the Agent, which is responsible for Activities and that they are taking place, e.g. software, persons or organizations. The association of an Agent to an Activity defines the responsibility of the Agent for the Activity. An Activity describes what happened that the Entity has come to existence and how attributes of an Entity changed \cite{f06eee9045b445be89cf07100b3ce05c}. In this thesis the PROV-O standard is not implemented, but since it is a reasonable extension it is mentioned in the future work Section \ref{FutureWork}.
-
+In Figure \ref{fig:prov} there is the basic setup of the PROV-O concept. It consists of three main elements. The Entity is any physical, digital, conceptual thing. Provenance records describe Entities that can consist of references to other Entities. Another element is the Agent, which is responsible for Activities and that they are taking place, e.g. software, persons or organizations. The association of an Agent to an Activity defines the responsibility of the Agent for the Activity. An Activity describes what happened that the Entity has come to existence and how attributes of an Entity changed \cite{f06eee9045b445be89cf07100b3ce05c}. The representation of the context information is not specified in the design chapter \ref{Design}, therefore the PROV ontology can be used to represent the information. In this thesis the PROV-O standard is not implemented, since the EODC back end providers wanted their own representation of it, which is an extension of the existing meta-data, but since it is a reasonable extension it is mentioned in the future work Section \ref{FutureWork}.
+\todo{ICH BIN HIER}
 \subsection{VFramework}
 
 The basic concept of the VFramework is that the execution is done with parallel capturing of provenance data. During the original execution evidence gets collected into a repository. All of which is persisted in the context model of the execution. A re-execution can then be verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution. The provenance data is divided into static and dynamic data. Static data defined in the VFramework is data that is not dependent on the execution of the experiment. The static environment information is therefore independent from the set up and the configuration of the execution. Dynamic data on the other hand has to be captured during the execution of the original experiment. It describes the data that is specific for one work-flow execution \cite{Miksa2013FrameworkFV}. 
