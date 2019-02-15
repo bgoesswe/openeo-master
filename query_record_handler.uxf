@@ -133,13 +133,13 @@ bg=#3c7a00</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>670</x>
+      <x>660</x>
       <y>210</y>
-      <w>200</w>
+      <w>220</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>search for combination of
-DB Result and Query Hash
+Result Hash and Query Hash
 bg=#3c7a00</panel_attributes>
     <additional_attributes/>
   </element>

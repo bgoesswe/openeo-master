@@ -44,11 +44,11 @@ Generation</panel_attributes>
     <coordinates>
       <x>686</x>
       <y>364</y>
-      <w>91</w>
+      <w>49</w>
       <h>49</h>
     </coordinates>
     <panel_attributes>lt=()-[v]
-  Process Graph</panel_attributes>
+  Query</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
@@ -109,8 +109,8 @@ Generation</panel_attributes>
     <panel_attributes>symbol=component
 bg=white
 layer=1
-Process Graph 
-Parser
+Query
+Processor
 </panel_attributes>
     <additional_attributes/>
   </element>
