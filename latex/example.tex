@@ -179,13 +179,13 @@ The following sections define use cases to validate the design proposed in this 
 \subsection{Example Experiment}\label{example}
 
 This section describes an example of an experiment that a remote sensing scientist wants to execute. The example will be used throughout the thesis for better illustration of the concepts. It is used in the Use Cases in the following sections. \\
-The input data of the experiment is Sentinel 2 data developed by the European Space Agency (ESA). The area of interest is the italic province south tyrol. More specifically the bounding area in the "EPSG:32632" projection with the coordinates for an north-west corner of (652000, 5161000) and an south-east corner of (672000, 5181000). The time of interest is the month January of the year 2017. In this example the scientist is working on vegetation dynamics and wants to know how state of the vegetation of south tyrol was in the beginning of 2017. Therefore the minimum of the Normalized Difference Vegetation Index (NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php}) gets calculated on the data selection. It is derived from the difference between near-infrared (which reflects vegetation strongly) and red light (which vegetation absorbs). So for every pixel of the satellite image the NDVI value is calculated for every day of January 2017. Then the 31 images for January 2017 are reduced to one by taking the minimum NDVI value of each pixel. \\
+The input data of the experiment is Sentinel 2 data developed by the European Space Agency (ESA). The area of interest is the iprovince south tyrol. More specifically the bounding area in the "EPSG:4326" projection with the coordinates for an north-west corner of (10.288696, 46.905246) and an south-east corner of (12.189331, 45.935871). The time of interest is the month January of the year 2017. In this example the scientist is working on vegetation dynamics and wants to know how state of the vegetation of south tyrol was in the beginning of 2017. Therefore the minimum of the Normalized Difference Vegetation Index (NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php}) gets calculated on the data selection. It is derived from the difference between near-infrared (which reflects vegetation strongly) and red light (which vegetation absorbs). So for every pixel of the satellite image the NDVI value is calculated for every day of January 2017. Then the 31 images for January 2017 are reduced to one by taking the minimum NDVI value of each pixel. \\
 
 The execution of the experiment consists of the following steps:
 
 \begin{enumerate}
 	\item Selecting the Sentinel 2 data records
-	\item Filtering the Sentinel 2 records by the extent of south tyrol. \\(652000, 5161000) - (672000, 5181000) on "EPSG:32632" projection.
+	\item Filtering the Sentinel 2 records by the extent of south tyrol. \\(10.288696, 46.905246) - (12.189331, 45.935871) on "EPSG:4326" projection.
 	\item Filtering the Sentinel 2 records by January 2017.
 	\item Calculate NDVI for all days of January 2017.
 	\item Reduce by the minimum value of January 2017.
@@ -947,7 +947,7 @@ The previous sections describe only the technical insight of the back end. This 
 
 \textbf{Implementation of U1: Back end version} \\
 Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see Section \ref{Implementation:Back end provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data. The endpoint takes an time-stamp as parameter to get the back end version meta-data of a specific time. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python client. The result is a JSON object consisting of the back end provenance data similar to Figure \ref{fig:backendprovcm}.
-\todo{implement version with time-stamp parameter}
+
 \textbf{Implementation of U2: Detailed Job Information} \\
 In the OpenEO coreAPI there is an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.0.2 only contains the execution state of the job and the job id. In addition to this the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see Figure \ref{fig:job_context_model}). Since the python client just returns the resulting JSON response from the back end as a python dictionary, there is no modification needed.
 
@@ -963,59 +963,15 @@ The core API does not define the comparison of two jobs, hence there does not ex
 \todo{show process graph differences in the program and edit the image here}
 
 \textbf{U4: Data Identifier Landing Page} \\
-Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.0.2, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<dataset-id>" endpoint is extended, by accepting query PIDs. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and in addition the result of the query execution and the original query parameters.
+Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.0.2, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<dataset-id>" endpoint is extended, by accepting query PIDs. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and in addition the result of the query execution and the original query parameters. If the result file list differs from the original execution, there will be a warning message added to the response. 
 
 \textbf{U5: Re-use of Input Data} \\
-To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry.Section \ref{Evaluation:Use Case1} provides an example of such a process graph.  
+To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry. Section \ref{Evaluation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
 
-\section{Summary}
-\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
-\todo{I am here}
-\chapter{Evaluation}\label{Evaluation}
-This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. \\ The following sections test the use cases against the solution prototype.\\ The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections. The complete communication protocol can be found in the appendix Chapter \ref{Appendix}. 
+\section{Use Cases}
+This section shows how the use cases of Section \ref{Use Cases}  can be achieved using the implementation described in the sections before.
 
-
-\section{Evaluation Setup}\label{Evaluation:Setup}
-The EODC back end provides the evaluation setup for testing the prototype of this thesis. It is a duplicate of the productive service running at the OpenEO back end. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deploy the adapted back end of Section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO users. This allows for an unrestricted evaluation of the use cases. If the changes suit EODC, it can switch easily the productive instance with this test instance. \\
-The Evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
-
-%\section{Data Identification}
-%This section provides a quick overview of the implemented data identification at the EODC back end. It revisits the RDA recommendations to evaluate the concrete implementation of the single recommendation steps.
-
-%\begin{itemize}
-%	\item \textbf{R1: Data Versioning} \\
-%	The EODC back end has implemented a data versioning strategy, where every new version of a dataset results in a new filename, which is the id of the dataset.
-%	\item \textbf{R2: Timestamping} \\
-%	The EODC back end has implemented the timestamping of the data records in the data meta-database.  
-%	\item \textbf{R3: Query Store Facilities} \\
-%	The Query table in the meta-database represents the Query Store Facilities. It persists the query information described by the recommendation steps below.
-%	\item \textbf{R4: Query Uniqueness} \\
-%	The \textit{Process Graph Parser} of Figure \ref{fig:impldataid} achieves the query uniqueness by sorting the filter operations and the arguments of them in a new JSON object. 
-%	\item \textbf{R5: Stable Sorting} \\
-%	The CSW standard of the query tool used at the EODC back end provides stable sorting of the results. 
-%	\item \textbf{R6: Result Set Verification} \\
-%	The \textit{Data Handler} of Figure \ref{fig:impldataid} creates the data hash by hashing the resulting file list of the query.
-%	\item \textbf{R7: Query Timestamping} \\
-%	The Time stamp of the original query execution is persisted in the Query table.
-%	\item \textbf{R8: Query PID}\\
-%	The core of the query PID is generated by the UUID library of python and represents a unique pair of result hash and unique query hash, implemented by the \textit{Query Record Handler} of Figure \ref{fig:impldataid}.
-%	\item \textbf{R9: Store the Query} \\
-%	The Query is stored in the meta-database Query table. 
-%	\item \textbf{R10: Automated Citation Texts} \\
-%	The solution of this thesis is not capable of creating an automatic citation text at the EODC back end.
-%	\item \textbf{R11: Landing Page} \\
-	%The resolvable PID is integrated into the core API of OpenEO and implemented in the EODC back end at the endpoint "GET /data/<pid>". 
-	%\item \textbf{R12: Machine Actionability} \\
-	%The EODC back end endpoint where the PID resolves, returns a JSON object, which is machine readable.
-	%\item \textbf{R13: Technology Migration} \\
-	%This recommendation is not in the scope of the thesis.
-	%\item \textbf{R14: Migration Verification} \\
-	%This recommendation is not in the scope of the thesis.
-%\end{itemize}
-
-
-
-\section{Re-Use of Input Data}\label{Evaluation:Use Cases}\label{Evaluation:Use Case1}
+\subsection{Re-Use of Input Data}\label{Implementation:Use Case1}
 The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment.
 
 \begin{enumerate}
@@ -1028,11 +984,11 @@ The first scenario describes the process of a researcher using OpenEO as process
 	token = session.auth(EODC_USER_A, EODC_PWD_A, BearerAuth)
 	
 	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
-	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
-				right=672000, top=5161000,
-				bottom=5181000, srs="EPSG:32632")
+	timeseries = s2a_prd_msil1c.bbox_filter(west=10.288696, 
+	east=12.189331, north=46.905246,
+	south=45.935871, srs="EPSG:4326")
 	timeseries = timeseries.date_range_filter("2017-01-01", 
-						  "2017-01-08")
+	"2017-01-31")
 	timeseries = timeseries.ndvi("B04", "B08")
 	composite = timeseries.min_time()
 	jobA = timeseries.send_job()
@@ -1047,20 +1003,26 @@ The first scenario describes the process of a researcher using OpenEO as process
 	input_data = job_details["input_data"]
 	print(input_data)
 	# Output: EODC_DRIVER_URL/data
-	#			/Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139
+	#			/qu-5c45fa2a-52b9-4c7a-9023-37c34bdbd139
 	desc = session.describe_collection(input_data)
 	query = desc["query"]
 	files = desc["input_files"]
 	\end{lstlisting}
 	
-	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. After calling the page, the user is provided by the information of the data set (e.g. "s2a\_prd\_msil1c" ). In addition the resulting files of the query and the query (filter arguments) are added to the website. \\
-	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.    
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{usecase1_pid}
+		\caption{Response of the PID created by job A landing page.}
+		\label{fig:usecase1-pid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+	\end{figure}	
+	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the query PID information. After calling the page, the user is provided by the information of the data. In addition the resulting files of the query and the query (filter arguments) are added to the website. \\
+	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.  
 	
 	\item \textbf{Researcher A cites the input data in a publication.} \\
 	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the PID from step 2 for the citation.   
 	
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
-	In order to use the same input data as Researcher A, Researcher B just copies the data PID from the publication and puts it into the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (different band configuration) is printed. In Figure \ref{fig:eva_datacitation} the resulting process graph can be viewed.   
+	In order to use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.   
 	\begin{lstlisting}[frame=single, language=Python]
 	import openeo
 	session = openeo.session(EODC_USER_B, endpoint=EODC_DRIVER_URL)
@@ -1068,44 +1030,37 @@ The first scenario describes the process of a researcher using OpenEO as process
 	token = session.auth(EODC_USER_B, EODC_PWD_B, BearerAuth)
 	
 	s2a_prd_msil1c = session
-		     .image("Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139")
-	timeseries = s2a_prd_msil1c.ndvi("B02", "B04")
-	composite = timeseries.min_time()
+	.image("qu-5c45fa2a-52b9-4c7a-9023-37c34bdbd139")
+	timeseries = s2a_prd_msil1c.ndvi("B04", "B08")
+	composite = timeseries.max_time()
 	jobB = timeseries.send_job()
 	status = jobB.queue()
 	\end{lstlisting}
 	
 \end{enumerate}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{datacitation_process_graph}
-	\caption{Example process graph using the data PID as input data.}
-	\label{fig:eva_datacitation} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-\section{Capturing job dependent environments}\label{Evaluation:Use Case2}
-This scenario has the scope on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In addition the advantages for the back end provider gain additional information about job executions are part of the use case. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
+\subsection{Capturing job dependent environments}\label{Implementation:Use Case2}
+This scenario has the scope on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
 
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
 	The researcher A runs a job at the EODC back end with the following python client code. This is the default workflow of executing a job using the python client.  
 	\begin{lstlisting}[frame=single, language=Python]
 	import openeo
-	session = openeo.session(EODC_USER, endpoint=EODC_DRIVER_URL)
+	session = openeo.session(EODC_USER_A, endpoint=EODC_DRIVER_URL)
 	# Authenticate with bearer token
-	token = session.auth(EODC_USER, EODC_PWD, BearerAuth)
+	token = session.auth(EODC_USER_A, EODC_PWD_A, BearerAuth)
 	
 	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
-	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
-	right=672000, top=5161000,
-	bottom=5181000, srs="EPSG:32632")
+	timeseries = s2a_prd_msil1c.bbox_filter(west=10.288696, 
+	east=12.189331, north=46.905246,
+	south=45.935871, srs="EPSG:4326")
 	timeseries = timeseries.date_range_filter("2017-01-01", 
-	"2017-01-08")
+	"2017-01-31")
 	timeseries = timeseries.ndvi("B04", "B08")
 	composite = timeseries.min_time()
-	job = timeseries.send_job()
-	status = job.queue()
+	jobA = timeseries.send_job()
+	status = jobA.queue()
 	\end{lstlisting}
 	\item \textbf{Researcher wants to describe the experiment environment.}\\
 	The researcher wants to publish the result of the experiment and therefore needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
@@ -1115,13 +1070,13 @@ This scenario has the scope on the execution environment. It handles the need of
 	interpreter = context_model["interpreter"]
 	code_env = context_model["code_env"]
 	backend_version = context_model["backend_env"]
-						["backend_version"]
+	["backend_version"]
 	\end{lstlisting}
 	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. 
 	
 \end{enumerate}
 
-\section{Getting differences of job executions}\label{Evaluation:Use Case3}
+\subsection{Getting differences of job executions}\label{Implementation:Use Case3}
 The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments.  
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
@@ -1133,11 +1088,11 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 	token = session.auth(EODC_USER_A, EODC_PWD_A, BearerAuth)
 	
 	s2a_prd_msil1c = session.image("s2a_prd_msil1c")
-	timeseries = s2a_prd_msil1c.bbox_filter(left=652000, 
-	right=672000, top=5161000,
-	bottom=5181000, srs="EPSG:32632")
+	timeseries = s2a_prd_msil1c.bbox_filter(west=10.288696, 
+	east=12.189331, north=46.905246,
+	south=45.935871, srs="EPSG:4326")
 	timeseries = timeseries.date_range_filter("2017-01-01", 
-	"2017-01-08")
+	"2017-01-31")
 	timeseries = timeseries.ndvi("B04", "B08")
 	composite = timeseries.min_time()
 	jobA = timeseries.send_job()
@@ -1162,7 +1117,7 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 	diffAB = jobA.diff(jobB)
 	diffAC = jobA.diff(jobC)
 	\end{lstlisting}  
-	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. The result of the comparison between job A and job C can be viewed at Figure \ref{fig:eva_diff}. The whole results of this evaluations are in the appendix (Section \ref{Appendix}).   
+	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. The result of the comparison between job A and job C can be viewed at Figure \ref{fig:eva_diff}.   
 \end{enumerate}
 
 \begin{figure}[h]
@@ -1173,54 +1128,82 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 \end{figure}
 
 
+\section{Summary}
+\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
+
+\chapter{Evaluation}\label{Evaluation}
+This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. \\ Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. \\ Section \ref{Evaluation:impact} evaluates the impact of the solution to the EODC back end by looking into storage and performance metrics. \\ The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections.
+
+
+\section{Evaluation Setup}\label{Evaluation:Setup}
+The EODC back end provides the evaluation setup for testing the prototype of this thesis. It is a duplicate of the productive service running at the OpenEO back end. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deploy the adapted back end of Section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. This allows for an unrestricted evaluation of the use cases. If the changes suit EODC, it can switch easily the productive instance with this test instance. \\
+The evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
+
+\todo{I am Here}
+\section{Special Test Cases}\label{Evaluation:special}
+This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. These test cases are created to look into the error proneness of the solution. They are structured by the topic of the test cases in the following sections.
+
+\subsection{Data Changes}\label{Evaluation:special_dataid}
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose. \\
+The following steps are taken to test the behavior on data changes:
+
+\begin{enumerate}
+	\item \textbf{Run JobA, which creates query PID-A. Get file list of PID-A} \\
+	After executing the job the PID-A is created as "qu-4dc4e155-cd36-4f90-a335-f610b58fec7a". The resulting file list consists of 31 files. One of the filenames ends with "T32TPR\_20170104T101405.zip". 
+	\item \textbf{Change filename of one File of PID-A query resulting files} \\
+	The file with the name ending with "T32TPR\_20170104T101405.zip" is now set to end with "T32TPR\_20170104T101405\_NEW.zip", by replacing the name after the query execution. Since the processing would break, if the name is changed in that way, it is replaced by the original name for the processing service.  
+	\item \textbf{Get file list of PID-A} \\
+	The second call for the file list, after the file is modified results in a different file list and a warning message, that the resulting files differ from the original execution.
+	\item \textbf{Run duplicate of JobA} \\
+	After running a duplicate of JobA, a new query PID ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") gets created, which is correct behavior since the result of the query changed. 
+	\item \textbf{Run JobB using PID-A}\\
+	JobB is the same process chain as JobA, but using the data PID of JobA as input parameter. After executing JobB, the job gets the same PID as the duplicate of JobA ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") instead of the used PID-A. The job got executed by the updated data records, since the execution of the same query returns a different resulting data. In the job description endpoint there is a warning message, that the data input was different to the specified input data PID of the process graph. 
+\end{enumerate}
+
+The test case shows the behavior of the solution, if the data gets updated, nevertheless the behavior is the same for deleted data records. The deletion changes the outcome of the query execution and therefore, a new query PID gets generated. Another outcome of the example is that the used input data PID of a job execution is consistent only after the execution. It shows limitations of the EODC back end at the moment for not being able to query for deprecated data records. Nevertheless, the implementation gives the user the possibility to notice changes in the data-set. \\
+The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
+
+\subsection{Job Capturing}\label{Evaluation:special_jobcap}
+
+This section reviews the outcome of the job capturing critically. The focus of it is the created context model of the job executions. The following two question are used to discuss the impact of the captured data regarding the job execution.  \\
+
+\textbf{Is it theoretically possible to recreate an older version of the back end?} \\
+The aim of the implementation is to capture enough data to make it theoretically possible to re-run the same job. The EODC back end is created directly by a GitHub repository. To recreate an old version of the back end, the GitHub repository URL and the commit identifier of the original set up is needed. The timestamp of the job execution is persisted in the context model of the original job execution. The original GitHub repository and commit can be resolved by the back end provenance. Therefore, the information of re-creating the back end state from an older version is captured. To re-create the original job on the back end, the process graph of it is persisted and can be re-executed. The execution of the job is the same, assuming the input data has not been deleted in the meantime. The result hash makes it possible to validate, if the job re-execution was the same.
+
+\section{Impact}\label{Evaluation:impact}
+
+This section evaluates the impact of the implementation on the EODC back end. To achieve this a testing set of 20 different process graphs are executed at the EODC back end. The testing set consists of a composition of jobs with different complexity. There are 14 jobs in the same complexity level of the running example, where every job creates a new input data PID. There are 5 jobs that are using existing input data PIDs and one job with a big area of interest, which will lead to a big resulting  output file. The impact is measured by the impact on the performance and the impact on the storage of the EODC back end.           
+
+\subsection{Performance}\label{Evaluation:impact_perf}
+This section evaluates the performance impact on the EODC back end by measuring the difference of the job execution duration between the original EODC back end and the EODC back end with the implementations of the thesis.  
+
+
+
+
+\subsection{Storage}\label{Evaluation:impact_stor}
+\todo{Table Query, Table QueryJob, Context Model in Job Table, }
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
-The two implementation approaches have implemented the same features, even though there are major differences between them. The following sections compares and discusses the different implementations and the advantages and disadvantages. Therefore, both implementations are confronted with three categories. First the effort of applying the implementation gets compared, then the performance of the python and the noworkflow implementation is compared. The last comparison is about the maintenance and the extensibility of the solutions. 
+The two implementation approaches have implemented the same features, even though there are major differences between them. This section provides the reason for choosing the python implementation instead of the noWorkflow implementation. Therefore, the performance of the implementations gets compared. The experiment setup is the running example (see Section \ref{example}) of the thesis. The date range of the example gets modified to generate a set of test scenarios with a range of input data sizes. There are 10 jobs executed in both implementations, which have the same process graph like defined in the running example, but with varying date range parameters. The date range is modified on each iteration by an addition of 2 days. The first range is January 2017, the next one is January until 2nd of February 2017 and so on, until the last test case has a date range of January to the 20th of February of 2017. The jobs are executed in both implementations and the duration time of the execution is measured. After each job the setup gets cleaned up, by removing all generated files including the generated provenance database of noWorkflow. 
 
-\subsection{Implementation Effort}\label{NvsP:Implementation Effort}
-The implementation of this thesis applies the purposed reproducibility context model creation only for the EODC back end. There are six other back end providers in the project were there needs to be a solution too. Therefore the effort of the implementation gets graded so that other back end providers can decide, which solution they want to implement.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{noworkflow_vs_python}
+	\caption{Duration time of the job executions}
+	\label{fig:noworkvspython} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
-\textbf{noWorkflow} \\
-The implementation of noworkflow is by the definition of noworkflow itself quiet easy. The EODC back end is a python implemented back end and therefore just the call of the python scripts has to be changed to the noworkflow command line interface, which is a wrapper around python. That was everything that has to be done on the code provenance capturing part. The created database has to be moved to the job output folder. To get the provenance data the command line tool has to be called, so there is some effort to find the needed data in the documentation of the tool. After finding the information it has to get parsed for the information needed for the context model, which takes some effort, but can be done in a view hours. 
-
-\textbf{Python} \\
-The python implementation does not affect the processing code of the EODC back end, but adds some additional logging calls to it. So that the actual code has to be modified, which takes longer than the noworkflow implementation. After the logging calls are added to the code the capturing part is done. For retrieving the information of the logging file it has to get parsed to transfer it to the context model of the job. This is easily done, because the added logging messages are only the needed information and it is self formatted so that the parsing is easy to implement.   
-
-\textbf{noWorkflow vs Python} \\
-The implementation effort of both solutions are very similar, the noworkflow solution has the advantage, that the capturing does not require changes in the code. The downside of noworkflow is that it captures much more provenance information than needed for the context model and the needed information has to be extracted from the database in case to get it. 
-
-\subsection{Performance}\label{NvsP:Performance}
-Most of the OpenEO back end provider have customers that pay by the length of the execution time and therefore the provenance capturing shall not affect performance significantly. Therefore, the performance of the two implementations get compared.
-
-\textbf{noWorkflow} \\
-Due to the wrapper around the python interpreter, the performance after applying the solution was very low. The execution time a bit more than three times the original execution without capturing. The fact about the bad performance of noworkflow is the reason for the implementation of the python solution. 
-
-\textbf{Python} \\
-The python implementation adds almost no overhead to the execution. The parsing of the log file is the only part of the python code that has an real effect on the performance. Hence, the execution duration using the python solution is only a view milliseconds longer compared to the unmodified execution.  
-
-\textbf{noWorkflow vs Python} \\
-The python implementation is by far much more efficient when it comes to performance. The main reason is the wrapper around python and the high amount of captured data in the noworkflow solution of data that is not needed in the context of this thesis. In the table below the timings of the proof of concept execution is recorded. The timing in the table is the time between sending the request and getting response from the server about the finished processing. 
+Figure \ref{fig:noworkvspython} shows a diagram of the execution duration over the input date range. The python implementation has a smaller effect on the execution performance. The diagram shows that the gap between the execution duration gets bigger, if the amount of input data is bigger. Hence, the noWorkflow implementation is more inefficient on more bigger workloads. Table \ref{Tab:noworkflow} shows the average execution duration of both implementations. The average execution duration of noWorkflow, for the given jobs, is about 2 to 3 times bigger then from the python implementation.  
 
 \begin{table}[]
-	\caption{Performance comparison between noworkflow and python implementation}
+	\caption{Average duration time of the job executions of the  noWorkflow and python implementation}
 	\centering
-	\begin{tabular}{l|l|l}
-		\textbf{original execution} & \textbf{noworkflow solution} & \textbf{python solution} \\ \hline
-		4069 ms & 11900 ms & 4074 ms \\ 
+	\begin{tabular}{l|l}
+		\textbf{noWorkflow solution} & \textbf{python solution} \\ \hline
+		84,779 s & 26,043 s \\ 
 	\end{tabular}
 	\label{Tab:noworkflow}
 \end{table}
 
-\subsection{Maintenance and Extensibility}\label{NvsP:Maintenance and Extensibility}
-OpenEO is still involving and will be in the future due to the rapidly changing earth observation market. So in this section the extensibility and the maintenance of the solutions gets compared. 
-
-\textbf{noWorkflow} \\
-NoWorkflow is already capturing much more information about the execution. It comes with a high amount of features to query the provenance data and to visualize it. NoWorkflow is still evolving and new features may be added to it in the future. On the other hand the noworkflow solution is depending on the external maintenance of noworkflow, which is not guaranteed. So it can happen, that noworkflow does not work with a new python version, or if the back end provider switches to another programming language noworkflow can not be used any more. In addition to this disadvantages it is hard to add additional provenance data that is not already captured by noworkflow, because then noworkflow has to be adapted.
-
-\textbf{Python} \\
-The python solution is only capturing exactly the information that the back end provider wants it to capture. On fine granulated capturing and parsing the additional effort can be quite high. The advantage on this implementation is that the tool is easy extensible by just adding more logging information. Since logging is a simple feature of python it can be assumed that it will not change much in the future. If the back end provider decides to switch to a different programming language it can easily switch by adapting the code parsing to the new language and add the logging messages to the new back end implementation. 
-
-\textbf{noWorkflow vs Python} \\
-Noworkflow comes with more features, especially for the back end provider to query and visualize the provenance data, but it is much harder to add information to the provenance capturing mechanism. So the python solution is much more flexible on changes and more independent from the environment than the noworkflow implementation. 
 
 \section{Summary}
 \todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
@@ -1271,518 +1254,7 @@ In the solution of this work the meta-data is captured for identifying how jobs 
 So far only the capturing of the whole process chain, including input and output data, are described. The general idea (presented in Section \ref{Implementation:Job dependent provenance}) of the job dependent provenance capturing is to capture the input data of the process graph, the whole process graph and the output of the process graph. This is a common concept the back end providers can agree on, since it is not affecting the back end providers implementations much. Moreover, it is capable of giving the user a simple overview of how the results are generated and what the differences between job executions are.To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. \\
 Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but every data state in between of each process. For every process in the process graph the input data, the output data and the code executing the process get captured. This makes it easier for users to see where in the process chain the execution actually produced different results.\\ The concept leads to higher implementation and execution costs at the back end side. The effect on the performance of the execution is higher than the common context model. If the implementation of such a granularity is  doable is highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of single processes are not distinct-able. If a back end can support it, the granularity can be finer. In an extreme example, the data and code can be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
-\chapter{Appendix}\label{Appendix}
-
-\section{Re-Use of Input Data}\label{usecase1appendix}
-\subsection{Researcher A runs an experiment (job A) at the EODC back end.}
-\begin{lstlisting}[frame=single, language=Python]
-POST http://openeo.dev.193.170.203.100.xip.io/jobs
-
-Body:
-
-{ 
-"process_graph": {"imagery": {"imagery": {
-			"extent": ["2017-01-01", "2017-01-05"],
-"imagery": {"extent": {"crs": "EPSG:32632",
-"east": 17.2,
-"north": 46.3,
-"south": 49.02,
-"west": 9.4},
-"imagery": {"name": "s2a_prd_msil1c", "process_id": "get_collection"},
-"process_id": "filter_bbox"},
-"process_id": "filter_daterange"},
-"nir": "B08",
-"process_id": "NDVI",
-"red": "B04"},
-"process_id": "min_time"}
-}
-
-Response-Code: 200
-
-{
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"status": "created"
-}
-
-----
-
-POST http://openeo.dev.193.170.203.100.xip.io/jobs/
-		jb-46de179d-ec94-40ba-bfb5-d138b473ce0f/results
-
-Response-Code: 200
-
-{
-"download": "http://openeo.dev.193.170.203.100.xip.io/
-	b185f06d08486a68ecafeecdcbc800119fbfa043134d671259b0a753d60c94c9", 
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"status": "finished"
-}
-
-\end{lstlisting}
-
-\subsection{Researcher A retrieves the used input data of job A.}
-\begin{lstlisting}[frame=single, language=Python]
-GET http://openeo.dev.193.170.203.100.xip.io/jobs/
-		jb-46de179d-ec94-40ba-bfb5-d138b473ce0f
-
-Response-Code: 200
-
-{
-"input_data": "http://openeo.dev.193.170.203.100.xip.io/data/
-               Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139",
-"download": "http://openeo.dev.193.170.203.100.xip.io/
-     b185f06d08486a68ecafeecdcbc800119fbfa043134d671259b0a753d60c94c9", 
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"status": "finished",
-
-"context_model": {
-"backend_env": {
-"backend_version": 2,
-"openeo_api": "0.0.2",
-"git_repos": [
-{
-"branch": "master",
-"commit": "05f4765de578467fef8e1a24404bbd7f77b61c17",
-"diff": null,
-"url": "https://github.com/Open-EO/openeo-openshift-driver.git"
-}]
-},
-"code_env": "code_env": [
-"alabaster==0.7.11",
-"apted==1.0.3",
-"asn1crypto==0.24.0",
-"atomicwrites==1.2.1",
-"attrs==18.2.0",
-"Babel==2.6.0",
-"backcall==0.1.0",
-"bleach==2.1.3",
-"certifi==2018.8.13",
-"cffi==1.11.5",
-"Pygments==2.2.0",
-"pyOpenSSL==18.0.0",
-"pyparsing==2.2.0",
-"PyPosAST==1.4.1",
-"PySocks==1.6.8",
-"pytest==3.8.0",
-"python-dateutil==2.7.3",
-"pytz==2018.5",
-"pyzmq==17.1.2",
-"qtconsole==4.4.1",
-"requests==2.19.1",
-"requests-mock==1.5.2",
-"Send2Trash==1.5.0",
-"Shapely==1.6.4",
-"simplegeneric==0.8.1",
-"six==1.11.0",
-"snowballstemmer==1.2.1",
-"Sphinx==1.7.7",
-"sphinx-autodoc-annotation==1.0.post1",
-"sphinxcontrib-websupport==1.1.0",
-"SQLAlchemy==1.2.11",
-"terminado==0.8.1",
-"testpath==0.3.1",
-"tornado==5.1",
-"traitlets==4.3.2",
-"urllib3==1.23",
-"wcwidth==0.1.7",
-"webencodings==0.5.1",
-"Werkzeug==0.14.1",
-"widgetsnbextension==3.4.1"
-],
-"interpreter": "Python 3.7.1",
-"input_data": "Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139",
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"start_time": "2018-10-21 11:27:47,653",
-"end_time": "2018-10-21 11:28:44,644",
-"output_data": 
-	"c448e6f8cd027bf0af70bab8d8372b339e70858ffc9f19854d5ea38bf401b856"
-}
-
-}
-
-GET http://openeo.dev.193.170.203.100.xip.io/data/
-		Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139
-
-Response-Code: 200
-
-{
-{
-"bands": [
-{
-"band_id": "1",
-"offset": 0,
-"res_m": 60,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 443.9
-},
-{
-"band_id": "2",
-"offset": 0,
-"res_m": 10,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 496.6
-},
-{
-"band_id": "3",
-"offset": 0,
-"res_m": 10,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 560
-},
-{
-"band_id": "4",
-"offset": 0,
-"res_m": 10,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 664.5
-},
-{
-"band_id": "5",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 703.9
-},
-{
-"band_id": "6",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 740.2
-},
-{
-"band_id": "7",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 782.5
-},
-{
-"band_id": "8",
-"offset": 0,
-"res_m": 10,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 835.1
-},
-{
-"band_id": "8a",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 864.8
-},
-{
-"band_id": "9",
-"offset": 0,
-"res_m": 60,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 945
-},
-{
-"band_id": "10",
-"offset": 0,
-"res_m": 60,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 1373.5
-},
-{
-"band_id": "11",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 1613.7
-},
-{
-"band_id": "12",
-"offset": 0,
-"res_m": 20,
-"scale": 0.0001,
-"type": "int16",
-"unit": "1",
-"wavelength_nm": 2202.4
-}
-],
-"data_id": "s2a_prd_msil1c",
-"description": "Sentinel-2 is a multispectral, high-resolution, optical 
-imaging mission, developed by the European Space Agency (ESA) in the 
-frame of the Copernicus program of the European Commission.",
-"input_files": [
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32TPT_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32TPT_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32TPS_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32TPS_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32TQS_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32TQS_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UVP_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UVP_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33TVM_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33TVM_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33TUN_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33TUN_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UUQ_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UUQ_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UUP_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UUP_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32UQV_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32UQV_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UWQ_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UWQ_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32UPV_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32UPV_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32TNS_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32TNS_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32TQT_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32TQT_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33TUM_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33TUM_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UVQ_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UVQ_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33TVN_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33TVN_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32UQU_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32UQU_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T32UPU_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T32UPU_20170104T101405.zip"
-},
-{
-"date": "2017-01-04",
-"name": "S2A_MSIL1C_20170104T101402_N0204_R022_T33UWP_20170104T101405",
-"path": "/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/01/04/
-S2A_MSIL1C_20170104T101402_N0204_R022_T33UWP_20170104T101405.zip"
-}
-],
-"query": "{'bands': None, 'data_id': None, 'derived_from': None, 
-'extent': {'extent': {'crs': 'EPSG:32632', 'east': 17.2, 'north': 46.3, 
-'south': 49.02, 'west': 9.4}}, 'license': None, 'name': 's2a_prd_msil1c', 
-'time': {'extent': ['2017-01-01', '2017-01-05']}}",
-"source": "ESA"
-
-}
-\end{lstlisting}
-
-\subsection{Researcher B uses the same input data of job A for job B.}
-\begin{lstlisting}[frame=single, language=Python]
-POST http://openeo.dev.193.170.203.100.xip.io/jobs
-
-Body:
-
-
-{ 
-"process_graph": {"imagery": { 
-"imagery": {"name": "Q-5c45fa2a-52b9-4c7a-9023-37c34bdbd139", 
-"process_id": "get_collection"},
-"nir": "B02",
-"process_id": "NDVI",
-"red": "B04"},
-"process_id": "min_time"}
-}
-
-Response-Code: 200
-
-{
-"job_id": "jb-57de179d-fc94-4gb0-bbfg5-d29Fb473ce0f",
-"status": "created"
-}
-\end{lstlisting}
-
-
-\section{Capturing job dependent environments}
-See Section \ref{usecase1appendix}
-
-\section{Getting differences of job executions}
-See Section \ref{usecase1appendix}
-
-\subsection{Researcher runs a different experiment (job C).}
-
-\begin{lstlisting}[frame=single, language=Python]
-POST http://openeo.dev.193.170.203.100.xip.io/jobs
-
-Body:
-
-{ 
-"process_graph": {"imagery": {"imagery": {"extent": ["2017-01-01", 
-			                                 "2017-01-05"],
-"imagery": {"extent": {"crs": "EPSG:32632",
-"east": 17.2,
-"north": 46.3,
-"south": 49.02,
-"west": 9.4},
-"imagery": {"name": "s2a_prd_msil1c", "process_id": "get_collection"},
-"process_id": "filter_bbox"},
-"process_id": "filter_daterange"},
-"nir": "B02",
-"process_id": "NDVI",
-"red": "B04"},
-"process_id": "min_time"}
-}
-
-Response-Code: 200
-
-{
-"job_id": "jb-1ed40agr-e3f4-4zba-bfb5-d9r1fg53ft0p",
-"status": "created"
-}
-\end{lstlisting}
-
-\subsection{Researcher wants to compare the jobs by their environment and outcome.}
-
-\begin{lstlisting}[frame=single, language=Python]
-3.4a
-
-POST http://openeo.dev.193.170.203.100.xip.io/jobs/
-	jb-46de179d-ec94-40ba-bfb5-d138b473ce0f/diff
-
-Body:
-
-{ 
-"job_ids": ["jb-08s71ajr-fg02-7phz-ap01-a80htg13fk8l"]
-}
-
-Response-Code: 200
-
-{
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"validation":  { 
-"jb-08s71ajr-fg02-7phz-ap01-a80htg13fk8l":  {
-"backend_env": "EQUAL",
-"code_env": "EQUAL",
-"interpreter": "EQUAL",
-"input_data": "EQUAL",
-"job_id": "DIFF",
-"start_time": "DIFF",
-"end_time": "DIFF",
-"output_data": "EQUAL"
-}
-}
-
-}
-
-3.4b
-
-POST http://openeo.dev.193.170.203.100.xip.io/jobs/
-	jb-46de179d-ec94-40ba-bfb5-d138b473ce0f/diff
-
-Body:
-
-{ 
-"job_ids": ["jb-1ed40agr-e3f4-4zba-bfb5-d9r1fg53ft0p"]
-}
-
-Response-Code: 200
-
-{
-"job_id": "jb-46de179d-ec94-40ba-bfb5-d138b473ce0f",
-"validation":  { 
-"jb-1ed40agr-e3f4-4zba-bfb5-d9r1fg53ft0p":  {
-"backend_env": "EQUAL",
-"code_env": "EQUAL",
-"interpreter": "EQUAL",
-"input_data": "DIFF",
-"job_id": "DIFF",
-"start_time": "DIFF",
-"end_time": "DIFF",
-"output_data": "DIFF"
-}
-}
-
-}
-
-\end{lstlisting}
+%\chapter{Appendix}\label{Appendix}
 
 \backmatter
 
