@@ -720,7 +720,7 @@ After the job is executed the input data has a relating input data PID. The PID 
  The back end has to provide an endpoint to the user to re-use a specific input data in another job. Therefore, the API allows to include the use of an input data PID in the process graph, so that users can include cited data directly in a new created job description.  
 
 \section{Summary}
-\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
+This chapter presented the concept of the proposed solution system. The data elements needed to be able to reproduce a job execution are presented and described. To achieve it the data identification has to be implemented according to the RDA recommendations. The back end provenance got defined by the identification of the software and the version of the back end. The job dependent environment describes the environment of the job execution information and the result hash. The meta-data of the job execution got summarized into the context model. It consists of the data needed to answer the research questions of Chapter \ref{Introduction} In addition to the data description, the needed user interfaces to provide the functionality for the users got described in the last chapter. The next chapter presents the implementation of the design of this chapter at the EODC back end.     
 
 \chapter{Implementation}\label{Implementation}
 This chapter presents the EODC prototype of the concept described in Chapter \ref{Design}. The implementation consists of all suggested changes that have to be made to the OpenEO workflow including parts of the back end, core API and the client. Thus, all three parts of the OpenEO project architecture get modified in the presented solution. In the OpenEO project there is a vast amount of back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. The motivation for choosing this options is that python is the most common programming language at the contributing back ends of the OpenEO project. Both of the chosen implementations are using python as their main programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC back end driver. The resulting prototype is open source and can therefore be used by other back end providers with a similar setup.  
@@ -826,22 +826,29 @@ The following list describes how the elements of the query data set record are c
 \end{enumerate}
 
 \section{Back end provenance}\label{Implementation:Back end provenance}
-\todo{change after discussion with Andi...}
-The aim of the automated back end provenance computation is to implement a simple approach capturing changes on the back end. First the parts of EODC that have an influence on the back end functionality results are defined. In addition the implementation generates a back end version automatically, when changes happen at the back end. The proposed tool can be used by every OpenEO back end with a Linux system with some simple configuration changes. It is completely independent of an existing back end driver service. It is a separate tool that gets executed at the back end in the background. This section calls the tool implemented for the EODC back end \textit{BackendMonit}. 
 
-The following subsections explain how the, in Section \ref{Design:Back end provenance} defined, provenance data elements are read from the system from the GitHub repository.  
+The aim of the back end provenance is to persist the versions of the back end and therefore the version of the software used to execute the jobs. The following subsections explain how the, in Section \ref{Design:Back end provenance} defined, provenance data elements are read from the GitHub repository.  
 
 \textbf{B1: GitHub Repository} \\
-To capture the GitHub repository, all folders that consists of GitHub repositories are added to the configuration file. In case of EODC there is only one Git repository involved. The path of the Git CLI installation directory is defined in the configuration file. The "git config" and "git log" call is used to parse the current repository url and the current commit id. The "git diff" and "git branch" returns the local differences and the currently checked out branch of the repositories. \textit{BackendMonit} writes the GitHub URL, the branch, the commit identifier and a hash of all local differences to the context model. If there are changes to the previous model, a new back end version is generated. To automatically keep track on changes, \textit{Inotify} (see \cite{inotify}) is used. It calls a command if any changes on the file system in a specific folders occur. The changes can be further specified by 12 different operations on the file system like \textit{IN\_DELETE}, \textit{IN\_ACCESS}. For the purpose of capturing changes in this implementation only write access on the folders triggers \textit{Inotify}. Below there is the command used to configure the \textit{Inotify} daemon. \\
+The GitHub repository is directly used to create the services of the EODC back end. Therefore, the currently used GitHub repository information can be read via the command line interface (CLI) of Git. The used commit and branch are accessed directly via the Git CLI. In the listing below the Git CLI calls used to get the GitHub repository information.       
+
+\begin{lstlisting}[frame=single, language=Python]
+# Receiving the Git Repository URL
+git config --get remote.origin.url 
+# Receiving Branch
+git branch
+# Receiving the commit messages with the timestamps
+git log 
+\end{lstlisting}
 
 \textbf{B2: Core API Version} \\
-Back end developers manually update the OpenEO core API version of the EODC back end. Therefore, the data file containing this information is specified in the configuration file of \textit{BackendMonit}. 
+Back end developers manually update the OpenEO core API version of the EODC back end. It is in the GitHub repository of the EODC back end. 
 
 \textbf{B3: Back End Version} \\
-The back end version is an integer beginning with 1 and increments on every change of the above described data. On every call of the cron job, \textit{BackendMonit} captures all above points and compares them to the most recent context model. If \textit{BackendMonit} finds differences, the version is incremented by one and added to the back end provenance JSON file. 
+Since EODC takes the code for the services directly from GitHub, the Git commit identifier is used as the version of the back end.
 
 \textbf{B4: Publication Time-stamp} \\
-\todo{Directly from GitHub}
+The publication time-stamp of the EODC back end is defined by the time-stamp when the Git commit happened. It is persisted by GitHub and can be retrieved via the Git CLI. 
 
 \section{Job dependent provenance}\label{Implementation:Job dependent provenance}
 The EODC back end of the release version "0.0.2" transforms the process graph into separate docker containers. For every process in the process graph there is a docker container running the related python code. The input of the current process is the output of the previous process. The first process docker container has the input data defined in the process graph as input value, which is the result of the query execution. Every process saves the results in a temporary folder dedicated to the specific process execution. Every process has its own temporary output directory until the whole process chain is finished. After that the back end deletes the temporary folders and only the end result is persisted in the job directory.
@@ -890,7 +897,7 @@ Figure \ref{fig:impljobcapture} visualizes the additional python module \textit{
 	\caption{Overview of the Job capturing architecture at the EODC back end}
 	\label{fig:impljobcapture} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{adapt the umlet diagram ?}
+
 \begin{enumerate}
 	\item \textbf{Process Execution} \\
 	The \textit{Process Execution} module at the EODC back end is responsible for the actual execution of the job. It creates the additional logging information (J1, J3, J4 and J5) and persists it in the logging file of the job execution. 
@@ -911,7 +918,7 @@ The source input data identifier is the pid of the input data and query provided
 
 \textbf{J2: Back end provenance / Code Identifier} \\
 The \textit{Job Capturing} module reads the back end provenance from the \textit{BackendMonit} output JSON file described in Section \ref{Implementation:Back end provenance}. The latest back end version during the execution is copied to the context model.
-\todo{describe how updates are managed at eodc}
+
 \textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
 The \textit{Process Execution} module uses the installed python module \textit{pip} to list all installed packages including their versions. The module is at the moment used to manage the python packages of the back end. The GitHub repository of the EODC back end driver includes a python environment file to automatically install all needed dependencies of python via \textit{pip}. A feature of that tool is the \textit{pip freeze} call, which returns all installed python packages including their concrete versions. This is then transformed to a JSON list object and saved to the context model. In addition to this the \textit{Process Execution} captures the python version by using the \textit{sys.version} call. All of this executions are done in the \textit{Process Execution} module, in the actual processing environment and stored in the output log file of the job execution.    
 
@@ -1127,9 +1134,8 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 	\label{fig:eva_diff} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-
 \section{Summary}
-\todo{Add a short Summary section at the end of each chapter containing a short summary  of the current chapter and connection to the context of the thesis as well as a lead-over to the next chapter}
+This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The Job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 
 \chapter{Evaluation}\label{Evaluation}
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. \\ Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. \\ Section \ref{Evaluation:impact} evaluates the impact of the solution to the EODC back end by looking into storage and performance metrics. \\ The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections.
