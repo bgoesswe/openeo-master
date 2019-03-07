@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.3.0">
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
     <id>UMLGeneric</id>
@@ -33,33 +32,32 @@ halign=left</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>retrieve 
-Job Info</panel_attributes>
+Job info</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>720</x>
+      <x>700</x>
       <y>690</y>
-      <w>120</w>
+      <w>140</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>persist 
-back end Version</panel_attributes>
+Back end version</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>740</x>
+      <x>770</x>
       <y>640</y>
-      <w>150</w>
+      <w>90</w>
       <h>70</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
-
-                 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>90.0;10.0;50.0;50.0</additional_attributes>
+&lt;&lt;extends&gt;&gt;</panel_attributes>
+    <additional_attributes>62.0;10.0;20.0;50.0</additional_attributes>
   </element>
   <element>
     <id>UMLActor</id>
@@ -67,7 +65,7 @@ back end Version</panel_attributes>
       <x>430</x>
       <y>600</y>
       <w>100</w>
-      <h>110</h>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Researcher</panel_attributes>
     <additional_attributes/>
@@ -91,7 +89,7 @@ back end Version</panel_attributes>
       <w>130</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>job A 
+    <panel_attributes>Job A 
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -111,7 +109,7 @@ back end Version</panel_attributes>
     <coordinates>
       <x>800</x>
       <y>600</y>
-      <w>120</w>
+      <w>130</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>execute Workflow</panel_attributes>
@@ -134,26 +132,25 @@ back end Version</panel_attributes>
     <coordinates>
       <x>870</x>
       <y>790</y>
-      <w>130</w>
-      <h>70</h>
+      <w>140</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>Persist 
-back end version 
-during execution of 
-Job
+Back end version 
+during execution of Job
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>800</x>
+      <x>790</x>
       <y>730</y>
-      <w>90</w>
+      <w>100</w>
       <h>80</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>70.0;60.0;10.0;10.0</additional_attributes>
+    <additional_attributes>80.0;60.0;15.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -164,7 +161,7 @@ Job
       <h>60</h>
     </coordinates>
     <panel_attributes>persist Job
-Environment</panel_attributes>
+environment</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -177,7 +174,7 @@ Environment</panel_attributes>
     </coordinates>
     <panel_attributes>lt=.&gt;
   &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;40.0;50.0</additional_attributes>
+    <additional_attributes>17.0;10.0;40.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -206,12 +203,12 @@ Environment</panel_attributes>
     <coordinates>
       <x>500</x>
       <y>810</y>
-      <w>170</w>
-      <h>60</h>
+      <w>190</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>Job A Info:
-Used Back End Version
-Used Job A Environment
+Used Back end version
+Used job a environment
 </panel_attributes>
     <additional_attributes/>
   </element>
