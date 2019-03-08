@@ -1,0 +1,87 @@
+ {
+    "name": "get_collection",
+    "summary": "Selects a collection.",
+    "description": "Filters and selects a single collection provided by the back-end. The back-end provider decides which of the potential collections is the most relevant one to be selected.",
+    "min_parameters": 1,
+    "parameters": {
+      "name": {
+        "description": "Filter by collection name",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "Sentinel2A-L1C"
+          ]
+        }
+      },
+      "spatial_extent": {
+        "description": "Filter by spatial extent.",
+        "schema": {
+          "type": "object",
+          "format": "spatial_extent"
+        }
+      },
+      "temporal_extent": {
+        "description": "Filter by time.",
+        "schema": {
+          "type": "array",
+          "format": "temporal_extent"
+        }
+      },
+      "bands": {
+        "description": "Filter by band id.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "license": {
+        "description": "Filter by license.",
+        "schema": {
+          "type": "string",
+          "description": "SPDX License identifier, SPDX expression, or the string proprietary if the license is not on the SPDX license list.",
+          "examples": [
+            "Apache-2.0"
+          ]
+        }
+      },
+      "data_pid": {
+        "description": "Filter by persistent data identifier (PID).",
+        "schema": {
+          "type": "string",
+          "description": "The PID identifies a data set that was used before at the back end, it is already filtered by temporal and spatial extent.",
+          "examples": [
+            "qu-0d6bb7c1-bf6d-49ec-a21c-bd9afcc6fdda"
+          ]
+        }
+      }
+    },
+    "returns": {
+      "description": "Processed EO data.",
+      "schema": {
+        "type": "object",
+        "format": "eodata"
+      }
+    }
+}
+
+
+
+Process Graph:
+
+{ "process_graph": {"imagery": {"imagery": {"extent": ["2017-01-01", "2017-01-31"],
+   "imagery": {"extent": {
+     "north": 49.041469,
+     "east": 17.171631,
+     "west": 9.497681,
+     "south": 46.517296, 
+     "crs": "EPSG:32632"},
+    "imagery": {"process_id": "get_collection", "name": "s2a_prd_msil1c"},
+    "process_id": "filter_bbox"},
+   "process_id": "filter_daterange"},
+  "nir": "B08",
+  "process_id": "NDVI",
+  "red": "B04"},
+ "process_id": "min_time"}
+}

@@ -179,16 +179,16 @@ The following sections define use cases to validate the design proposed in this 
 \subsection{Example Experiment}\label{example}
 
 This section describes an example of an experiment that a remote sensing scientist wants to execute. The example will be used throughout the thesis for better illustration of the concepts. It is used in the Use Cases in the following sections. \\
-The input data of the experiment is Sentinel 2 data developed by the European Space Agency (ESA). The area of interest is the province south tyrol. More specifically the bounding area in the "EPSG:4326" projection with the coordinates for an north-west corner of (10.288696, 46.905246) and an south-east corner of (12.189331, 45.935871). The time of interest is the month January of the year 2017. In this example the scientist is working on vegetation dynamics and wants to know what the state of the vegetation of south tyrol was in the beginning of 2017. Therefore the minimum of the Normalized Difference Vegetation Index (NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php}) is calculated on the data selection. It is derived from the difference between near-infrared (which reflects vegetation strongly) and red light (which vegetation absorbs). So for every pixel of the satellite image the NDVI value is calculated for every day of January 2017. Then the 31 images for January 2017 are reduced to one by taking the minimum NDVI value of each pixel. Figure \ref{fig:example} shows the result of the running example execution.\\
-\todo{maybe better example with real usecase, or is this a real use case ? maybe explain what can be retrieved by this}
+The input data of the experiment is Sentinel 2 data developed by the European Space Agency (ESA). The area of interest is the province south tyrol. More specifically the bounding area in the "EPSG:4326" projection with the coordinates for an north-west corner of (10.288696, 46.905246) and an south-east corner of (12.189331, 45.935871). The time of interest is the month May of the year 2017. In this example the scientist is working on vegetation dynamics and wants to know what the state of the vegetation of south tyrol was in the beginning of 2017. Therefore the minimum of the Normalized Difference Vegetation Index (NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php}) is calculated on the data selection. It is derived from the difference between near-infrared (which reflects vegetation strongly) and red light (which vegetation absorbs). So for every pixel of the satellite image the NDVI value is calculated for every day of May 2017. Then the 31 images for May 2017 are reduced to one by taking the minimum NDVI value of each pixel. Figure \ref{fig:example} shows the result of the running example execution.\\
+
 The execution of the experiment consists of the following steps:
 
 \begin{enumerate}
 	\item Selecting the Sentinel 2 data records
 	\item Filtering the Sentinel 2 records by the extent of south tyrol. \\(10.288696, 46.905246) - (12.189331, 45.935871) on "EPSG:4326" projection.
-	\item Filtering the Sentinel 2 records by January 2017.
-	\item Calculate NDVI for all days of January 2017.
-	\item Reduce by the minimum value of January 2017.
+	\item Filtering the Sentinel 2 records by May 2017.
+	\item Calculate NDVI for all days of May 2017.
+	\item Reduce by the minimum value of May 2017.
 	\item Interpret the resulting image.
 \end{enumerate}
 
@@ -208,11 +208,11 @@ The execution of the experiment consists of the following steps:
 	\label{fig:usecase1} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 The first use case is about the re-use of input data between job executions. Reproducible methods are especially important for the scientific community. Since scientists are likely to build on results and methods of publications, this is a scenario to make the re-use simpler. In this case a scientist wants to create a publication by running the example, described in Section \ref{example} on an earth observation back end. The back end generates a persistent data identifier (PID) for the input data of the experiment. After that the scientist publishes the results and cites the input data with the resulting PID. The PID redirects to a human readable landing page that provides meta information about the dataset. Another scientist also interested in the vegetation of south tyrol wants to use the same input data but chooses a different approach of processing it (e.g. maximum instead of minimum). Hence, the input data PID can be used to re-use the same data. The back end has to be capable of resolving the PID automatically to let the user work with the same input data for a new work-flow. The data provider need to persist the data defined by a PID even if the preprocessing of the data changes in the future.    
-\todo{find meaning for maximum instead of minimum, so what would be the interest..}
+
 \begin{itemize}
-	\item \textbf{Input Data A}: Sentinel 2 data of the area of south tyrol in January 2017. 
-	\item \textbf{Job A}: Taking the \textbf{minimum} NDVI of the area of south tyrol in January 2017. 
-	\item \textbf{Job B}: Taking the \textbf{maximum} NDVI of the area of south tyrol in January 2017.
+	\item \textbf{Input Data A}: Sentinel 2 data of the area of south tyrol in May 2017. 
+	\item \textbf{Job A}: Taking the \textbf{minimum} NDVI of the area of south tyrol in May 2017. 
+	\item \textbf{Job B}: Taking the \textbf{maximum} NDVI of the area of south tyrol in May 2017.
 \end{itemize}
 
 An overview of the use case can be viewed in Figure \ref{fig:usecase1}. \\
@@ -254,9 +254,9 @@ The third use case is dedicated to the comparison of job executions. The goal is
 The scenario sequence of actions is summarized in the following steps: \\
 
 \begin{itemize}
-	\item \textbf{Job A}: Taking the minimum NDVI of the area of south tyrol in January 2017. 
-	\item \textbf{Job B}: Taking the minimum NDVI of the area of south tyrol in January 2017.
-	\item \textbf{Job C}: Taking the maximum NDVI of the area of south tyrol in January 2017.
+	\item \textbf{Job A}: Taking the minimum NDVI of the area of south tyrol in May 2017. 
+	\item \textbf{Job B}: Taking the minimum NDVI of the area of south tyrol in May 2017.
+	\item \textbf{Job C}: Taking the maximum NDVI of the area of south tyrol in May 2017.
 \end{itemize}
 
 \begin{enumerate}
@@ -328,14 +328,14 @@ Achieving reproducibility is a common problem in all scientific areas. It is an 
 Reproducibility is the key element of The Fourth Paradigm published in \cite{noauthororeditorfourth}. It leads to the term eScience, which has the aim of bringing science and computer technologies closer together. The general concept is to enable scientific procedures in the new information technologies used by data intensive sciences. The expected result of eScience is to get all scientific papers publicly available including the necessary data and work-flows so that scientists are able to have a fast interaction with each other \cite{noauthororeditorfourth}. 
 eScience has the potential to enable a boost in scientific discovery by providing approaches to make digital data and work-flows citable. The publication \cite{Rauber2015RepeatabilityAR} discusses a common way of reaching the goal formulated above. It describes an approach to look at whole research processes by introducing Process Management Plans, other than limiting it to data citation. The capturing, verification and validation of the input data for a computational process is demonstrated within the paper \cite{Rauber2015RepeatabilityAR}.
 Computer sciences have the issue of a high amount of published papers that do not provide enough information to make them reproducible. The problem will not be solved by the scientists that need to do additional effort to make reproducibility doable, but by providing new tools for scientists that allow it automatically as stated in \cite{MIKSA201725}. There are some additional issues on reproducibility in computer science e.g. in the case that used software technologies are deprecated and not available any more. Therefore, persisting the execution context is critical to achieve a re-execution of the experiment. One proposed concept of doing so is the VFramework described in more detail in the method Section \ref{Related Work}. 
-The PRIMAD model is a method to describe if an experiment is reproducing an original one. The following variables of an experiment are used to describe the relationship to the second experiment according to \cite{primad}:
+The PRIMAD model defines a set of variables that define an experiment. The relationship of the original execution to a re-execution can be visualized by noticing changes of the variables in the re-execution. The following variables of an experiment are used to describe the relationship to the second experiment according to \cite{primad}:
 
 \begin{itemize}
 	\item \textbf{P} Platform / Execution Environment / Context (e.g. Python 2.7, Windows 10,\dots) \\
-	\item \textbf{R or O} Research Objectives / Goals (e.g. sorting the input) \\
+	\item \textbf{R} Research Objectives / Goals (e.g. sorting the input) \\
 	\item \textbf{I} Implementation / Code / Source-Code (e.g. script in Python) \\
 	\item \textbf{M} Methods / Algorithms (e.g. quick sort) \\
-	\item \textbf{A} Actors / Persons (e.g. user that is executing the experiment) \\
+	\item \textbf{A} Actors / Persons (e.g. researcher that is executing the experiment) \\
 	\item \textbf{D} Data (input data and parameter values)   (e.g. input data that is to be sorted) 
 \end{itemize}
 If there is another experiment that is different on every variable to the original one, but has the same method (M) and goal (R), then it is a reproducing experiment \cite{primad}. 
@@ -366,7 +366,7 @@ In Figure \ref{fig:vframework} there is an overview of the VFramework concept.
 	\label{fig:vframework} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-
+\todo{bis hier fertig (fürs Erste)}
 \section{Earth Observation Science}\label{EOScience}
 
 Reproducibility is a well discussed topic of the computational geoscience. The high amount of earth observation data leads to complex research experiments and therefore high complexity in the papers.  According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience are tested by obtaining more than 400 papers. In \cite{Ostermann2017AdvancingSW} a reproduction is defined by an exact duplicate of an experiment, whereas a replication is defined as a resemblance of the original execution, but allowing variation e.g. different scales.Only half of the test group publications are replicable and none of them reproducible. There are publications to address this lack of reproducibility in the earth observation science. The sections below summarize some examples of earth observation communities that are working on the topic of reproducibility. 
@@ -393,7 +393,7 @@ The geoscience paper of the future (GPF) is according to \cite{Gil2016TowardTG} 
 \end{figure}
 
 In Figure \ref{fig:gpf} the differences with a reproducible paper gets visualized. In addition to the characteristics of the reproducible paper the GPF focuses on publishing the data publicly with open licenses with citable persistent identifiers.
-The GPF consists of a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility and provenance information. GPF authors may find reasons to not be able to follow the rules and therefore have to find workarounds and propose areas for future improvements. The strategy of the GPF community is to educate the scientist to make reproducible publications, by making training sessions for them(see \footnote{\footnote{http://scientificpaperofthefuture.org/gpf/events.html}}), rather then providing tools to make it easier for scientists to use it. In comparison to this thesis it is a different approach to achieve the same goal, in this thesis the strategy is to achieve reproducibility in geoscience through technology. 
+The GPF consists of a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility and provenance information. GPF authors may find reasons to not be able to follow the rules and therefore have to find workarounds and propose areas for future improvements. The strategy of the GPF community is to educate the scientist to make reproducible publications, by making training sessions for them \footnote{\footnote{http://scientificpaperofthefuture.org/gpf/events.html}}, rather then providing tools to make it easier for scientists to use it. In comparison to this thesis it is a different approach to achieve the same goal, in this thesis the strategy is to achieve reproducibility in geoscience through technology. 
 
 \subsection{Climate Change Centre Austria (CCCA)}
 
@@ -524,7 +524,7 @@ In the following the relevant RESTful request types in OpenEO and the policy of 
 	\item \textbf{POST Request} \\ 
 	POST requests are used to create new data and meta-data records at the back end. It is also used to carry information to the back end.  \\(e.g. POST /jobs creates a new processing job at the back end, which is defined in the body of the request.)  
 	\item \textbf{PATCH Request} \\
-	PATCH requests are used to update an existing records at the back end. \\(e.g. /PATCH /job/{job\_id} modifies an existing job at the back-end but maintains the identifier.)
+	PATCH requests are used to update an existing record at the back end. \\(e.g. /PATCH /job/{job\_id} modifies an existing job at the back-end but maintains the identifier.)
 	\item \textbf{DELETE Request} \\ 
 	DELETE requests are used to remove existing records from the back end. \\(e.g. /DELETE /job/{job\_id} removes an existing job from the back end.)
 \end{itemize}
@@ -540,7 +540,7 @@ The main part of the job execution definition is based on the description of wha
 	\label{fig:process_graph} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-The back ends interpret the process graph from inside out. Figure \ref{fig:process_graph} displays the process graph of the running example of Section \ref{example}. It describes the calculation of the minimum NDVI image of the Sentinel 2 satellite over south tyrol in January 2017. The element in the center of the process graph defines the input data identifier in the "imagery" block, with the "product\_id". In this case the "s2a\_prd\_msil1c" is chosen  as input data identifier, because it is the identifier for Sentinel 2 at the EODC back end. After reading the input data id, the back end iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "left", "right" and so on, which is responsible of filtering the image spatial (e.g. the area over south tyrol). After that the "filter\_daterange" process is used to only take imageries from January 2017. Every process beginning with "filter\_" is a filter operation that specifies the selection of the input data. The output data of the previous process is the input data of the next process. After the last filtering process, the NDVI gets called by "/user/custom\_ndvi" with the parameters "red" and "nir", which take the identifier of the bands of near infrared and red light, which is needed by the NDVI process (see Section \ref{example}). After that the minimum value is taken from all images using the "min\_time" process, which then results in a single image. In Figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, visualizing the order of how it gets executed. To transfer the process graph in Figure \ref{fig:process_graph} at a back end, it gets sent in the body of the POST /jobs endpoint request.
+The back ends interpret the process graph from inside out. Figure \ref{fig:process_graph} displays the process graph of the running example of Section \ref{example}. It describes the calculation of the minimum NDVI image of the Sentinel 2 satellite over south tyrol in May 2017. The element in the center of the process graph defines the input data identifier in the "imagery" block, with the "product\_id". In this case the "s2a\_prd\_msil1c" is chosen  as input data identifier, because it is the identifier for Sentinel 2 at the EODC back end. After reading the input data id, the back end iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "left", "right" and so on, which is responsible of filtering the image spatial (e.g. the area over south tyrol). After that the "filter\_daterange" process is used to only take imageries from May 2017. Every process beginning with "filter\_" is a filter operation that specifies the selection of the input data. The output data of the previous process is the input data of the next process. After the last filtering process, the NDVI gets called by "/user/custom\_ndvi" with the parameters "red" and "nir", which take the identifier of the bands of near infrared and red light, which is needed by the NDVI process (see Section \ref{example}). After that the minimum value is taken from all images using the "min\_time" process, which then results in a single image. In Figure \ref{fig:process_graph_diagram} the same process graph is visualized from the back end point of view, visualizing the order of how it gets executed. To transfer the process graph in Figure \ref{fig:process_graph} at a back end, it gets sent in the body of the POST /jobs endpoint request.
 
 \begin{figure}[h]
 	\centering
@@ -589,7 +589,7 @@ The data management of EODC is file-based, so every image data is stored in a un
 
 \section{Summary}
 
-For the research areas that are related to the solution of the thesis is a vast amount of literature available. The problem description of the thesis has many possible solutions described in this chapter. The outcome of this thesis has the aim of making it easy for the scientists to reproduce experiments, other than presented solutions for earth observation science like the VZJ approach or the GPF, which tries to motivate scientists to do it themselves. The implementation of Section \ref{Implementation} builds on existing systems like the implementation of the CCCA query store. The following chapter describes the design of the solution. 
+For the research areas that are related to the solution of the thesis a vast amount of literature is available. The problem description of the thesis has many possible solutions described in this chapter. The outcome of this thesis has the aim of making it easy for the scientists to reproduce experiments, other than presented solutions for earth observation science like the VZJ approach or the GPF, which tries to motivate scientists to do it themselves. The implementation of Section \ref{Implementation} builds on existing systems like the implementation of the CCCA query store. The following chapter describes the design of the solution. 
 
 
 
@@ -1224,7 +1224,7 @@ This section describes the storage needed for the captured meta-data. Since all 
 Table \ref{Tab:eva_storage} shows the data needed for the captured data after the test cases got executed. Each saved query record needs an average of 2.807 kBytes space and each QueryTable record an average of 409 kBytes. The context models needs an average of 936 kBytes per job execution and takes about 47,589 \% of the job meta-data kept by the EODC.   
 
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
-The two implementation approaches have implemented the same features, even though there are major differences between them. This section provides the reason for choosing the python implementation instead of the noWorkflow implementation. Therefore, the performance of the implementations gets compared. The experiment setup is the running example (see Section \ref{example}) of the thesis. The date range of the example gets modified to generate a set of test scenarios with a range of input data sizes. There are 10 jobs executed in both implementations, which have the same process graph like defined in the running example, but with varying date range parameters. The date range is modified on each iteration by an addition of 2 days. The first range is January 2017, the next one is January until 2nd of February 2017 and so on, until the last test case has a date range of January to the 20th of February of 2017. The jobs are executed in both implementations and the duration time of the execution is measured. After each job the setup gets cleaned up, by removing all generated files including the generated provenance database of noWorkflow. 
+The two implementation approaches have implemented the same features, even though there are major differences between them. This section provides the reason for choosing the python implementation instead of the noWorkflow implementation. Therefore, the performance of the implementations gets compared. The experiment setup is the running example (see Section \ref{example}) of the thesis. The date range of the example gets modified to generate a set of test scenarios with a range of input data sizes. There are 10 jobs executed in both implementations, which have the same process graph like defined in the running example, but with varying date range parameters. The date range is modified on each iteration by an addition of 2 days. The first range is May 2017, the next one is May until 2nd of February 2017 and so on, until the last test case has a date range of May to the 20th of February of 2017. The jobs are executed in both implementations and the duration time of the execution is measured. After each job the setup gets cleaned up, by removing all generated files including the generated provenance database of noWorkflow. 
 
 \begin{figure}[h]
 	\centering
