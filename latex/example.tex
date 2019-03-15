@@ -650,7 +650,7 @@ To make the whole workflow reproducible, every single component have to be ident
 \section{Query Handler}\label{Design:Data Identification}
 The input data of the processing is crucial for the outcome of the job execution. Even though the process graph already contains an identifier of the input data, unique for the specific back end, internal changes to the data set might not result in a new identifier. So jobs called later in time might use another version of the input data than the previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying data identification. It is assumed that the back ends preserve the data as described in Section \ref{Design:Data Identification}. The Query Handler is the module where the data persistence is implemented and depends highly on the structure and architecture of the back end. Therefore, no common definitions can be made for all back ends in this section. In Chapter \ref{Implementation} there is a fully implemented solution at the EODC back end. The context model elements of the job executions are specified with a "J" in the beginning for readability reasons. Elements of context model related to the back end environment are specified with a "B" in the beginning. Each element represents one data entry of the resulting context model. The input data is represented in the context model by the following element: \\
 \\
-\textbf{J1: Input Data Persisted Identifier} \\
+\textbf{J1: Input data persistent identifier} \\
 The output of the Query Handler is the PID of the input data related to a job execution. Every job execution uses input data, which has a PID assigned to it. Therefore, the PID is added to the job dependent context model. 
 
 \section{Job Capturing}\label{Design:Job Capturing}
@@ -659,7 +659,7 @@ The aim of this section is to describe the job execution capturing and a descrip
 \subsection{Back end provenance}\label{Design:Back end provenance}
 The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent of a job execution, so it does not change through job executions, regardless of how many jobs were processed. It can only change from inside of the back end by their maintainers. The earth observation community has a great variety of different back end providers with very distinct setups. The challenge of this part of the design is to make it simple and generic. Data captured in this part of the context model is not meant to be shown to the user directly, because of security issues.  The context model elements of the back end environment are specified with a "B" in the beginning for readability reasons. Elements of the job dependent context model are specified with a "J" in the beginning. The following meta-data is suggested for the back end provenance:
 \\ \\
-\textbf{B1: Code Identification} \\
+\textbf{B1: Code identification} \\
 Every earth observation back end has to provide an identifier for the used code. Therefore, a version control system has to be applied to the running services. If back end is open source, it can provide a GitHub repository were the used code is stored and publicly available. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends. In this case the information is added to the back end provenance by saving the git repository URL, the used commit identifier and local changes to the repository. If the back end is not open source a local or secure version control repository has to be implemented to keep track of the different code versions. 
 %\\ \\
 %\textbf{B2: Used Folders} \\
@@ -668,15 +668,15 @@ Every earth observation back end has to provide an identifier for the used code.
 %\textbf{B3: OS and packages} \\
 %The operating system can also have an impact on the processing and so it has to be stored to the context model too. Not only the information about the operating system, but also the installed packages are added to the context model. If the whole processing is done in a virtual container the operating system of that container shall be stored. If the whole processing is done in a docker container, the docker description file can be used for the environment data. 
 \\ \\
-\textbf{B2: API Version} \\
+\textbf{B2: API version} \\
 The back ends API version is the version of the interface API it currently is using. The same API calls can resolve in different results if the version of it differs, hence the API version is persisted in the context model. 
 \\ \\
-\textbf{B3: Back End Version} \\
+\textbf{B3: Back end version} \\
 The back end version is an identifier that gets updated on every change of the back end. This includes changes on the hardware and software, so that every change on the code identifier or the API version results in a new back end version.   
 \\
 To provide long term stability of the capturing, it is essential to implement a tool to automatically capture the environment data and persist it in a separate back end version store. Every change on any of the previously described back end meta-data has to be detected automatically and have to result in a new back end version.  
 \\ \\
-\textbf{B4: Publication Time-stamp} \\
+\textbf{B4: Publication time-stamp} \\
 The time-stamp of when the version was accessible at the back end. The time-stamp stands for the beginning of the version of the back end. If there exists no time-stamp after that, then it is the current used version. This enables the possibility to find the version of the back end used by a job executed in the past, by only knowing the time it was executed.     
 
 \subsection{Job dependent environment}\label{Design:Job dependent provenance}
@@ -687,26 +687,26 @@ The following subsections describe the single elements of the context model in m
 This section describes the capturing of the process itself. As mentioned above the incoming process graph describes the process, but to be certain that the same process id results in the same code, the code version has to be added to the context model. To be able to identify code from different versions a source control management needs to be installed. An example of doing so is persisting the back end source code on a public platform like GitHub. The entry in the context model related to this was mentioned in Section \ref{Design:Back end provenance}.  \\
 The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. Therefore, the programming language version and the additional used libraries of it are persisted in the context model. To gain more meta-information about the processing the start time and end time can be added to the context model via timestamps. This leads to the following capturing elements in the job context model.
 
-\textbf{J3: Programming Language}\\
+\textbf{J3: Programming language}\\
 The programming language of the code that is used for the processing. In addition the version of the programming language has to be included in this information.
 
 \textbf{J4: Installed packages of the programming language}\\
 To identify the environment of the code execution, the installed packages of the programming language shall be captured and added to the context model. The version of the packages have a high influence on the outcome, hence can be included in the context model. For example in python the installed modules are added with their versions to the context model. The information stored in this element is related to the job execution, because it depends on the work-flow of the execution, how the environment is configured, since the job execution may be done in a dynamically generated container.
 
-\textbf{J5: Start and End time of process execution}\\
+\textbf{J5: Start and end time of process execution}\\
 On the beginning of the process execution and at the end of it, a time-stamp is created. These timestamps are persisted in the context model.
 
 \subsubsection{Back end provenance}\label{Job:Back end provenance}
 The back end provenance described in Section \ref{Design:Back end provenance} defines the version of the code that is executed and therefore has to be added to the job context model. Over time the back end provenance will get updated so that every job need to persist a reference to the original back end configuration at the execution time. There are two solutions to achieve this. First the identifier of a specific version of the back end gets added to the context model. In this case the data of the back end environment versions have to be persisted and accessible. The second solution is to put a time-stamp of the execution into the job execution context model.
 
-\textbf{J2: Back end provenance / Code Identifier} \\
+\textbf{J2: Back end provenance / code identifier} \\
 The version of the back end provenance during the job execution. Since for every change on the back end a new version will be applied, the version of the back end is used as a code identifier for the execution. Another solution is to persist an execution time-stamp, so that the version of the given time can be identified.
 
 
 \section{Result Handler}\label{Design:Result Handler}
 The output data of the processing has to be captured as well to be able to compare job execution outcomes. In earth observation tasks the results can be rather big, that is why a simple generated hash value of the output result is enough. The output data does not have to be identifiable within the scope of this thesis, but just checkable of identity with other executions. Therefore, a generated hash value of the output data is sufficient. The aim of the output data capturing is not to add the possibility to find differences between results, but to be able to see that the results are different. Even though the input data of typical earth observation experiments are big, the output of such experiments are images of various sizes.   
 
-\textbf{J6: Result Hash} \\
+\textbf{J6: Result hash} \\
 The output result of the job need to be verifiable and therefore need to be persisted. An easy way to achieve this is to take the hash value over the output files sorted by the alphabetical ascending filenames.
  
 \section{Context Model}\label{Design:Context Model}
@@ -887,7 +887,7 @@ Each executed job creates a context model. If the job gets re-executed, the cont
 The context model is stored as a JSON object in the job execution meta-database. After the job is carried out in the EODC back end the results are saved in a folder named after the unique job identifier and the meta data information is stored in a PostGreSQL database (see Section \ref{EODC Back End}). Jobs are saved in the Job table of the database and in this solution the context model is an additional column of it. The context model JSON object gets created by the implementations described below. \\
 Table \ref{Tab:contextmodel} provides the mapping between the context model elements from Section \ref{Design} and the keys of the JSON context model object of the prototype. The elements have a one to one mapping of the context model and the JSON key except for the timestamps of the execution. The execution time stamps are part of the Job table in the EODC meta-database. \\
 Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described for the context model in the Design section. Information on the back end environment during the execution of the job is persisted in the context model. In the context model the back end version and the execution time-stamp is persisted and can be used to identify the back end provenance of the execution time. The code environment is a list of all python dependencies with their versions installed during the execution of the jobs. In addition the python interpreter version is added to the JSON object. How the data is captured in detail is described in the sections below.    
-\todo{bis hier fertig (fürs Erste)}
+
 \todo{Make Glossary !}
 \todo{Add listing captions !}
  
@@ -895,12 +895,12 @@ Figure \ref{fig:job_context_model} shows an example context model. It consists o
 	\caption{Relation of context model elements and EODC JSON context model.}
 	\begin{tabular}{l|l}
 		\textbf{Context Model Definition} & \textbf{JSON Key} \\ \hline
-		\textbf{J1: Input Data Persistent Identifier} & input\_data \\ \hline
-		\textbf{J2: Back End provenance / Code Identifier} & backend\_env \\ \hline
-		\textbf{J3: Programming Language} & interpreter \\ \hline
+		\textbf{J1: Input data persistent identifier} & input\_data \\ \hline
+		\textbf{J2: Back end provenance / code identifier} & backend\_env \\ \hline
+		\textbf{J3: Programming language} & interpreter \\ \hline
 		\textbf{J4: Installed packages of the programming language} & code\_env \\ \hline
-		\textbf{J5: Start and End time of process execution} & start\_time, end\_time \\ \hline
-		\textbf{J6: Result Hash} & output\_data \\ %\hline
+		\textbf{J5: Start and end time of the process execution} & start\_time, end\_time \\ \hline
+		\textbf{J6: Result hash} & output\_data \\ %\hline
 	%	\textbf{J7: Back end provenance} & backend\_env \\ 
 	\end{tabular}
 \label{Tab:contextmodel}
@@ -945,10 +945,10 @@ The source input data identifier is the pid of the input data and query provided
 \textbf{J2: Back end provenance / Code Identifier} \\
 The \textit{Job Capturing} module reads the back end provenance from the \textit{BackendMonit} output JSON file described in Section \ref{Implementation:Back end provenance}. The latest back end version during the execution is copied to the context model.
 
-\textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
+\textbf{J3 and J4: Programming language and  installed packages of programming language} \\
 The \textit{Process Execution} module uses the installed python module \textit{pip} to list all installed packages including their versions. The module is at the moment used to manage the python packages of the back end. The GitHub repository of the EODC back end driver includes a python environment file to automatically install all needed dependencies of python via \textit{pip}. A feature of that tool is the \textit{pip freeze} call, which returns all installed python packages including their concrete versions. This is then transformed to a JSON list object and saved to the context model. In addition to this the \textit{Process Execution} captures the python version by using the \textit{sys.version} call. All of this executions are done in the \textit{Process Execution} module, in the actual processing environment and stored in the output log file of the job execution.    
 
-\textbf{J5: Start and End time of process execution} \\
+\textbf{J5: Start and end time of process execution} \\
 The start and end time of the process execution is already done at the EODC back end in the  \textit{Process Execution} module. The resulting time stamps are persisted in the Job table of the meta-database. The \textit{Process Execution} module adds the values to the output logging file. These logging entries are not added by this solution, since they are already implemented by the EODC back end provider.  
 
 \textbf{J6: Result Identifier } \\
@@ -968,41 +968,42 @@ To enable a more detailed environment, noWorkflow captures the hash of the execu
 now show --dir=JOB_DIR
 \end{lstlisting}
 
-\textbf{J3 and J4: Programming Language and  Installed packages of programming language} \\
+\textbf{J3 and J4: Programming language and  installed packages of programming language} \\
 NoWorkflow captures the used python packages in the database. To retrieve the modules the command line interface is used with the “-m” argument (see code block below), which returns all used python modules including their versions and the version of python. The advantage of using noWorkflow instead of the \textit{pip} tool described in the python solution is that only the used packages are listed.
 
 \begin{lstlisting}[frame=single]
 now show -m --dir=JOB_DIR
 \end{lstlisting}
 
-\section{User Interface}\label{Implementation:User Interface}
+\section{User Services}\label{Implementation:User Interface}
 The previous sections describe only the technical insight of the back end. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing OpenEO core API version 0.0.2. In addition, the proposed endpoints are applied to the python client and the EODC back end. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
 
 \textbf{Implementation of U1: Back end version} \\
-Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see Section \ref{Implementation:Back end provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data. The endpoint takes an time-stamp as parameter to get the back end version meta-data of a specific time. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python client. The result is a JSON object consisting of the back end provenance data similar to Figure \ref{fig:backendprovcm}.
+Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see Section \ref{Implementation:Back end provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data. The endpoint takes a time-stamp as parameter to get the back end version meta-data of a specific time. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python client. The result is a JSON object consisting of the back end provenance data \todo{like in Figure \ref{fig:backendprovcm}. change to picture in the use cases section}
 
 \textbf{Implementation of U2: Detailed Job Information} \\
 In the OpenEO coreAPI there is an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.0.2 only contains the execution state of the job and the job id. In addition to this the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see Figure \ref{fig:job_context_model}). Since the python client just returns the resulting JSON response from the back end as a python dictionary, there is no modification needed.
 
 \textbf{Implementation of U3: Comparing two Jobs} \\
 The core API does not define the comparison of two jobs, hence there does not exist any user interface. The modified core API defines a new endpoint in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the new core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "diff(target\_job)". Figure \ref{fig:job_comparison} provides an example of the dictionary output of this function.
-
+\todo{Change figure to one in the Use Cases section}
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=1]{job_comparison}
 	\caption{JSON Example of a job comparison result.}
 	\label{fig:job_comparison} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{show process graph differences in the program and edit the image here}
+
+
 
 \textbf{U4: Data Identifier Landing Page} \\
 Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.0.2, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<dataset-id>" endpoint is extended, by accepting query PIDs. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and in addition the result of the query execution and the original query parameters. If the result file list differs from the original execution, there will be a warning message added to the response. 
 
 \textbf{U5: Re-use of Input Data} \\
 To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
-
+\todo{If files are not queried on the fly: change the text here.}
 \section{Use Cases}
-This section shows how the use cases of Section \ref{Use Cases}  can be achieved using the implementation described in the sections before.
+This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before.
 
 \subsection{Re-Use of Input Data}\label{Implementation:Use Case1}
 The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment.
@@ -1161,7 +1162,7 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 \end{figure}
 
 \section{Summary}
-This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The Job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
+This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 
 \chapter{Evaluation}\label{Evaluation}
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. \\ Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. \\ Section \ref{Evaluation:impact} evaluates the impact of the solution to the EODC back end by looking into storage and performance metrics. \\ The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections.
