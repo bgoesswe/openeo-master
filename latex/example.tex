@@ -1233,14 +1233,15 @@ This chapter evaluates the prototype implementation described in the previous se
 \section{Evaluation Setup}\label{Evaluation:Setup}
 The EODC back end provides the evaluation setup for testing the prototype of this thesis. It is a duplicate of the productive service running at the OpenEO back end. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deploy the adapted back end of Section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. This allows for an unrestricted evaluation of the use cases. If the changes suit EODC, it can switch easily the productive instance with this test instance. \\
 The evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
-
+\todo{Extend this by the laptop settings}
 \section{Special Test Cases}\label{Evaluation:special}
 This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. These test cases are created to look into the error proneness of the solution. They are structured by the topic of the test cases in the following sections.
 
 \subsection{Data Changes}\label{Evaluation:special_dataid}
 This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose. \\
 The following steps are taken to test the behavior on data changes:
-
+\todo{Update text with local CSW server}
+\todo{Show concrete code of execution}
 \begin{enumerate}
 	\item \textbf{Run JobA, which creates query PID-A. Get file list of PID-A} \\
 	After executing the job the PID-A is created as "qu-4dc4e155-cd36-4f90-a335-f610b58fec7a". The resulting file list consists of 31 files. One of the filenames ends with "T32TPR\_20170104T101405.zip". 
@@ -1248,12 +1249,14 @@ The following steps are taken to test the behavior on data changes:
 	The file with the name ending with "T32TPR\_20170104T101405.zip" is now set to end with "T32TPR\_20170104T101405\_NEW.zip", by replacing the name after the query execution. Since the processing would break, if the name is changed in that way, it is replaced by the original name for the processing service.  
 	\item \textbf{Get file list of PID-A} \\
 	The second call for the file list, after the file is modified results in a different file list and a warning message, that the resulting files differ from the original execution.
+	\todo{describe how it works with the timestamp}
 	\item \textbf{Run duplicate of JobA} \\
 	After running a duplicate of JobA, a new query PID ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") gets created, which is correct behavior since the result of the query changed. 
 	\item \textbf{Run JobB using PID-A}\\
-	JobB is the same process chain as JobA, but using the data PID of JobA as input parameter. After executing JobB, the job gets the same PID as the duplicate of JobA ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") instead of the used PID-A. The job got executed by the updated data records, since the execution of the same query returns a different resulting data. In the job description endpoint there is a warning message, that the data input was different to the specified input data PID of the process graph. 
+	JobB is the same process chain as JobA, but using the data PID of JobA as input parameter. After executing JobB, the job gets the same input data PID as the duplicate of JobA ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") instead of the used PID-A. The job got executed by the updated data records, since the execution of the same query returns a different resulting data. In the job description endpoint there is a warning message, that the data input was different to the specified input data PID of the process graph. 
 \end{enumerate}
-
+\todo{Show select * from the database}
+\todo{Show how it works with the timestamps}
 The test case shows the behavior of the solution, if the data gets updated, nevertheless the behavior is the same for deleted data records. The deletion changes the outcome of the query execution and therefore, a new query PID gets generated. Another outcome of the example is that the used input data PID of a job execution is consistent only after the execution. It shows limitations of the EODC back end at the moment for not being able to query for deprecated data records. Nevertheless, the implementation gives the user the possibility to notice changes in the data-set. \\
 The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
 
