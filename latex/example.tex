@@ -1266,14 +1266,14 @@ This section reviews the outcome of the job capturing critically. The focus of i
 
 \textbf{Is it theoretically possible to recreate an older version of the back end?} \\
 The aim of the implementation is to capture enough data to make it theoretically possible to re-run the same job. The EODC back end is created directly by a GitHub repository. To recreate an old version of the back end, the GitHub repository URL and the commit identifier of the original set up is needed. The timestamp of the job execution is persisted in the context model of the original job execution. The original GitHub repository and commit can be resolved by the back end provenance. Therefore, the information of re-creating the back end state from an older version is captured. To re-create the original job on the back end, the process graph of it is persisted and can be re-executed. The execution of the job is the same, assuming the input data has not been deleted in the meantime. The result hash makes it possible to validate, if the job re-execution was the same.
-
+\todo{Show concrete example see Feedback for detailed storyline}
 \section{Impact}\label{Evaluation:impact}
 
 This section evaluates the impact of the implementation on the EODC back end. To achieve this a testing set of 25 different process graphs are executed at the EODC back end. The testing set consists of a composition of jobs with different complexity. There are 15 jobs in the same complexity level of the running example (estimated 2MegaBytes (MB) result file), where every job creates a new input data PID. There are 5 jobs that are using existing input data PIDs and 5 jobs with a big area of interest, which will lead to a resulting output file of about 25MB. The impact is measured by the impact on the performance and the impact on the storage of the EODC back end.           
 
 \subsection{Performance}\label{Evaluation:impact_perf}
 This section evaluates the performance impact on the EODC back end by measuring the difference of the job execution duration between the original EODC back end and the EODC back end with the implementations of the thesis. The duration of the single parts of the implementation is applied by writing timestamps into the log file and calculating the duration afterwards. The duration of three parts are captured during the execution of the test cases. The time needed by the Query Handler, the duration of the context model and the part of the context model creation needed by the Result Handler.   
-
+\todo{Use the data from the papers}
 \begin{table}[]
 	\caption{Average duration time of the parts of the solution by executing the test cases}
 	\centering
@@ -1287,8 +1287,9 @@ This section evaluates the performance impact on the EODC back end by measuring 
 \end{table}
 
 Table \ref{Tab:eva_performance} shows the average duration of the parts of the solution, when executing the test cases. The test cases are grouped by the first 15 test cases that create new query PIDs, the test cases 16-20, which use already existing query PIDs and the last 5 test cases that have a result file with a size of estimated 25 MBytes. The results show that the impact of the parts is small in comparison to the whole execution time (~0.1\%). The percentage of duration of the Result Handler is getting bigger, if the result file gets bigger as well (0.2\% on the test cases 21-25). Whereas the duration of the other parts of the capturing keeps a similar percentage of the whole execution time. 
+\todo{discussion about the results, define Hardware at the experiment setup, increase higher for big queries --> why ? What is the variance across several runs? --> How to avaid caching effects ?}
 
-
+\todo{better describe stuff: How are the percentages computed? --> Make the difference of Context Model and Result Handler clear ! --> Run measurements several times ? --> What can you generalize from the measurmeents ? What guarantees would you be able (willing) to give on impact on the real performance on the EODC if deployed? Would you guarantee certain performance bound even if contractual penalty payments were attached if your implementation fails to meet them?}
 \subsection{Storage}\label{Evaluation:impact_stor}
 This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostGreSQL database, the storage needed by it can be estimated using the PostGreSQL CLI.
 
@@ -1303,7 +1304,7 @@ This section describes the storage needed for the captured meta-data. Since all 
 \end{table}
 
 Table \ref{Tab:eva_storage} shows the data needed for the captured data after the test cases got executed. Each saved query record needs an average of 2.807 kBytes space and each QueryTable record an average of 409 kBytes. The context models needs an average of 936 kBytes per job execution and takes about 47,589 \% of the job meta-data kept by the EODC.   
-
+\todo{describe how they are computed ! Representative queries ? }
 \section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
 The two implementation approaches have implemented the same features, even though there are major differences between them. This section provides the reason for choosing the python implementation instead of the noWorkflow implementation. Therefore, the performance of the implementations gets compared. The experiment setup is the running example (see Section \ref{example}) of the thesis. The date range of the example gets modified to generate a set of test scenarios with a range of input data sizes. There are 10 jobs executed in both implementations, which have the same process graph like defined in the running example, but with varying date range parameters. The date range is modified on each iteration by an addition of 2 days. The first range is May 2017, the next one is May until 2nd of February 2017 and so on, until the last test case has a date range of May to the 20th of February of 2017. The jobs are executed in both implementations and the duration time of the execution is measured. After each job the setup gets cleaned up, by removing all generated files including the generated provenance database of noWorkflow. 
 
@@ -1325,6 +1326,8 @@ Figure \ref{fig:noworkvspython} shows a diagram of the execution duration over t
 	\end{tabular}
 	\label{Tab:noworkflow}
 \end{table}
+
+\todo{Use data from the pubölications ! Describe WHY there is such a big difference between NoWF and my stuff}
 
 % summery ?
 
