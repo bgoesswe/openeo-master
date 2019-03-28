@@ -23,6 +23,10 @@
 \usepackage{hyperref}  % Enables cross linking in the electronic document version. This package has to be included second to last.
 \usepackage[acronym,toc]{glossaries} % Enables the generation of glossaries and lists fo acronyms. This package has to be included last.
 
+\usepackage{morewrites}
+
+\usepackage{minted}
+
 \usepackage{listings}
 \lstset{
 	language=bash,
@@ -102,6 +106,8 @@
 %\setsecondreviewerdata{Affiliation, Country}
 
 \newcolumntype{L}[1]{>{\centering\arraybackslash}l{#1}}
+
+
 
 \begin{document}
 
@@ -855,16 +861,21 @@ The following list describes how the elements of the query data set record are c
 The aim of the back end provenance is to persist the versions of the back end and therefore the version of the software used to execute the jobs. The following subsections explain how the, in Section \ref{Design:Back end provenance} defined, provenance data elements are read from the GitHub repository.  
 
 \textbf{B1: GitHub Repository} \\
-The GitHub repository is directly used to create the services of the EODC back end. Therefore, the currently used GitHub repository information can be read via the command line interface (CLI) of Git. The used commit and branch are accessed directly via the Git CLI. In the listing below the Git CLI calls used to get the GitHub repository information.       
+The GitHub repository is directly used to create the services of the EODC back end. Therefore, the currently used GitHub repository information can be read via the command line interface (CLI) of Git. The used commit and branch are accessed directly via the Git CLI. Listing \ref{lst:impl_backendprov} shows the Git CLI calls used to get the GitHub repository information.       
 
-\begin{lstlisting}[frame=single, language=Python]
-# Receiving the Git Repository URL
-git config --get remote.origin.url 
-# Receiving Branch
-git branch
-# Receiving the commit messages with the timestamps
-git log 
-\end{lstlisting}
+
+\begin{listing}[ht]
+	\begin{minted}{bash}
+	# Receiving the Git Repository URL
+	git config --get remote.origin.url 
+	# Receiving Branch
+	git branch
+	# Receiving the commit messages with the timestamps
+	git log 
+	\end{minted}
+	\caption{Git commands used to get access the back end identification.}
+	\label{lst:impl_backendprov}
+\end{listing}
 
 \textbf{B2: Core API Version} \\
 Back end developers manually update the OpenEO core API version of the EODC back end. It is in the GitHub repository of the EODC back end. 
@@ -889,7 +900,6 @@ Table \ref{Tab:contextmodel} provides the mapping between the context model elem
 Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described for the context model in the Design section. Information on the back end environment during the execution of the job is persisted in the context model. In the context model the back end version and the execution time-stamp is persisted and can be used to identify the back end provenance of the execution time. The code environment is a list of all python dependencies with their versions installed during the execution of the jobs. In addition the python interpreter version is added to the JSON object. How the data is captured in detail is described in the sections below.    
 
 \todo{Make Glossary !}
-\todo{Add listing captions !}
  
 \begin{table}[]
 	\caption{Relation of context model elements and EODC JSON context model.}
@@ -964,16 +974,24 @@ For the purpose of the job dependent provenance capturing described in the Desig
 The job identifier is defined by the back end version, which includes the current state of the locally checked out GitHub repository.\\
 To enable a more detailed environment, noWorkflow captures the hash of the executed code. The hash from the database of noWorkflow gets retrieved via the command line interface. It contains the command “show” (see code block below), which returns the data of a specific trial. The code hash is extracted from the output and added to the context model. 
 
-\begin{lstlisting}[frame=single]
-now show --dir=JOB_DIR
-\end{lstlisting}
+\begin{listing}[ht]
+	\begin{minted}{bash}
+	now show --dir=JOB_DIR
+	\end{minted}
+	\caption{noWorkflow command to retrieve the context of the executed code.}
+	\label{lst:impl_now1}
+\end{listing}	
 
 \textbf{J3 and J4: Programming language and  installed packages of programming language} \\
-NoWorkflow captures the used python packages in the database. To retrieve the modules the command line interface is used with the “-m” argument (see code block below), which returns all used python modules including their versions and the version of python. The advantage of using noWorkflow instead of the \textit{pip} tool described in the python solution is that only the used packages are listed.
+noWorkflow captures the used python packages in the database. To retrieve the modules the command line interface is used with the “-m” argument (see code block below), which returns all used python modules including their versions and the version of python. The advantage of using noWorkflow instead of the \textit{pip} tool described in the python solution is that only the used packages are listed.
 
-\begin{lstlisting}[frame=single]
-now show -m --dir=JOB_DIR
-\end{lstlisting}
+\begin{listing}[ht]
+	\begin{minted}{bash}
+	now show -m --dir=JOB_DIR
+	\end{minted}
+	\caption{noWorkflow command to retrieve the installed python modules.}
+	\label{lst:impl_now2}
+\end{listing}	
 
 \section{User Services}\label{Implementation:User Interface}
 The previous sections describe only the technical insight of the back end. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing OpenEO core API version 0.3.1. In addition, the proposed endpoints are applied to the python client and the EODC back end. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
@@ -1012,151 +1030,9 @@ The first scenario describes the process of a researcher using OpenEO as process
 	\item \textbf{Researcher A runs an experiment (job A) at the EODC back end.} \\
 	This step is basic OpenEO functionality and is not influenced by the solution from the user point of view. The researcher chooses Sentinel-2 data by loading the Sentinel-2 collection of EODC with the data-set identifier "s2a\_prd\_msil1c". In the next step the data is filtered temporally (May of 2017) and spatially (bounding box of the south tyrol area). In the next step the researcher applies the NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php} process on the filtered data as well as the minimum value of each pixel in the time range with the "min\_time" process. The NDVI calculation needs the measurements of the satellite in near-infrared (parameter "nir") and the measurements of red light (parameter "red"). for Sentinel 2 data of the EODC the two measurements are represented by the band identifiers "B08" for near-infrared and "B04" for visible red light. The last two lines create a job at the back end with the specified process graph and start the execution of it.
 	At the back end the Query Handler is generating a new data PID or returns an already existing one if the same query got executed in the past. The following python client code represents the experiment of Researcher A.  
-	\begin{lstlisting}[caption={Researcher A runs job A with the python client}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase1_1}]
-import openeo
-EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
-		
-con = openeo.connect(EODC_DRIVER_URL)
 	
-# Choose dataset
-processes = con.get_processes()
-pgA = processes.get_collection(name="s2a_prd_msil1c")
-pgA = processes.filter_daterange(pgA, extent=["2017-05-01", 
-                                              "2017-05-31"])
-pgA = processes.filter_bbox(pgA, west=10.288696, 
-		south=45.935871, east=12.189331, 
-		north=46.905246, crs="EPSG:4326")
-	
-# Choose processes
-pgA = processes.ndvi(pgA, nir="B08", red="B04")
-pgA = processes.min_time(pgA)
-	
-# Create job A out of the process graph A (pgA)
-	
-jobA = con.create_job(pgA.graph)
-jobA.start_job()
-	\end{lstlisting}
-	
-\todo{Add result of use case 1 image}
-
-	\item \textbf{Researcher A retrieves the used input data of job A.} \\
-	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snipped shows the call using the python client.
-	
-	\begin{lstlisting}[caption={Researcher A retrieves the used input data pid}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase1_2}]
-pidA_url = jobA.get_data_pid_url()
-print(pidA_url)
-# Output: EODC_DRIVER_URL/collections
-#	/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
-pidA = jobA.get_data_pid()
-
-# retrieve information about the pidA 
-# e.g. executed query and description about the dataset.
-desc = con.describe_collection(pidA)
-	
-query = desc["query"]
-# re-execute query and get the resulting 
-# file list from the back end
-file_list = con.get_filelist(pidA)
-	\end{lstlisting}
-	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=\textwidth]{usecase1_2}
-		\caption{Screenshot of the job A landing page.}
-		\label{fig:usecase1-pid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-	\end{figure}	
-	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the query PID information. After calling the page, the user is provided by the executed filter parameter, the dataset identifier, a description about the dataset. In addition the link to get the re-execution results of the query and the resolvable query pid is added to the page (see Figure \ref{fig:usecase1-pid}). \\
-	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.  
-	
-	\item \textbf{Researcher A cites the input data in a publication.} \\
-	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"EODC\_DRIVER\_URL/collections/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
-	
-	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
-	In order to use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.   
-	\begin{lstlisting}[caption={Researcher B uses pid A for different job.}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase1_3}]
-import openeo
-	
-# Take input data of job A by using the input data pid A
-# pidA = qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
-pgB = processes.get_collection(
-      data_pid="qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06")
-# Alternative: data_pid="EODC_DRIVER_URL/collections/pidA" 
-	
-# Choose processes
-pgB = processes.ndvi(pgB, nir="B08", red="B04")
-pgB = processes.max_time(pgB)
-	
-# Create job B out of the process graph B (pgB)
-	
-jobB = con.create_job(pgB.graph)
-jobB.start_job()
-	\end{lstlisting}
-	
-\end{enumerate}
-\todo{Add result of use case 1 - 4 image}
-\subsection{Capturing job dependent environments}\label{Implementation:Use Case2}
-This scenario focuses on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
-
-\begin{enumerate}
-	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
-	The researcher A runs a job at the EODC back end with the following python client code. This is the default workflow of executing a job using the python client.  
-	\begin{lstlisting}[caption={Researcher A runs job A with the python client}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase2_1}]
-import openeo
-EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
-		
-con = openeo.connect(EODC_DRIVER_URL)
-	
-# Choose dataset
-processes = con.get_processes()
-pgA = processes.get_collection(name="s2a_prd_msil1c")
-pgA = processes.filter_daterange(pgA, extent=["2017-05-01", 
-                                              "2017-05-31"])
-pgA = processes.filter_bbox(pgA, west=10.288696, 
-                south=45.935871, east=12.189331, 
-                 north=46.905246, crs="EPSG:4326")
-	
-# Choose processes
-pgA = processes.ndvi(pgA, nir="B08", red="B04")
-pgA = processes.min_time(pgA)
-	
-# Create job A out of the process graph A (pgA)
-jobA = con.create_job(pgA.graph)
-jobA.start_job()
-	\end{lstlisting}
-	\item \textbf{Researcher wants to describe the experiment environment.}\\
-	The researcher wants to publish the result of the experiment and therefore needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
-	\begin{lstlisting}[caption={Describe jobA execution environment}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase2_2}]
-# Get context model of job A
-context_model = jobA.describe_job["context_model"]
-	
-# Retrieve the information that Researcher A needs.
-	
-interpreter = context_model["interpreter"]
-code_env = context_model["code_env"]
-input_data = jobA.get_data_pid_url()
-backend_version = jobA.get_backend_version()
-logging.info("Interpreter: {}".format(interpreter))
-logging.info("Code Environment: {}".format(code_env))
-logging.info("Input Data PID URL: {}".format(input_data))
-logging.info("Back End Version (commit): {}".format(backend_version["commit"]))
-	\end{lstlisting}
-	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
-	
-\end{enumerate}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{usecase2_2}
-	\caption{Screenshot of logging output of the second Use Case.}
-	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-\subsection{Getting differences of job executions}\label{Implementation:Use Case3}
-The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments.  
-\begin{enumerate}
-	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
-	The researcher A runs a job at the EODC back end with the following python client code. 
-	\begin{lstlisting}[caption={Researcher A runs job A with the python client}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase3_1}]
+\begin{listing}[ht]
+	\begin{minted}{python}
 import openeo
 EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
 
@@ -1179,40 +1055,235 @@ pgA = processes.min_time(pgA)
 
 jobA = con.create_job(pgA.graph)
 jobA.start_job()
-\end{lstlisting}
-	\item \textbf{Researcher re-runs the same experiment (job B).}\\
-	Since re-execution of the same job id is handled internally with the re-execution of the same job configuration with a new job id, the the following code is used to create the same job again (job B). It uses the same process graph and the definition of pgA is the same as in Listing \ref{lst:impl_usecase3_1}:
-	\begin{lstlisting}[caption={Researcher re-reuns job A resulting in job B.}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase3_2}]
+	\end{minted}
+	\caption{Researcher A runs job A with the python client.}
+	\label{lst:impl_usecase1_1}
+\end{listing}	
+
+
+\todo{Add result of use case 1 image}
+
+	\item \textbf{Researcher A retrieves the used input data of job A.} \\
+	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snipped shows the call using the python client.
+	
+\begin{listing}[ht]
+	\begin{minted}{python}
+pidA_url = jobA.get_data_pid_url()
+print(pidA_url)
+# Output: EODC_DRIVER_URL/collections
+#	/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
+pidA = jobA.get_data_pid()
+
+# retrieve information about the pidA 
+# e.g. executed query and description about the dataset.
+desc = con.describe_collection(pidA)
+
+query = desc["query"]
+# re-execute query and get the resulting 
+# file list from the back end
+file_list = con.get_filelist(pidA)
+	\end{minted}
+	\caption{Researcher A retrieves the used input data pid.}
+	\label{lst:impl_usecase1_2}
+\end{listing}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{usecase1_2}
+		\caption{Screenshot of the job A landing page.}
+		\label{fig:usecase1-pid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+	\end{figure}	
+	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the query PID information. After calling the page, the user is provided by the executed filter parameter, the dataset identifier, a description about the dataset. In addition the link to get the re-execution results of the query and the resolvable query pid is added to the page (see Figure \ref{fig:usecase1-pid}). \\
+	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.  
+	
+	\item \textbf{Researcher A cites the input data in a publication.} \\
+	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"EODC\_DRIVER\_URL/collections/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
+	
+	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
+	In order to use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.   
+
+\begin{listing}[ht]
+	\begin{minted}{python}
+import openeo
+
+# Take input data of job A by using the input data pid A
+# pidA = qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
+pgB = processes.get_collection(
+data_pid="qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06")
+# Alternative: data_pid="EODC_DRIVER_URL/collections/pidA" 
+
+# Choose processes
+pgB = processes.ndvi(pgB, nir="B08", red="B04")
+pgB = processes.max_time(pgB)
+
+# Create job B out of the process graph B (pgB)
+
+jobB = con.create_job(pgB.graph)
+jobB.start_job()
+	\end{minted}
+	\caption{Researcher B uses pid A for different job.}
+	\label{lst:impl_usecase1_3}
+\end{listing}
+	
+\end{enumerate}
+\todo{Add result of use case 1 - 4 image}
+\subsection{Capturing job dependent environments}\label{Implementation:Use Case2}
+This scenario focuses on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
+
+\begin{enumerate}
+	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
+	The researcher A runs a job at the EODC back end with the following python client code. This is the default workflow of executing a job using the python client.  
+
+\begin{listing}[ht]
+	\begin{minted}{python}
+import openeo
+EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
+
+con = openeo.connect(EODC_DRIVER_URL)
+
+# Choose dataset
+processes = con.get_processes()
+pgA = processes.get_collection(name="s2a_prd_msil1c")
+pgA = processes.filter_daterange(pgA, extent=["2017-05-01", 
+"2017-05-31"])
+pgA = processes.filter_bbox(pgA, west=10.288696, 
+south=45.935871, east=12.189331, 
+north=46.905246, crs="EPSG:4326")
+
+# Choose processes
+pgA = processes.ndvi(pgA, nir="B08", red="B04")
+pgA = processes.min_time(pgA)
+
+# Create job A out of the process graph A (pgA)
 jobA = con.create_job(pgA.graph)
 jobA.start_job()
-	\end{lstlisting}
+	\end{minted}
+	\caption{Researcher A runs job A with the python client.}
+	\label{lst:impl_usecase2_1}
+\end{listing}
+	\item \textbf{Researcher wants to describe the experiment environment.}\\
+	The researcher wants to publish the result of the experiment and therefore needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
+
+\begin{listing}[ht]
+	\begin{minted}{python}
+# Get context model of job A
+context_model = jobA.describe_job["context_model"]
+
+# Retrieve the information that Researcher A needs.
+
+interpreter = context_model["interpreter"]
+code_env = context_model["code_env"]
+input_data = jobA.get_data_pid_url()
+backend_version = jobA.get_backend_version()
+logging.info("Interpreter: {}".format(interpreter))
+logging.info("Code Environment: {}".format(code_env))
+logging.info("Input Data PID URL: {}".format(input_data))
+logging.info("Back End Version (commit): {}".format(backend_version["commit"]))
+	\end{minted}
+	\caption{Describe jobA execution environment.}
+	\label{lst:impl_usecase2_2}
+\end{listing}
+	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
+	
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{usecase2_2}
+	\caption{Screenshot of logging output of the second Use Case.}
+	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\subsection{Getting differences of job executions}\label{Implementation:Use Case3}
+The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments.  
+\begin{enumerate}
+	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
+	The researcher A runs a job at the EODC back end with the following python client code. 
+
+\begin{listing}[ht]
+	\begin{minted}{python}
+import openeo
+EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
+
+con = openeo.connect(EODC_DRIVER_URL)
+
+# Choose dataset
+processes = con.get_processes()
+pgA = processes.get_collection(name="s2a_prd_msil1c")
+pgA = processes.filter_daterange(pgA, extent=["2017-05-01", 
+"2017-05-31"])
+pgA = processes.filter_bbox(pgA, west=10.288696, 
+south=45.935871, east=12.189331, 
+north=46.905246, crs="EPSG:4326")
+
+# Choose processes
+pgA = processes.ndvi(pgA, nir="B08", red="B04")
+pgA = processes.min_time(pgA)
+
+# Create job A out of the process graph A (pgA)
+
+jobA = con.create_job(pgA.graph)
+jobA.start_job()
+	\end{minted}
+	\caption{Researcher A runs job A with the python client.}
+	\label{lst:impl_usecase3_1}
+\end{listing}
+	\item \textbf{Researcher re-runs the same experiment (job B).}\\
+	Since re-execution of the same job id is handled internally with the re-execution of the same job configuration with a new job id, the the following code is used to create the same job again (job B). It uses the same process graph and the definition of pgA is the same as in Listing \ref{lst:impl_usecase3_1}:
+\begin{listing}[ht]
+	\begin{minted}{python}
+jobA = con.create_job(pgA.graph)
+jobA.start_job()
+	\end{minted}
+	\caption{Researcher re-reuns job A resulting in job B.}
+	\label{lst:impl_usecase3_2}
+\end{listing}
 	
 	\item \textbf{Researcher runs a different experiment (job C).}\\
 	The third job (job C) is created with a different process configuration and input data query.
-	\begin{lstlisting}[caption={Researcher runs experiment different from job A.}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase3_3}]
+
+\begin{listing}[ht]
+	%		\inputminted{octave}{BitXorMatrix.m}
+	\begin{minted}{python}
 # Choose dataset
 processes = con.get_processes()
 pgC = processes.get_collection(name="s2a_prd_msil1c")
-pgC = processes.filter_daterange(pgC, extent=["2017-05-01", "2017-05-31"])
-pgC = processes.filter_bbox(pgC, west=10.288696, south=45.935871, east=12.189331, north=46.905246, crs="EPSG:4326")
-
+pgC = processes.filter_daterange(pgC, extent=["2017-05-01", 
+                                              "2017-05-31"])
+pgC = processes.filter_bbox(pgC, west=10.288696, south=45.935871, 
+                                 east=12.189331, north=46.905246, 
+                                 crs="EPSG:4326")
+	
 # Choose processes
 pgC = processes.ndvi(pgC, nir="B08", red="B04")
 pgC = processes.max_time(pgC) # differs from job A
-
+	
 # Create job C out of the process graph C (pgC)
-
+	
 jobC = con.create_job(pgC.graph)
 jobC.start_job()
-	\end{lstlisting}   
+	\end{minted}
+	\caption{Researcher runs experiment different from job A.}
+	\label{lst:impl_usecase3_3}
+	
+\end{listing}
+
 	\item \textbf{Researcher wants to compare the jobs by their environment and outcome.}\\
 	Now the researcher wants to compare job B and job C with the first job A. Therefore the following code has to be executed:
-	\begin{lstlisting}[caption={Researcher compares the different jobs.}, captionpos=b,frame=single, language=Python,label={lst:impl_usecase3_4}]
+	
+	\begin{listing}[ht]
+%		\inputminted{octave}{BitXorMatrix.m}
+		\begin{minted}{python}
 diffAB = jobA.diff(jobB)
 diffAC = jobA.diff(jobC)
 logging.info(diffAB)
 logging.info(diffAC)
-	\end{lstlisting}  
+		\end{minted}
+		\caption{Researcher compares the different jobs.}
+		\label{lst:impl_usecase3_4}
+		
+	\end{listing}
+	 
 	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. Figure \ref{fig:eva_diff} is a screenshot of the logging messages defined in Listing \ref{lst:impl_usecase3_4}.
 \end{enumerate}
 
@@ -1228,7 +1299,6 @@ This chapter presented an implementation of the design of Chapter \ref{Design} a
 
 \chapter{Evaluation}\label{Evaluation}
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations.\\ First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. \\ Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. \\ Section \ref{Evaluation:impact} evaluates the impact of the solution to the EODC back end by looking into storage and performance metrics. \\ The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation} on different aspects. Since the amount of resulting information can be very big, only the important information is extracted from the communication in the next sections.
-
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
 The EODC back end provides the evaluation setup for testing the prototype of this thesis. It is a duplicate of the productive service running at the OpenEO back end. EODC uses the Open Shift service to provide the back ends functionality. It uses the version provided at GitHub from EODC to build the local instance of the EODC back end. In this setup a GitHub fork of the EODC back end is used to deploy the adapted back end of Section \ref{Implementation}. Since the used back end instance is a duplicate of the actual productive service, the data used in the back end is the actual data that EODC provides for the OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. This allows for an unrestricted evaluation of the use cases. If the changes suit EODC, it can switch easily the productive instance with this test instance. \\
@@ -1327,9 +1397,9 @@ Figure \ref{fig:noworkvspython} shows a diagram of the execution duration over t
 	\label{Tab:noworkflow}
 \end{table}
 
-\todo{Use data from the pubölications ! Describe WHY there is such a big difference between NoWF and my stuff}
+\todo{Use data from the publications ! Describe WHY there is such a big difference between NoWF and my stuff}
 
-% summery ?
+\todo{Evaluation summary}
 
 \chapter{Conclusion and future Work}\label{Conclusion}
 
@@ -1388,7 +1458,12 @@ Therefore, the bench marking context model gets introduced. The idea is that not
 \cleardoublepage % Start list of tables on the next empty right hand page.
 \listoftables % Starred version, i.e., \listoftables*, removes the toc entry.
 
-\lstlistoflistings
+
+
+%\renewcommand\listoflistingscaption{List of source codes}
+\listoflistings
+
+
 
 % Use an optional list of alogrithms.
 %\listofalgorithms
