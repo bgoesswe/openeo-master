@@ -1301,7 +1301,7 @@ This chapter presented an implementation of the design of Chapter \ref{Design} a
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation}.
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
-The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. \todo{Maybe add CSW Server?} The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. The implementation and used software for the evaluation is available and further described on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo}. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the database.     
+The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. The implementation and used software for the evaluation is available and further described on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo}. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the database.     
 
 The evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
 
@@ -1320,31 +1320,142 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 	\end{tabular}
 	\label{Tab:eva_hardware}
 \end{table}
-\todo{bis hierher ist es ok}
+
 
 \section{Special Test Cases}\label{Evaluation:special}
 This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. These test cases are created to look into the error proneness of the solution. They are structured by the topic of the test cases in the following sections.
-
+\todo{bis hierher ist es ok}
 \subsection{Data Changes}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to a date after the query time-stamp. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose. \\
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose. The code as well as the results of the evaluation is available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/notebooks}.  \\
 The following steps are taken to test the behavior on data changes:
-\todo{Update text with local CSW server?}
+
 \todo{Show concrete code of execution}
 \begin{enumerate}
-	\item \textbf{Run JobA, which creates query PID-A. Get file list of PID-A} \\
-	After executing the job the PID-A is created as "qu-4dc4e155-cd36-4f90-a335-f610b58fec7a". The resulting file list consists of 31 files. One of the filenames ends with "T32TPR\_20170104T101405.zip". 
-	\item \textbf{Update one of the resulting files of the PID-A query} \\
-	The file with the name ending with "T32TPR\_20170104T101405.zip" is now set to end with "T32TPR\_20170104T101405\_NEW.zip", by replacing the name after the query execution. Since the processing would break, if the name is changed in that way, it is replaced by the original name for the processing service.  
-	\item \textbf{Get file list of PID-A} \\
-	The second call for the file list, after the file is modified results in a different file list and a warning message, that the resulting files differ from the original execution.
-	\todo{describe how it works with the timestamp}
-	\item \textbf{Run duplicate of JobA} \\
-	After running a duplicate of JobA, a new query PID ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") gets created, which is correct behavior since the result of the query changed. 
-	\item \textbf{Run JobB using PID-A}\\
-	JobB is the same process chain as JobA, but using the data PID of JobA as input parameter. After executing JobB, the job gets the same input data PID as the duplicate of JobA ("qu-5ad7c999-058b-4560-a1fc-25195a448c65") instead of the used PID-A. The job got executed by the updated data records, since the execution of the same query returns a different resulting data. In the job description endpoint there is a warning message, that the data input was different to the specified input data PID of the process graph. 
+	\item \textbf{Run JobA, which creates query pidA. Get result files of pidA} \\
+	\begin{listing}[ht]
+		\begin{minted}{python}
+con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
+# Choose dataset
+processes = con.get_processes()
+pgA = processes.get_collection(name="s2a_prd_msil1c")
+pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
+pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, east=12.189331, north=46.905246, crs="EPSG:4326")
+# Choose processes
+pgA = processes.ndvi(pgA, nir="B08", red="B04")
+pgA = processes.min_time(pgA)
+# Create and start job A out of the process graph A (pgA)
+jobA = con.create_job(pgA.graph)
+jobA.start_job()
+# Re-execute the query to print the used files.
+pidA = jobA.get_data_pid()
+file_listA = con.get_filelist(pidA)
+# Get state of the resultfiles, so if they changed since the original execution 
+file_listA["input_files"]["state"] # Returns "EQUAL"
+		\end{minted}
+		\caption{Researcher runs JobA and retrieves the result files status.}
+		\label{lst:eva_datachange_1}
+	\end{listing}
+	After executing the job the pidA is created as "qu-78aab90a-13e6-4722-9237-924713de6b43". The resulting file list consists of 51 files and the re-execution of the query results in the same 51 files. 
+	\item \textbf{Update one of the resulting files of the pidA query} \\
+	\begin{listing}[ht]
+	\begin{minted}{python}
+# Update the first file of the pidA query resulting files.
+con.update_file()
+	\end{minted}
+	\caption{Update one of the pidA resulting files, but keep the original file.}
+	\label{lst:eva_datachange_2}
+	\end{listing}
+	The "update\_file" method is added to the python client to set the back end to simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the current date and time and renames the file with an additional "\_new". The addition happens right after the query execution. The update does not remove the old file from the result, but adds an additional file to the result files. 
+	\item \textbf{Second re-execution of pidA query} \\
+	\begin{listing}[ht]
+		\begin{minted}{python}
+# Get state of the resultfiles, so if they changed since the original execution. 
+file_listA = con.get_filelist(pidA)
+file_listA["input_files"]["state"] # Returns "EQUAL"
+		\end{minted}
+		\caption{Re-execute pidA query after one file got updated.}
+		\label{lst:eva_datachange_3}
+	\end{listing}
+	The second call for the file list results in the same file list, since the old file is still available and the updated file is filtered out by the time-stamp of the original execution. The query contains the execution time-stamp of the original query and filters every file out of the result that has a creation time-stamp after that. 
+	\todo{add query figure ?}
+	\item \textbf{Run duplicate of Job A named Job B} \\
+	\begin{listing}[ht]
+		\begin{minted}{python}
+# Reuse the defined process Graph from Job A to create Job B.
+jobB = con.create_job(pgA.graph)
+jobB.start_job()
+# re-execute query and get the resulting file list from the back end
+pidB = jobB.get_data_pid()
+file_listB = con.get_filelist(pidB)
+# comparing the resultfiles of jobA with the resultfiles of jobB
+(file_listA == file_listB) # Returns False
+		\end{minted}
+		\caption{Create job B, which uses the same process graph as Job A.}
+		\label{lst:eva_datachange_4}
+	\end{listing}
+	The duplicate job B uses the same process graph as the job A, but gets executed after the update of the file takes place. Therefore, job B gets a new query PID and the resulting files differ, by the updated file. 
+	\todo{show filelist, maybe in appendix...}
+	\item \textbf{Run duplicate of Job A, by using the data PID of job A named Job C}\\
+	\begin{listing}[ht]
+		\begin{minted}{python}
+# Take input data of job A by using the input data pid A of job A
+pgC = processes.get_collection(data_pid=pidA)
+# Choose processes
+pgC = processes.ndvi(pgC, nir="B08", red="B04")
+pgC = processes.min_time(pgC)
+# Create and start Job C
+jobC = con.create_job(pgC.graph)
+jobC.start_job()
+# re-execute query and get the resulting file list from the back end
+pidC = jobC.get_data_pid()
+file_listC = con.get_filelist(pidC)
+# Compare resulting files with the original execution of jobA
+(file_listA == file_listC) # Returns True
+		\end{minted}
+		\caption{Create job C, which uses the input data od pidA.}
+		\label{lst:eva_datachange_5}
+	\end{listing}
+	job C is using the data identifier of job A (pidA) and uses therefore also the execution time-stamp of the original query execution. So job C uses the same data PID as jobA and the updated file is also filtered out of the resulting files. 
+	\item \textbf{Update one of the resulting files of the pidA query and remove the original one.}\\ 
+	\begin{listing}[ht]
+	\begin{minted}{python}
+con.update_file(deleted=True)
+	\end{minted}
+	\caption{Update one of the pidA resulting files and delete the original file.}
+	\label{lst:eva_datachange_6}
+	\end{listing}
+	The method above updates the first file of the query result and removes the original file at the back end. 
+	\item \textbf{Get File-list of pidA}\\ 
+	\begin{listing}[ht]
+	\begin{minted}{python}
+# re-execute query and get the resulting file list from the back end
+file_listA = con.get_filelist(pidA)
+file_listA["input_files"]["state"] # Returns one file entry
+#'["\'date\': \'2017-05-24\', \'timestamp\': \'2018-08-11\', \'path\': \'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/24/S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new.zip\', \'name\': \'S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new\'}]: s2a_prd_msil1c <data.dependencies.arg_parser.BBox object at 0x7f90f9cbfe80> 2017-05-01T00:00:00Z 2017-05-31T23:59:59Z"]'
+	\end{minted}
+	\caption{Re-execute pidA query after one file got updated and the old version got erased.}
+	\label{lst:eva_datachange_7}
+	\end{listing}	
+	The re-execution of the query pidA results in a file list without the deleted file. Since files are filtered out by the query due to the execution time-stamp, the new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" consists of a list of the newest files that replaced files that are no longer available. In this case the "state" contains only one file that replaces the original file. So users can see the alternatives for the original file, but not the original file itself. This is because the file list is not persisted in the query store, but the number of result files. If the number of result files is different at a re-execution, the query gets executed without the original execution timestamp and the result gets compared to the re-execution with the original execution timestamp. All files that are missing in the re-execution with the original execution timestamp are added to the "state" list.        
+	\item \textbf{Run duplicate of Job A, by using the data PID of job A named Job D}\\
+	\begin{listing}[ht]
+	\begin{minted}{python}
+# Take input data of job A by using the input data pid A of job A
+pgD = processes.get_collection(data_pid=pidA)
+# Choose processes
+pgD = processes.ndvi(pgC, nir="B08", red="B04")
+pgD = processes.min_time(pgD)
+# Create and start Job D
+jobD = con.create_job(pgD.graph)
+jobD.start_job()
+pidD = jobD.get_data_pid()
+	\end{minted}
+	\caption{Run duplicate of Job A, by using the data PID of job A named Job D}
+	\label{lst:eva_datachange_}
+	\end{listing}
+
 \end{enumerate}
 \todo{Show select * from the database}
-\todo{Show how it works with the timestamps}
 The test case shows the behavior of the solution, if the data gets updated, nevertheless the behavior is the same for deleted data records. The deletion changes the outcome of the query execution and therefore, a new query PID gets generated. Another outcome of the example is that the used input data PID of a job execution is consistent only after the execution. It shows limitations of the EODC back end at the moment for not being able to query for deprecated data records. Nevertheless, the implementation gives the user the possibility to notice changes in the data-set. \\
 The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
 
