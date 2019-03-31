@@ -1065,7 +1065,7 @@ jobA.start_job()
 
 	\item \textbf{Researcher A retrieves the used input data of job A.} \\
 	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snipped shows the call using the python client.
-	
+\todo{show landing page}
 \begin{listing}[ht]
 	\begin{minted}{python}
 pidA_url = jobA.get_data_pid_url()
@@ -1301,7 +1301,7 @@ This chapter presented an implementation of the design of Chapter \ref{Design} a
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation}.
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
-The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. The implementation and used software for the evaluation is available and further described on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo}. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the database.     
+The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. The implementation and used software for the evaluation is available and further described on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo}. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database.     
 
 The evaluation is done from a user point of view, hence an OpenEO client needs to be used for the evaluation. The python client is chosen for this purpose including the additional functionality described in Section \ref{Implementation:User Interface}. \\ 
 
@@ -1323,13 +1323,12 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 
 
 \section{Special Test Cases}\label{Evaluation:special}
-This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. These test cases are created to look into the error proneness of the solution. They are structured by the topic of the test cases in the following sections.
+This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. These test cases are created to look into the error proneness of the solution. They are structured by the topic of the test cases in the following sections. The code as well as the results of the evaluation is available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/notebooks/}.
 \todo{bis hierher ist es ok}
 \subsection{Data Changes}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose. The code as well as the results of the evaluation is available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/notebooks}.  \\
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data. To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result instead of the original filename. Usually if this happens at the EODC back end, the original data record gets deleted. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as JobA) defined in Section \ref{example} is used for this purpose.   \\
 The following steps are taken to test the behavior on data changes:
 
-\todo{Show concrete code of execution}
 \begin{enumerate}
 	\item \textbf{Run JobA, which creates query pidA. Get result files of pidA} \\
 	\begin{listing}[ht]
@@ -1339,7 +1338,8 @@ con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
 processes = con.get_processes()
 pgA = processes.get_collection(name="s2a_prd_msil1c")
 pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
-pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, east=12.189331, north=46.905246, crs="EPSG:4326")
+pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, east=12.189331, 
+                                 north=46.905246, crs="EPSG:4326")
 # Choose processes
 pgA = processes.ndvi(pgA, nir="B08", red="B04")
 pgA = processes.min_time(pgA)
@@ -1349,13 +1349,14 @@ jobA.start_job()
 # Re-execute the query to print the used files.
 pidA = jobA.get_data_pid()
 file_listA = con.get_filelist(pidA)
-# Get state of the resultfiles, so if they changed since the original execution 
+# Get state of the resultfiles, so if they changed since 
+# the original execution 
 file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
 		\caption{Researcher runs JobA and retrieves the result files status.}
 		\label{lst:eva_datachange_1}
 	\end{listing}
-	After executing the job the pidA is created as "qu-78aab90a-13e6-4722-9237-924713de6b43". The resulting file list consists of 51 files and the re-execution of the query results in the same 51 files. 
+	After executing the job the pidA is created as "qu-78aab90a-13e6-4722-9237-924713de6b43". The resulting file list consists of 51 files and the re-execution of the query results in the same 51 files. Therefore, the "state" of the re-execution contains the value "EQUAL".  
 	\item \textbf{Update one of the resulting files of the pidA query} \\
 	\begin{listing}[ht]
 	\begin{minted}{python}
@@ -1369,7 +1370,8 @@ con.update_file()
 	\item \textbf{Second re-execution of pidA query} \\
 	\begin{listing}[ht]
 		\begin{minted}{python}
-# Get state of the resultfiles, so if they changed since the original execution. 
+# Get state of the resultfiles, so if they changed since 
+# the original execution. 
 file_listA = con.get_filelist(pidA)
 file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
@@ -1431,8 +1433,10 @@ con.update_file(deleted=True)
 # re-execute query and get the resulting file list from the back end
 file_listA = con.get_filelist(pidA)
 file_listA["input_files"]["state"] # Returns one file entry
-#'["\'date\': \'2017-05-24\', \'timestamp\': \'2018-08-11\', \'path\': \'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/24/S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new.zip\', \'name\': \'S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new\'}]: s2a_prd_msil1c <data.dependencies.arg_parser.BBox object at 0x7f90f9cbfe80> 2017-05-01T00:00:00Z 2017-05-31T23:59:59Z"]'
+#'["\'date\': \'2017-05-24\', \'timestamp\': \'2018-08-11\', \'path\':
+#\'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/24/S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new.zip\', \'name\': \'S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new\'}]: s2a_prd_msil1c <data.dependencies.arg_parser.BBox object at 0x7f90f9cbfe80> 2017-05-01T00:00:00Z 2017-05-31T23:59:59Z"]'
 	\end{minted}
+	\todo{show result as image}
 	\caption{Re-execute pidA query after one file got updated and the old version got erased.}
 	\label{lst:eva_datachange_7}
 	\end{listing}	
@@ -1461,11 +1465,69 @@ The remaining question is how the system behaves if the data is updated during t
 
 \subsection{Job Capturing}\label{Evaluation:special_jobcap}
 
-This section reviews the outcome of the job capturing critically. The focus of it is the created context model of the job executions. The following two question are used to discuss the impact of the captured data regarding the job execution.  \\
+This section reviews the outcome of the job capturing. The focus of is on the created context model of the job executions. The following two question are used to discuss the impact of the captured data regarding the job execution.  \\
 
-\textbf{Is it theoretically possible to recreate an older version of the back end?} \\
-The aim of the implementation is to capture enough data to make it theoretically possible to re-run the same job. The EODC back end is created directly by a GitHub repository. To recreate an old version of the back end, the GitHub repository URL and the commit identifier of the original set up is needed. The timestamp of the job execution is persisted in the context model of the original job execution. The original GitHub repository and commit can be resolved by the back end provenance. Therefore, the information of re-creating the back end state from an older version is captured. To re-create the original job on the back end, the process graph of it is persisted and can be re-executed. The execution of the job is the same, assuming the input data has not been deleted in the meantime. The result hash makes it possible to validate, if the job re-execution was the same.
-\todo{Show concrete example see Feedback for detailed storyline}
+\textbf{Is it possible to recreate an older version of the back end?} \\
+The aim of the implementation is to capture enough data to make it possible to re-run the same job. The EODC back end is created directly by its GitHub repository. To recreate an old version of the back end, the GitHub repository URL and the commit identifier of the original set up is needed. The timestamp of the job execution is persisted in the context model of the original job execution. The original GitHub repository and commit can be resolved by the back end provenance. Therefore, the information of re-creating the back end state from an older version is captured. To re-create the original job on the back end, the process graph of it is persisted and can be re-executed. The execution of the job is the same, assuming the input data has not been deleted in the meantime. The result hash makes it possible to validate, if the job re-execution was the same. The following code represents the workflow described above.
+
+\begin{enumerate}
+	\item \textbf{Run Job A, which creates query pidA and job\_idA.} \\
+	\begin{listing}[ht]
+		\begin{minted}{python}
+import openeo
+# Connect with GEE backend
+con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
+# Choose dataset
+processes = con.get_processes()
+pgA = processes.get_collection(name="s2a_prd_msil1c")
+pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
+pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, east=12.189331, north=46.905246, crs="EPSG:4326")
+# Choose processes
+pgA = processes.ndvi(pgA, nir="B08", red="B04")
+pgA = processes.min_time(pgA)
+# Create and start job A
+jobA = con.create_job(pgA.graph)
+jobA.start_job()
+# Get current back end version
+version_old = con.version()
+# Get back end version of jobA 
+versionA = jobA.get_backend_version()
+		\end{minted}
+		\caption{Researcher runs Job A and gets the used back end version.}
+		\label{lst:eva_jobcapture_1}
+	\end{listing}
+\todo{Show result of the Version}
+	\item \textbf{Publish job\_idA and pidA.} \\
+	\begin{listing}[ht]
+	\begin{minted}{python}
+# Get input data pid of jobA 
+pidA = jobA.get_data_pid()
+jobA_id = jobA.job_id
+	\end{minted}
+	\caption{Researcher gets the input data PID of jobA and the job\_id of jobA.}
+	\label{lst:eva_jobcapture_2}
+	\end{listing}
+
+\todo{Show result and how the thing can be published}
+	\item \textbf{Update back end version} \\
+	\todo{explain modification and commit}
+	\item \textbf{Get original context of jobA} \\
+	\begin{listing}[ht]
+	\begin{minted}{python}
+import openeo
+# Connect with GEE backend
+con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
+# Get jobA using the jobA_id.
+jobA = con.get_job(jobA_id)
+# Get the version of the back end that was active during the job A execution
+versionA = jobA.get_backend_version()
+	\end{minted}
+	\caption{Researcher gets the original back end version of the jobA execution.}
+	\label{lst:eva_jobcapture_4}
+	\end{listing}	
+	\item \textbf{Re-run jobA with the original version.} \\
+	\todo{explain how EODC has to provide the instance}
+\end{enumerate}
 \section{Impact}\label{Evaluation:impact}
 
 This section evaluates the impact of the implementation on the EODC back end. To achieve this a testing set of 25 different process graphs are executed at the EODC back end. The testing set consists of a composition of jobs with different complexity. There are 15 jobs in the same complexity level of the running example (estimated 2MegaBytes (MB) result file), where every job creates a new input data PID. There are 5 jobs that are using existing input data PIDs and 5 jobs with a big area of interest, which will lead to a resulting output file of about 25MB. The impact is measured by the impact on the performance and the impact on the storage of the EODC back end.           
