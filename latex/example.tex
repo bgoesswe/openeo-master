@@ -490,7 +490,7 @@ noWorkflow is introduced in \cite{c9e0604becba42af96a9cb0a6f60018b} as a script 
 \end{figure}
 
 The noWorkflow framework got improved regularly after the first announcement. In \cite{Pimentel2016TrackingAA} an additional feature of tracking the evolution of the experiment execution is added. It improves the possibility to compare different trials of an experiment and to visualize the history of past executions. In \cite{Pimentel:2016:FPC:3090188.3090214} the fine-grained provenance tracking extension of noWorkflow is introduced. With it the execution of the python script can be viewed as a set of execution lines. It adds a visualization of all called functions with the exclusion of calls in one line on complex data structures such as dictionaries, lists and objects. In \cite{69bac1252a684629baa43b48e350068d} the provenance capturing of noWorkflow in combination of yesWorkflow, which gathers information about the provenance using comments and annotations (see \cite{192094}), got combined. The combination enabled a more detailed environment information, querying and visualizations. 
-In this thesis noWorkflow is used in an alternative attempt of the implementation described in Section \ref{Implementation:Noworkflow Implementation}, but is not part of the final solution due to reasons provided in Section \ref{Evaluation:NvsP}.
+In this thesis noWorkflow was used in an early attempt for the implementation, but is not part of the final solution due to the high amount of the captured data by noWorkflow and the additional requirements needed by the EODC back end for using it.
 
 \subsection{ReproZip}\label{ReproZip}
 ReproZip is a packaging tool to enable the reproducibility of computational executions of any kind. It automatically tracks the dependencies of an experiment and saves it to a package that can be executed on another machine by ReproZip. It is even capable of letting the re-executor modify the original experiment. It was developed for the SIGMOD Reproducibility Review. In Figure \ref{fig:reprozip} the architecture of ReproZip is shown in detail. It traces the system calls to create a package defined in the configuration file. Thus, a single file with the extension “.rpz” gets produced. These type of files can then be unpacked on a different machine and re-executed. The aim of ReproZip is to make reproducible science easy to apply for single experiments \cite{29c5846926a4497d95f276604cb0368c}. The reason why it is not used in the solution of this thesis, is that the capturing is very fine granulated and takes too much performance from the back ends, which is a key selling point for back end providers. Depending on the back end, the payment for users may be dependent on the duration time of the processing. Another issue with ReproZip in the context of this thesis is that it is not capable of capturing the big data of the back ends within the package, because it would take too much space and performance.  
@@ -890,7 +890,7 @@ The publication time-stamp of the EODC back end is defined by the time-stamp whe
 \section{Job dependent provenance}\label{Implementation:Job dependent provenance}
 The EODC back end of the release version "0.3.1" transforms the process graph into separate docker containers. For every process in the process graph there is a docker container running the related python code. The input of the current process is the output of the previous process. The first process docker container has the input data defined in the process graph as input value, which is the result of the query execution. Every process saves the results in a temporary folder dedicated to the specific process execution. Every process has its own temporary output directory until the whole process chain is finished. After that the back end deletes the temporary folders and only the end result is persisted in the job directory.
 To achieve the job environment data capturing described in Chapter \ref{Design:Job dependent provenance}, the processes must provide meta-data about the input data, the output data and the processing itself. \\ 
-This thesis describes two different implementations to achieve the job dependent environment capturing. The first implementation uses the python wrapper noWorkflow \cite{c9e0604becba42af96a9cb0a6f60018b}. Instead of calling the processing code with the python interpreter, the noWorkflow wrapper gets called. It automatically creates a meta-data database regarding the python execution. Since the wrapper is capturing the environment in a detailed way, which influences the performance, a second, simpler approach is implemented. Section \ref{Evaluation:NvsP} compares the noWorkflow approach and the second python approach and shows the reasons for using the second approach in detail. The second implementation adds the specific information of interest to the logging of the processing and reads the logging files to generate the context model. This solution modifies and extends the existing python code and is used for the evaluation of this thesis. In Figure \ref{fig:impljobcapture} an overview of the job capturing work-flow is presented. Section \ref{Implementation:Python Implementation} describes the single parts of the overview in more detail.  
+The implementation adds the specific information of interest to the logging of the processing and reads the logging files to generate the context model. This solution modifies and extends the existing python code and is used for the evaluation of this thesis. In Figure \ref{fig:impljobcapture} an overview of the job capturing work-flow is presented. Section \ref{Implementation:Python Implementation} describes the single parts of the overview in more detail.  
 
 
 \subsection{Context Model Repository}\label{Implementation:Provenance Repository}
@@ -963,35 +963,6 @@ The start and end time of the process execution is already done at the EODC back
 
 \textbf{J6: Result Identifier } \\
 The result identifier consists of the resulting data of the whole process graph execution. It is a SHA-256 hash (using the \textit{hashlib} python library) of the resulting alphabetical sorted output files, which are placed in the resulting folder of the job execution directory. In the current version of the back end there is only one result file created, due to the limitations of the available processes.  
-
-
-\subsection{Alternative Implementation}\label{Implementation:Noworkflow Implementation}
-NoWorkflow is a python module used to capture the provenance of a python script execution. The main aim of it is that the program itself does not have to be changed, it only has to be executed with the noWorkflow interpreter instead of python. It then automatically creates a provenance database on every execution of the script called “trial”. Every time the job gets executed a new trial is created. A trial in the past can be re-executed with the same conditions and trials themselves can be easily compared and visualized with noWorkflow (see \cite{c9e0604becba42af96a9cb0a6f60018b}). NoWorkflow and its capabilities are described in Section \ref{Noworkflow}. 
-For the purpose of the job dependent provenance capturing described in the Design section, only parts of the provenance capturing functionality that noWorkflow offers is suitable. In the following the features of noWorkflow used in the alternative implementation that differ from the actual solution at Section \ref{Implementation:Python Implementation} are presented.    
-
-
-\textbf{J2: Back end provenance / Code Identifier} \\
-The job identifier is defined by the back end version, which includes the current state of the locally checked out GitHub repository.\\
-To enable a more detailed environment, noWorkflow captures the hash of the executed code. The hash from the database of noWorkflow gets retrieved via the command line interface. It contains the command “show” (see code block below), which returns the data of a specific trial. The code hash is extracted from the output and added to the context model. 
-
-\begin{listing}[ht]
-	\begin{minted}{bash}
-	now show --dir=JOB_DIR
-	\end{minted}
-	\caption{noWorkflow command to retrieve the context of the executed code.}
-	\label{lst:impl_now1}
-\end{listing}	
-
-\textbf{J3 and J4: Programming language and  installed packages of programming language} \\
-noWorkflow captures the used python packages in the database. To retrieve the modules the command line interface is used with the “-m” argument (see code block below), which returns all used python modules including their versions and the version of python. The advantage of using noWorkflow instead of the \textit{pip} tool described in the python solution is that only the used packages are listed.
-
-\begin{listing}[ht]
-	\begin{minted}{bash}
-	now show -m --dir=JOB_DIR
-	\end{minted}
-	\caption{noWorkflow command to retrieve the installed python modules.}
-	\label{lst:impl_now2}
-\end{listing}	
 
 \section{User Services}\label{Implementation:User Interface}
 The previous sections describe only the technical insight of the back end. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing OpenEO core API version 0.3.1. In addition, the proposed endpoints are applied to the python client and the EODC back end. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
@@ -1298,7 +1269,7 @@ logging.info(diffAC)
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 
 \chapter{Evaluation}\label{Evaluation}
-This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. The last section in this chapter presents a comparison between the used python implementation and the noWorkflow implementation described in Section \ref{Implementation:Noworkflow Implementation}.
+This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. 
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
 The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database. \\
@@ -1558,68 +1529,92 @@ versionA = jobA.get_backend_version()
 	To get the original version of the back end, EODC has to create a second instance of the back end. Then EODC has to check out the commit of the job execution version, by running "git checkout commit\_id" in the console, where "commit\_id" is the value of "versionA["commit"]".
 \end{enumerate}
 \todo{maybe rearange the code blocks}
-\todo{bis hierher ist es ok}
+
 \section{Impact}\label{Evaluation:impact}
 
-This section evaluates the impact of the implementation on the EODC back end. To achieve this a testing set of 25 different process graphs are executed at the EODC back end. The testing set consists of a composition of jobs with different complexity. There are 15 jobs in the same complexity level of the running example (estimated 2MegaBytes (MB) result file), where every job creates a new input data PID. There are 5 jobs that are using existing input data PIDs and 5 jobs with a big area of interest, which will lead to a resulting output file of about 25MB. The impact is measured by the impact on the performance and the impact on the storage of the EODC back end.           
+This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 8 publications that used EODC data in the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, the concrete values and the identifier of the original paper is stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end (reference back end), without the extensions of this thesis. Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at the back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format. The reference back end, the solution back end as well as the code for the impact evaluation are available at the GitHub repository mentioned at Section \ref{Evaluation:special}.        
 
 \subsection{Performance}\label{Evaluation:impact_perf}
-This section evaluates the performance impact on the EODC back end by measuring the difference of the job execution duration between the original EODC back end and the EODC back end with the implementations of the thesis. The duration of the single parts of the implementation is applied by writing timestamps into the log file and calculating the duration afterwards. The duration of three parts are captured during the execution of the test cases. The time needed by the Query Handler, the duration of the context model and the part of the context model creation needed by the Result Handler.   
-\todo{Use the data from the papers}
+This section evaluates the performance impact on the EODC back end by measuring the difference of the job execution duration between the original EODC back end and the EODC back end with the implementations of the thesis. The duration of the single parts of the implementation is applied by writing timestamps into the log file and calculating the duration afterwards. The duration of the Query Handler (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}) are captured during the execution of the test cases. 
+
 \begin{table}[]
-	\caption{Average duration time of the parts of the solution by executing the test cases}
+	\caption{Mean duration time over 50 runs of the solution and the reference back end by executing the test cases}
 	\centering
-	\begin{tabular}{l|l|l|l}
-		\textbf{Test Cases} & \textbf{Query Handler} & \textbf{Context Model / Result Handler} & \textbf{ Whole Execution Time} \\ \hline
-		1-15 & 15.733 ms & 20.267 ms / 4.4 ms & 15 176.431 ms \\ 
-		16-20 & 15.674 ms & 20.684 ms / 5.833 ms & 15 218.105 ms \\ 
-		21-25 & 32.8 ms & 127.833 ms / 84 ms & 36 521.667 ms \\ 
+	\begin{tabular}{r|r|r|r|r}
+		
+		\textbf{} & \textbf{Reference Back end} & \multicolumn{3}{c}{\textbf{Solution Back end}} \\ \textbf{Test Case} & \textbf{Total Duration} & \textbf{Total Duration} & \textbf{Query Handler} & \textbf{Context Model} \\ \hline
+		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms \\ 
+		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms \\ 
+		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms \\ 
+		4 & 266.351 ms & 309.541 ms & 20.351 ms & 22.838 ms \\ 
+		5 & 284.324 ms & 345.757 ms & 26.081 ms & 35.351 ms \\ 
+		6 & 289.622 ms & 347.578 ms & 24.956 ms & 33.000 ms \\ 
+		7 & 270.889 ms & 327.289 ms & 25.533 ms & 30.867 ms \\ 
+		8 & 278.091 ms & 329.409 ms & 22.909 ms & 28.409 ms \\ 
+		9 & 13296.605 ms & 13604.698 ms & 259.884 ms & 48.209 ms \\ 
+		10 & 386.684 ms & 435.895 ms & 22.289 ms & 26.921 ms \\ 
+		11 & 40512.538 ms & 40770.026 ms & 212.667 ms & 44.821 ms \\ 
+		12 & 528.450 ms & 566.925 ms & 18.675 ms & 19.800 ms \\ 
+		13 & 1785.462 ms & 1818.641 ms & 18.410 ms & 14.769 ms \\ 
+		14 & 40461.526 ms & 40729.368 ms & 223.000 ms & 44.842 ms \\ 
+		15 & 422.512 ms & 466.854 ms & 20.146 ms & 24.195 ms \\ 
+		16 & 44672.378 ms & 44940.022 ms & 221.889 ms & 45.756 ms \\ 
+		17 & 753.256 ms & 787.436 ms & 15.897 ms & 18.282 ms \\ 
+		18 & 281.611 ms & 344.389 ms & 26.278 ms & 36.500 ms \\ \hline
+		\textbf{All} & \textbf{8104.569 ms} & \textbf{8202.766 ms} & \textbf{67.800 ms} & \textbf{30.397 ms} \\ 
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
-
-Table \ref{Tab:eva_performance} shows the average duration of the parts of the solution, when executing the test cases. The test cases are grouped by the first 15 test cases that create new query PIDs, the test cases 16-20, which use already existing query PIDs and the last 5 test cases that have a result file with a size of estimated 25 MBytes. The results show that the impact of the parts is small in comparison to the whole execution time (~0.1\%). The percentage of duration of the Result Handler is getting bigger, if the result file gets bigger as well (0.2\% on the test cases 21-25). Whereas the duration of the other parts of the capturing keeps a similar percentage of the whole execution time. 
+\todo{bis hierher ist es ok}
+Table \ref{Tab:eva_performance} shows the mean duration time of the test case execution at the reference back end and the solution back end. The test cases are grouped by the first 15 test cases that create new query PIDs, the test cases 16-20, which use already existing query PIDs and the last 5 test cases that have a result file with a size of estimated 25 MBytes. The results show that the impact of the parts is small in comparison to the whole execution time (~0.1\%). The percentage of duration of the Result Handler is getting bigger, if the result file gets bigger as well (0.2\% on the test cases 21-25). Whereas the duration of the other parts of the capturing keeps a similar percentage of the whole execution time. 
 \todo{discussion about the results, define Hardware at the experiment setup, increase higher for big queries --> why ? What is the variance across several runs? --> How to avaid caching effects ?}
 
 \todo{better describe stuff: How are the percentages computed? --> Make the difference of Context Model and Result Handler clear ! --> Run measurements several times ? --> What can you generalize from the measurmeents ? What guarantees would you be able (willing) to give on impact on the real performance on the EODC if deployed? Would you guarantee certain performance bound even if contractual penalty payments were attached if your implementation fails to meet them?}
 \subsection{Storage}\label{Evaluation:impact_stor}
 This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostGreSQL database, the storage needed by it can be estimated using the PostGreSQL CLI.
 
+
 \begin{table}[]
-	\caption{Storage needed for the query and conttext model persistence after the execution of the test cases}
+	\caption{Mean duration time over 50 runs of the solution and the reference back end by executing the test cases}
 	\centering
-	\begin{tabular}{l|l|l}
-		\textbf{Query Table} & \textbf{QueryJob Table} & \textbf{Context Model}  \\ \hline
-		56.107 kBytes & 8.192 kBytes & 23.391 kBytes  \\ 
+	\begin{tabular}{r|r|r|r}
+		
+	 \textbf{Test Case} & \textbf{Context Model} & \textbf{Query Table} & \textbf{QueryJob Table} \\ \hline
+		1 & 1043 & 1529.659 & 113 \\ 
+		2 & 1043 & 1530.583 & 113 \\ 
+		3 & 1043 & 1525.585 & 113 \\ 
+		4 & 1043 & 1533.649 & 113 \\ 
+		5 & 1043 & 1524.622 & 113 \\ 
+		6 & 1043 & 1520.267 & 113 \\ 
+		7 & 1043 & 1524.800 & 113 \\ 
+		8 & 1043 & 1527.614 & 113 \\ 
+		9 & 1043 & 1532.814 & 113 \\ 
+		10 & 1043 & 1523.184 & 113 \\ 
+		11 & 1043 & 1530.667 & 113 \\ 
+		12 & 1043 & 1524.825 & 113 \\ 
+		13 & 1043 & 1529.923 & 113 \\ 
+		14 & 1043 & 1525.614 & 113 \\ 
+		15 & 1043 & 1524.683 & 113 \\ 
+		16 & 1043 & 1530.422 & 113 \\ 
+		17 & 1043 & 1524.846 & 113 \\ 
+		18 & 1043 & 1521.432 & 113 \\ \hline
+		\textbf{All} & \textbf{1043} & \textbf{1526.955} & \textbf{113} \\
 	\end{tabular}
 	\label{Tab:eva_storage}
 \end{table}
 
+%\begin{table}[]
+%	\caption{Storage needed for the query and conttext model persistence after the execution of the test cases}
+%	\centering
+%	\begin{tabular}{l|l|l}
+%		\textbf{Query Table} & \textbf{QueryJob Table} & \textbf{Context Model}  \\ \hline
+%		56.107 kBytes & 8.192 kBytes & 23.391 kBytes  \\ 
+%	\end{tabular}
+%	\label{Tab:eva_storage}
+%\end{table}
+
 Table \ref{Tab:eva_storage} shows the data needed for the captured data after the test cases got executed. Each saved query record needs an average of 2.807 kBytes space and each QueryTable record an average of 409 kBytes. The context models needs an average of 936 kBytes per job execution and takes about 47,589 \% of the job meta-data kept by the EODC.   
 \todo{describe how they are computed ! Representative queries ? }
-\section{NoWorkflow vs Python Implementation}\label{Evaluation:NvsP}
-The two implementation approaches have implemented the same features, even though there are major differences between them. This section provides the reason for choosing the python implementation instead of the noWorkflow implementation. Therefore, the performance of the implementations gets compared. The experiment setup is the running example (see Section \ref{example}) of the thesis. The date range of the example gets modified to generate a set of test scenarios with a range of input data sizes. There are 10 jobs executed in both implementations, which have the same process graph like defined in the running example, but with varying date range parameters. The date range is modified on each iteration by an addition of 2 days. The first range is May 2017, the next one is May until 2nd of February 2017 and so on, until the last test case has a date range of May to the 20th of February of 2017. The jobs are executed in both implementations and the duration time of the execution is measured. After each job the setup gets cleaned up, by removing all generated files including the generated provenance database of noWorkflow. 
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{noworkflow_vs_python}
-	\caption{Duration time of the job executions}
-	\label{fig:noworkvspython} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-Figure \ref{fig:noworkvspython} shows a diagram of the execution duration over the input date range. The python implementation has a smaller effect on the execution performance. The diagram shows that the gap between the execution duration gets bigger, if the amount of input data is bigger. Hence, the noWorkflow implementation is more inefficient on more bigger workloads. Table \ref{Tab:noworkflow} shows the average execution duration of both implementations. The average execution duration of noWorkflow, for the given jobs, is about 2 to 3 times bigger then from the python implementation.  
-
-\begin{table}[]
-	\caption{Average duration time of the job executions of the  noWorkflow and python implementation}
-	\centering
-	\begin{tabular}{l|l}
-		\textbf{noWorkflow solution} & \textbf{python solution} \\ \hline
-		84.779 s & 26.043 s \\ 
-	\end{tabular}
-	\label{Tab:noworkflow}
-\end{table}
-
-\todo{Use data from the publications ! Describe WHY there is such a big difference between NoWF and my stuff}
 
 \todo{Evaluation summary}
 
