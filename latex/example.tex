@@ -25,14 +25,19 @@
 
 \usepackage{morewrites}
 
-\usepackage{minted}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
 
-\usepackage{listings}
-\lstset{
-	language=bash,
-	basicstyle=\footnotesize, 
-	breakatwhitespace=false
-}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Listing}
+
+%\usepackage{listings}
+%\lstset{
+%	language=bash,
+%	basicstyle=\footnotesize, 
+%	breakatwhitespace=false,
+%	escapeinside={\%*}{*)}
+%}
 
 % Define convenience functions to use the author name and the thesis title in the PDF document properties.
 \newcommand{\authorname}{Bernhard Gößwein} % The author name without titles.
@@ -106,8 +111,6 @@
 %\setsecondreviewerdata{Affiliation, Country}
 
 \newcolumntype{L}[1]{>{\centering\arraybackslash}l{#1}}
-
-
 
 \begin{document}
 
@@ -808,11 +811,10 @@ The Query Table stores the data related to the query instance, additional result
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{dataid_example_processgraph}
-	\caption{Example Input process graph of the Query Handler component.}
+	\includegraphics[width=\textwidth]{original_query}
+	\caption{Example original query and unique query.}
 	\label{fig:processgraph_example} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure} 
-\todo{adapt/add original Query}
 
 \begin{table}[]
 	\caption{Structure of the Query Table in the EODC meta database.}
@@ -865,7 +867,7 @@ The aim of the back end provenance is to persist the versions of the back end an
 The GitHub repository is directly used to create the services of the EODC back end. Therefore, the currently used GitHub repository information can be read via the command line interface (CLI) of Git. The used commit and branch are accessed directly via the Git CLI. Listing \ref{lst:impl_backendprov} shows the Git CLI calls used to get the GitHub repository information.       
 
 
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{bash}
 	# Receiving the Git Repository URL
 	git config --get remote.origin.url 
@@ -876,7 +878,7 @@ The GitHub repository is directly used to create the services of the EODC back e
 	\end{minted}
 	\caption{Git commands used to get access the back end identification.}
 	\label{lst:impl_backendprov}
-\end{listing}
+\end{code}
 
 \textbf{B2: Core API Version} \\
 Back end developers manually update the OpenEO core API version of the EODC back end. It is in the GitHub repository of the EODC back end. 
@@ -886,7 +888,6 @@ Since EODC takes the code for the services directly from GitHub, the Git commit 
 
 \textbf{B4: Publication Time-stamp} \\
 The publication time-stamp of the EODC back end is defined by the time-stamp when the Git commit happened. It is persisted by GitHub and can be retrieved via the Git CLI. 
-\todo{Maybe add the code example}
 
 \section{Job dependent provenance}\label{Implementation:Job dependent provenance}
 The EODC back end of the release version "0.3.1" transforms the process graph into separate docker containers. For every process in the process graph there is a docker container running the related python code. The input of the current process is the output of the previous process. The first process docker container has the input data defined in the process graph as input value, which is the result of the query execution. Every process saves the results in a temporary folder dedicated to the specific process execution. Every process has its own temporary output directory until the whole process chain is finished. After that the back end deletes the temporary folders and only the end result is persisted in the job directory.
@@ -900,7 +901,7 @@ The context model is stored as a JSON object in the job execution meta-database.
 Table \ref{Tab:contextmodel} provides the mapping between the context model elements from Section \ref{Design} and the keys of the JSON context model object of the prototype. The elements have a one to one mapping of the context model and the JSON key except for the timestamps of the execution. The execution time stamps are part of the Job table in the EODC meta-database. \\
 Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described for the context model in the Design section. Information on the back end environment during the execution of the job is persisted in the context model. In the context model the back end version and the execution time-stamp is persisted and can be used to identify the back end provenance of the execution time. The code environment is a list of all python dependencies with their versions installed during the execution of the jobs. In addition the python interpreter version is added to the JSON object. How the data is captured in detail is described in the sections below.    
 
-\todo{Make Glossary !}
+%\todo{Make Glossary !}
  
 \begin{table}[]
 	\caption{Relation of context model elements and EODC JSON context model.}
@@ -969,21 +970,43 @@ The result identifier consists of the resulting data of the whole process graph 
 The previous sections describe only the technical insight of the back end. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing OpenEO core API version 0.3.1. In addition, the proposed endpoints are applied to the python client and the EODC back end. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
 
 \textbf{Implementation of U1: Back end version} \\
-Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see Section \ref{Implementation:Back end provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data. The endpoint takes a time-stamp as parameter to get the back end version meta-data of a specific time. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python client. The result is a JSON object consisting of the back end provenance data \todo{like in Figure \ref{fig:backendprovcm}. change to picture in the use cases section}
+Retrieving additional information about the back end was added into a new end point of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. Response of the version endpoint is the whole job independent provenance information of the back end (B1-B5, see Section \ref{Implementation:Back end provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC back end to return the latest back end version including meta-data. The endpoint takes a time-stamp as parameter to get the back end version meta-data of a specific time. Further additions are created to the python client, so that the user can call a method in the python client called “version()” to retrieve the information of the back end directly in the python client. The result is a JSON object consisting of the back end provenance data. Listing \ref{lst:implementation_back_end_version} shows a result example.
+
+\begin{listing}[ht]
+	\begin{minted}{json}
+{'branch': 'master',
+'commit': '1a0cefd25c2a0fbb64a78cd9445c3c9314eaeb5b',
+'url': 'https://github.com/bgoesswein/implementation_backend.git'}
+	\end{minted}
+	\caption{Back end version example.}
+	\label{lst:implementation_back_end_version}
+\end{listing}
 
 \textbf{Implementation of U2: Detailed Job Information} \\
 In the OpenEO coreAPI there is an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.3.1 only contains the execution state of the job and the job id. In addition to this the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see Figure \ref{fig:job_context_model}). Since the python client just returns the resulting JSON response from the back end as a python dictionary, there is no modification needed.
 
 \textbf{Implementation of U3: Comparing two Jobs} \\
-The core API does not define the comparison of two jobs, hence there does not exist any user interface. The modified core API defines a new endpoint in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the new core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "diff(target\_job)". Figure \ref{fig:job_comparison} provides an example of the dictionary output of this function.
-\todo{Change figure to one in the Use Cases section}
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=1]{job_comparison}
-	\caption{JSON Example of a job comparison result.}
-	\label{fig:job_comparison} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+The core API does not define the comparison of two jobs, hence there does not exist any user interface. The modified core API defines a new endpoint in the manner of existing endpoint definitions. For the purpose of this thesis the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the new core API. In the url of the request the user defines the base job id, which context model will be compared with other jobs. In the body of the request the target job ids are defined in a JSON list. After getting the request from the user, the back end compares the context models of the base job with every target job occurring in the request body list. The result from the back end consists of, for every item in the base job context model, the term “EQUAL”, if the item is the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of every items value. In the python client this feature is added with an additional function of the Job class called "diff(target\_job)". Listing \ref{lst:job_comparison} provides an example of the dictionary output of this function.
 
+\begin{listing}[ht]
+	\begin{minted}{json}
+{
+"process_graph":"EQUAL",
+"interpreter":"EQUAL",
+"input_data":"EQUAL",
+"code_env":"EQUAL",
+"output_data":"EQUAL",
+"openeo_api":"EQUAL",
+"different":{
+   "job_id":"jb-47e062e4-d39c-4f7f-bc5e-aa877f039a84",
+   "start_time":"2019-04-05 12:16:38.286217",
+   "back_end_timestamp":"20190405121638.286217",
+   "end_time":"2019-04-05 12:18:08.286217"}
+}
+	\end{minted}
+	\caption{Example of resulting job comparison.}
+	\label{lst:job_comparison}
+\end{listing}	
 
 
 \textbf{U4: Data Identifier Landing Page} \\
@@ -996,14 +1019,14 @@ To re-use the input data in a different job execution, the data PID can be used 
 This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before.
 
 \subsection{Re-Use of Input Data}\label{Implementation:Use Case1}
-The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment.
-\todo{add Footnote / Link to GitHub Repo}
+The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment. The implementation of the use cases is available at GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
+
 \begin{enumerate}
 	\item \textbf{Researcher A runs an experiment (job A) at the EODC back end.} \\
 	This step is basic OpenEO functionality and is not influenced by the solution from the user point of view. The researcher chooses Sentinel-2 data by loading the Sentinel-2 collection of EODC with the data-set identifier "s2a\_prd\_msil1c". In the next step the data is filtered temporally (May of 2017) and spatially (bounding box of the south tyrol area). In the next step the researcher applies the NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php} process on the filtered data as well as the minimum value of each pixel in the time range with the "min\_time" process. The NDVI calculation needs the measurements of the satellite in near-infrared (parameter "nir") and the measurements of red light (parameter "red"). for Sentinel 2 data of the EODC the two measurements are represented by the band identifiers "B08" for near-infrared and "B04" for visible red light. The last two lines create a job at the back end with the specified process graph and start the execution of it.
-	At the back end the Query Handler is generating a new data PID or returns an already existing one if the same query got executed in the past. The following python client code represents the experiment of Researcher A.  
+	At the back end the Query Handler is generating a new data PID or returns an already existing one if the same query got executed in the past. The following python client code represents the experiment of Researcher A.
 	
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 import openeo
 EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
@@ -1030,15 +1053,19 @@ jobA.start_job()
 	\end{minted}
 	\caption{Researcher A runs job A with the python client.}
 	\label{lst:impl_usecase1_1}
-\end{listing}	
+\end{code}	
 
-
-\todo{Add result of use case 1 image}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{openeo_example_output}
+	\caption{Resulting image of the first step of Use Case 1.}
+	\label{fig:impl_usecase1_min} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 	\item \textbf{Researcher A retrieves the used input data of job A.} \\
 	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snipped shows the call using the python client.
-\todo{show landing page}
-\begin{listing}[ht]
+
+\begin{code}
 	\begin{minted}{python}
 pidA_url = jobA.get_data_pid_url()
 print(pidA_url)
@@ -1057,7 +1084,7 @@ file_list = con.get_filelist(pidA)
 	\end{minted}
 	\caption{Researcher A retrieves the used input data pid.}
 	\label{lst:impl_usecase1_2}
-\end{listing}
+\end{code}
 	
 	\begin{figure}[h]
 		\centering
@@ -1074,7 +1101,7 @@ file_list = con.get_filelist(pidA)
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
 	In order to use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.   
 
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 import openeo
 
@@ -1095,10 +1122,17 @@ jobB.start_job()
 	\end{minted}
 	\caption{Researcher B uses pid A for different job.}
 	\label{lst:impl_usecase1_3}
-\end{listing}
+\end{code}
 	
 \end{enumerate}
-\todo{Add result of use case 1 - 4 image}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{usecase1_max}
+	\caption{Resulting image of the last step of Use Case 1.}
+	\label{fig:impl_usecase1_max} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
 \subsection{Capturing job dependent environments}\label{Implementation:Use Case2}
 This scenario focuses on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
 
@@ -1106,7 +1140,7 @@ This scenario focuses on the execution environment. It handles the need of resea
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
 	The researcher A runs a job at the EODC back end with the following python client code. This is the default workflow of executing a job using the python client.  
 
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 import openeo
 EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
@@ -1132,11 +1166,11 @@ jobA.start_job()
 	\end{minted}
 	\caption{Researcher A runs job A with the python client.}
 	\label{lst:impl_usecase2_1}
-\end{listing}
+\end{code}
 	\item \textbf{Researcher wants to describe the experiment environment.}\\
 	The researcher wants to publish the result of the experiment and therefore needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
 
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 # Get context model of job A
 context_model = jobA.describe_job["context_model"]
@@ -1154,7 +1188,7 @@ logging.info("Back End Version (commit): {}".format(backend_version["commit"]))
 	\end{minted}
 	\caption{Describe jobA execution environment.}
 	\label{lst:impl_usecase2_2}
-\end{listing}
+\end{code}
 	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
 	
 \end{enumerate}
@@ -1172,7 +1206,7 @@ The last use case is focused on the users of OpenEO. It describes the need of tr
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
 	The researcher A runs a job at the EODC back end with the following python client code. 
 
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 import openeo
 EODC_DRIVER_URL = "http://openeo.local.127.0.0.1.nip.io"
@@ -1199,22 +1233,22 @@ jobA.start_job()
 	\end{minted}
 	\caption{Researcher A runs job A with the python client.}
 	\label{lst:impl_usecase3_1}
-\end{listing}
+\end{code}
 	\item \textbf{Researcher re-runs the same experiment (job B).}\\
 	Since re-execution of the same job id is handled internally with the re-execution of the same job configuration with a new job id, the the following code is used to create the same job again (job B). It uses the same process graph and the definition of pgA is the same as in Listing \ref{lst:impl_usecase3_1}:
-\begin{listing}[ht]
+\begin{code}
 	\begin{minted}{python}
 jobA = con.create_job(pgA.graph)
 jobA.start_job()
 	\end{minted}
 	\caption{Researcher re-reuns job A resulting in job B.}
 	\label{lst:impl_usecase3_2}
-\end{listing}
+\end{code}
 	
 	\item \textbf{Researcher runs a different experiment (job C).}\\
 	The third job (job C) is created with a different process configuration and input data query.
 
-\begin{listing}[ht]
+\begin{code}
 	%		\inputminted{octave}{BitXorMatrix.m}
 	\begin{minted}{python}
 # Choose dataset
@@ -1238,12 +1272,12 @@ jobC.start_job()
 	\caption{Researcher runs experiment different from job A.}
 	\label{lst:impl_usecase3_3}
 	
-\end{listing}
+\end{code}
 
 	\item \textbf{Researcher wants to compare the jobs by their environment and outcome.}\\
 	Now the researcher wants to compare job B and job C with the first job A. Therefore the following code has to be executed:
 	
-	\begin{listing}[ht]
+	\begin{code}
 %		\inputminted{octave}{BitXorMatrix.m}
 		\begin{minted}{python}
 diffAB = jobA.diff(jobB)
@@ -1254,7 +1288,7 @@ logging.info(diffAC)
 		\caption{Researcher compares the different jobs.}
 		\label{lst:impl_usecase3_4}
 		
-	\end{listing}
+	\end{code}
 	 
 	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. Figure \ref{fig:eva_diff} is a screenshot of the logging messages defined in Listing \ref{lst:impl_usecase3_4}.
 \end{enumerate}
@@ -1265,7 +1299,7 @@ logging.info(diffAC)
 	\caption{Logging output of the job comparisons diffAB and diffAC.}
 	\label{fig:eva_diff} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{store results somewhere}
+
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 
@@ -1305,7 +1339,7 @@ The following steps are executed to discuss and evaluate the behavior on data ch
 
 \begin{enumerate}
 	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
-	\begin{listing}[ht]
+	\begin{code}
 		\begin{minted}{python}
 con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
 # Choose dataset
@@ -1330,7 +1364,7 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
 		\caption{Step 1: Researcher runs jobA and retrieves the result files status.}
 		\label{lst:eva_datachange_1}
-	\end{listing}
+	\end{code}
 	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. Figure \ref{fig:eva_data_changes_1_query} shows the original query that got executed at the back end. It is a XML schema consisting the filter values defined in the process graph (pgA). The time stamp of the original query execution is highlighted in the figure of the query. The content of the database tables as well as query re-execution results after each execution step are available in the result folder\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/results} of the GitHub repository. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. Therefore, the "state" of the re-execution contains the value "EQUAL".
 
 	\begin{figure}[h]
@@ -1341,18 +1375,18 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 	\end{figure}
 	
 	\item \textbf{Update one of the resulting files of the pidA query} \\
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 # Update the first file of the pidA query resulting files.
 con.update_file()
 	\end{minted}
 	\caption{Step 2: Update one of the pidA resulting files, but keep the original file.}
 	\label{lst:eva_datachange_2}
-	\end{listing}
+	\end{code}
 	The "update\_file()" method is added to the python client and EODC back end to let the back end simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
 
 	\item \textbf{Second re-execution of pidA query} \\
-	\begin{listing}[ht]
+	\begin{code}
 		\begin{minted}{python}
 # Get state of the resultfiles, so if they changed since 
 # the original execution. 
@@ -1361,11 +1395,11 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
 		\caption{Step 3: Re-execute pidA query after one file got updated.}
 		\label{lst:eva_datachange_3}
-	\end{listing}
+	\end{code}
 	The second query re-execution results in the same file list as the first, since the old file is still available and the updated file is filtered out by the time-stamp of the original execution (see time-stamp in the query at Figure \ref{fig:eva_data_changes_1_query}). The query contains the execution time-stamp of the original query and filters every file out of the result that has a creation time-stamp after that. 
 
 	\item \textbf{Run duplicate of jobA named jobB} \\
-	\begin{listing}[ht]
+	\begin{code}
 		\begin{minted}{python}
 # Reuse the defined process Graph (pgA) from jobA at Step 1 to create jobB
 jobB = con.create_job(pgA.graph)
@@ -1378,10 +1412,10 @@ file_listB = con.get_filelist(pidB)
 		\end{minted}
 		\caption{Step 4: Create jobB, which uses the same process graph as jobA.}
 		\label{lst:eva_datachange_4}
-	\end{listing}
+	\end{code}
 	In the first line of Listing \ref{lst:eva_datachange_4} the process graph of jobA is used to create a new job instance named jobB. Therefore, jobB uses the same process graph as jobA, but gets executed after the update of the file in Step 2. That is why jobB gets a new query PID and the resulting files differ, by the updated file. 
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobC}\\
-	\begin{listing}[ht]
+	\begin{code}
 		\begin{minted}{python}
 # Take input data of job A by using the input data pid A of job A
 pgC = processes.get_collection(data_pid=pidA)
@@ -1399,19 +1433,19 @@ file_listC = con.get_filelist(pidC)
 		\end{minted}
 		\caption{Step 5: Create job C, which uses the input data od pidA.}
 		\label{lst:eva_datachange_5}
-	\end{listing}
+	\end{code}
 	To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated.  
 	\item \textbf{Update one of the resulting files of the pidA query and remove the original one.}\\ 
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 con.update_file(deleted=True)
 	\end{minted}
 	\caption{Step 6: Update one of the pidA resulting files and delete the original file.}
 	\label{lst:eva_datachange_6}
-	\end{listing}
+	\end{code}
 	The method in Listing \ref{lst:eva_datachange_6} updates the first file of the query result as described in Step 2 and removes the original file.  
 	\item \textbf{Get File-list of pidA}\\ 
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 # re-execute query and get the resulting file list from the back end
 file_listA = con.get_filelist(pidA)
@@ -1419,7 +1453,7 @@ file_listA["input_files"]["state"] # Returns one file entry
 	\end{minted}
 	\caption{Step 7: Re-execute pidA query after one file got updated and the old version got erased.}
 	\label{lst:eva_datachange_7}
-	\end{listing}	
+	\end{code}	
 	The re-execution of the query pidA results in a file list without the deleted file. Since files are filtered out by the query due to the execution time-stamp, the new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" attribute consists of the list of files that replaced files that are no longer available. Figure \ref{fig:eva_data_changes_7_state} shows the content of the "state" attribute of Listing \ref{lst:eva_datachange_7}. The back end returns the most recent file version, even if there are version between the original and the most recent one available. In the result of Listing \ref{lst:eva_datachange_7} the "state" contains only the one file that replaces the original file. So users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list comes from EODC, because of the additional needed storage size it would cause. If the number of resulting files is different at a re-execution, the query gets executed without the original time-stamp filter and the result is compared to the re-execution with the original execution time-stamp. All files that are missing in the re-execution with the original execution time-stamp are added to the "state" attribute. The researcher can use this information to order older version from EODC or ESA.   
 
 \begin{figure}[h]
@@ -1430,7 +1464,7 @@ file_listA["input_files"]["state"] # Returns one file entry
 \end{figure}
 
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobD}\\
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 # Take input data of job A by using the input data pid A of job A
 pgD = processes.get_collection(data_pid=pidA)
@@ -1444,10 +1478,10 @@ pidD = jobD.get_data_pid() # pidD != pidA
 	\end{minted}
 	\caption{Step 8: Run duplicate of jobA, by using the data PID of jobA named jobD.}
 	\label{lst:eva_datachange_8}
-	\end{listing}
+	\end{code}
 	Listing \ref{lst:eva_datachange_8} shows the code of running a new jobD with the query PID pidA like in Step 5. Step 6 deleted one file of the query PID from the back end. After the re-execution of the query, the back end notices that the number of result files is different than the original execution. It then looks for updated files like described in Step 7 and adds the most recent version of the missing file to the query result. This leads to a new query PID for jobD, since the query result has changed.  
 \end{enumerate}
-\todo{maybe rearange the code blocks}
+
 
 The test case shows how the solution behaves in update and deletion scenarios. The query PID gets updated on any changes of the result, even if it is used as input parameter for a new job. This leads to a consistent query PID. The researcher can see how the data has changed in the re-execution functionality. Note that the test case does not consist a case where a dataset got deleted without an updated dataset, since the behavior is the same as for the updated test case (see Step 6), except for an empty "state" attribute. 
 %The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
@@ -1461,7 +1495,7 @@ The aim of the implementation is to capture enough data to make it possible to r
 
 \begin{enumerate}
 	\item \textbf{Run Job A, which creates query pidA and job\_idA.} \\
-	\begin{listing}[ht]
+	\begin{code}
 		\begin{minted}{python}
 import openeo
 # Connect with GEE backend
@@ -1484,9 +1518,9 @@ versionA = jobA.get_backend_version()
 		\end{minted}
 		\caption{Step 1: Researcher runs Job A and gets the used back end version.}
 		\label{lst:eva_jobcapture_1}
-	\end{listing}
+	\end{code}
 
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{json}
 {'branch': 'master',
 'commit': '1a0cefd25c2a0fbb64a78cd9445c3c9314eaeb5b',
@@ -1494,12 +1528,12 @@ versionA = jobA.get_backend_version()
 	\end{minted}
 	\caption{Step 1: Version of the jobA execution version\_old.}
 	\label{lst:eva_jobcapture_1_1}
-\end{listing}
+\end{code}
 
 	The first step shows the definition, creation and execution of jobA. The last two lines show how the version can be retrieved from the back end. The "con.version()" method returns the current version of the back end, but can also take a time-stamp as a parameter to get the version of that time. The "jobA.get\_backend\_version()" method returns the version of the back end during the execution of jobA. Both version are at the end of Step 1 identical.  
 
 	\item \textbf{Publish job\_idA and pidA.} \\
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 # Get input data pid of jobA 
 pidA = jobA.get_data_pid()
@@ -1507,12 +1541,12 @@ jobA_id = jobA.job_id
 	\end{minted}
 	\caption{Researcher gets the input data PID of jobA and the job\_id of jobA.}
 	\label{lst:eva_jobcapture_2}
-	\end{listing}
+	\end{code}
 	The researcher can get the persistent input data identifier pidA and the job identifier jobA\_id to cite the provenance of the execution. The time-stamp of the execution in the context model can be used to identify the back end version used for the calculation.
 	\item \textbf{Update back end version} \\
 	In this step the back end gets modified slightly, by updating a python package to the requirements file of the job execution. The file gets edited by replacing the line "urllib3==1.23" with "urllib3==1.24.1". After editing the file the "git commit" command gets called. 
 	\item \textbf{Get original context of jobA} \\
-	\begin{listing}[ht]
+	\begin{code}
 	\begin{minted}{python}
 import openeo
 # Connect with GEE backend
@@ -1524,12 +1558,11 @@ versionA = jobA.get_backend_version()
 	\end{minted}
 	\caption{Researcher gets the original back end version of the jobA execution.}
 	\label{lst:eva_jobcapture_4}
-	\end{listing}	
+	\end{code}	
 	Listing \ref{lst:eva_jobcapture_4} shows the code the researcher has to run to get the original version of the jobA execution. The variable "versionA" is containing the same version that is displayed in Listing \ref{lst:eva_jobcapture_1_1}. 
 	\item \textbf{Re-run jobA with the original version.} \\
 	To get the original version of the back end, EODC has to create a second instance of the back end. Then EODC has to check out the commit of the job execution version, by running "git checkout commit\_id" in the console, where "commit\_id" is the value of "versionA["commit"]".
 \end{enumerate}
-\todo{maybe rearange the code blocks}
 
 \section{Impact}\label{Evaluation:impact}
 
@@ -1569,12 +1602,12 @@ This section evaluates the performance impact on the EODC back end by measuring 
 \end{table}
 
 Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including to the total execution duration of the solution, the duration of the Query Handler and the Context Model creation is measured and presented in the next two columns. The last column consists of the relative increase in duration of the solution back end compared to the solution back end. The last row of the table shows the mean duration of all test cases.
-The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration between the systems is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values. The Context Model creation performance is not affected much by the complexity of the test cases. The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration.   
+The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration between the systems is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration.   
   
- 
-\todo{ What is the variance across several runs?}
-\todo{Context Model: mock-up of result hash calculation possible ?}
-\todo{bis hierher ist es ok}
+% The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range.
+%\todo{ What is the variance across several runs?}
+%\todo{Context Model: mock-up of result hash calculation possible ?}
+
 \subsection*{Storage}\label{Evaluation:impact_stor}
 This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostgreSQL database, the storage needed by it can be estimated using the PostgreSQL interface. Listing \ref{lst:eva_imact_1} presents the commands used to get the size of the data base entries. The id of the data record is inserted into "{}" (e.g. job id in the first one).  
 
@@ -1626,8 +1659,9 @@ FROM queryjob as t WHERE job_id = '{}';
 Table \ref{Tab:eva_storage} shows the result of the queries. It contains the mean storage of the 50 runs per test case and the average storage size of all test cases in the last row. The column "Context Model" is only the size of the column "metrics" in the Job table, since the context model is stored in the column and the remaining Job table is not modified by the solution. The "Query" and "QueryJob" column show the storage needed for the Query or QueryJob table data record. The "Sum" column is calculated by summing up the Context Model, Query table and QueryJob table storage. It represents the additional storage needed by the solution compared to the reference back end. There is no element in the context model that can vary in size, so that needed size is statically at 1.043 kByte. The same occurs at the QueryJob table, which just maps the Query and Job table and contains only the identifier and timestamps for creation and modification. The Query data records has a slightly varying size, because of the string length of the parameters in the original query. The remaining parts of the Query table are static in storage usage. The original query makes up for the most size needed in the Query table (e.g. 959 Bytes of 1521.432 Bytes in Testcase 18), because of the XML annotations. In summary the average additional storage needed by the reference back end per Job with a new Query entry is 2.677 kBytes. If the used query is already in the Query table, only an additional 1.043 kBytes of storage is needed by the solution. 
 
 \section{Summary}
-\todo{Evaluation summary}
-
+This chapter presented the evaluation of the implementation of Chapter \ref{Implementation} at a local machine. It includes the evaluation of the system behavior on data changes at the back end. Therefore, implementing test cases to determine, if the back end has a consistent data identification behavior. The code of the test cases are presented in this chapter and also available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/}. The usage of the query PID as input data for a different job can lead to misleading results for the user, if the original data has changed and the back end uses new data to replace the missing files. 
+In the next section of this chapter, the captured data of the job execution is discussed, by executing a test case on how an job can be executed in the same way as the original execution. The data to re-execute the job is captured, but the reproduction of the old back end is not done in an automatic manner and is up to the EODC back end provider. In the last section of this chapter, the impact of the solution on the EODC back end is evaluated. Due to the local environment of the evaluation setup, the outcome is limited to relative changes on performance, by comparing the solution with an reference back end. The solution back end has a lower impact on complex test cases, due to the high impact of the execution duration of the processing. Other test cases need up to a fifth more time for the execution. The additional storage needed by the solution per execution is almost static and can be estimated good by the back end provider. The results of this chapter lead to further discussion in the next chapter, which is the conclusion and future work of the thesis.
+   
 \chapter{Conclusion and future Work}\label{Conclusion}
 
 \section{Conclusion}
@@ -1677,6 +1711,7 @@ Therefore, the bench marking context model gets introduced. The idea is that not
 %\chapter{Appendix}\label{Appendix}
 
 \backmatter
+
 
 % Use an optional list of figures.
 \listoffigures % Starred version, i.e., \listoffigures*, removes the toc entry.
