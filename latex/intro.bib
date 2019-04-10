@@ -455,4 +455,141 @@
 	doi={10.1109/ICWS.2017.56}, 
 	ISSN={},}
 
+% Papers for the EVALUATION
 
+@ARTICLE{evaluation1,
+	author={M. {Callegari} and L. {Carturan} and C. {Marin} and C. {Notarnicola} and P. {Rastner} and R. {Seppi} and F. {Zucca}},
+	journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing},
+	title={A Pol-SAR Analysis for Alpine Glacier Classification and Snowline Altitude Retrieval},
+	year={2016},
+	volume={9},
+	number={7},
+	pages={3106-3121},
+	keywords={geophysical image processing;glaciology;hydrological techniques;image classification;remote sensing by radar;snow;support vector machines;synthetic aperture radar;Pol-SAR analysis;alpine glacier classification;snowline altitude retrieval;synthetic aperture radar;SAR polarimetry;supervised classification technique;support vector machine;bare soil classification;ice classification;snow classification;Ortles-Cevedale massif;Eastern Italian Alps;topographic correction;backscattering SAR signature;polarimetric SAR signature;dual-pol data;quad-pol data;backscattering values;multiincidence angle;cosine corrected gamma backscattering;RADARSAT-2 data simulation;Sentinel-1 image;C-band SAR;glacier accumulation zone;glacier ablation zone;winter dry snow;RADARSAT-2 data;geometric acquisitions;Synthetic aperture radar;Remote sensing;Support vector machines;Satellites;Snow;Earth;Optical sensors;Glacier;polarimetric synthetic aperture radar (SAR);support vector machines (SVM)},
+	doi={10.1109/JSTARS.2016.2587819},
+	ISSN={1939-1404}}
+
+@Article{evaluation2,
+	AUTHOR = {Schlaffer, Stefan and Chini, Marco and Dettmering, Denise and Wagner, Wolfgang},
+	TITLE = {Mapping Wetlands in Zambia Using Seasonal Backscatter Signatures Derived from ENVISAT ASAR Time Series},
+	JOURNAL = {Remote Sensing},
+	VOLUME = {8},
+	YEAR = {2016},
+	NUMBER = {5},
+	ARTICLE-NUMBER = {402},
+	URL = {http://www.mdpi.com/2072-4292/8/5/402},
+	ISSN = {2072-4292},
+	ABSTRACT = {Wetlands are considered a challenging environment for mapping approaches based on Synthetic Aperture Radar (SAR) data due to their often complex internal structures and the diverse backscattering mechanisms caused by vegetation, soil moisture and flood dynamics contributing to the resulting imagery. In this study, a time series of &gt;100 SAR images acquired by ENVISAT during a time period of ca. two years over the Kafue River basin in Zambia was compared to water heights derived from radar altimetry and surface soil moisture from a reanalysis dataset. The backscatter time series were analyzed using a harmonic model to characterize the seasonality in C-band backscatter caused by the interaction of flood and soil moisture dynamics. As a result, characteristic seasonal signatures could be derived for permanent water bodies, seasonal open water, persistently flooded vegetation and seasonally flooded vegetation. Furthermore, the analysis showed that the influence of local incidence angle could be accounted for by a linear shift in backscatter averaged over time, even in wetland areas where the dominant scattering mechanism can change depending on the season. The retrieved harmonic model parameters were then used in an unsupervised classification to detect wetland backscattering classes at the regional scale. A total area of 7800 km2 corresponding to 7.6% of the study area was classified as either one of the wetland backscattering classes. The results demonstrate the value of seasonality parameters extracted from C-band SAR time series for wetland mapping.},
+	DOI = {10.3390/rs8050402}
+}
+
+@article{evaluation3,
+	title = "Flood detection from multi-temporal SAR data using harmonic analysis and change detection",
+	journal = "International Journal of Applied Earth Observation and Geoinformation",
+	volume = "38",
+	pages = "15 - 24",
+	year = "2015",
+	issn = "0303-2434",
+	doi = "https://doi.org/10.1016/j.jag.2014.12.001",
+	url = "http://www.sciencedirect.com/science/article/pii/S0303243414002645",
+	author = "Stefan Schlaffer and Patrick Matgen and Markus Hollaus and Wolfgang Wagner",
+	keywords = "ENVISAT, Sentinel-1, Time series analysis, Otsu, Flood hazard, HAND index",
+	abstract = "Flood mapping from Synthetic Aperture Radar (SAR) data has attracted considerable attention in recent years. Most available algorithms typically focus on single-image techniques which do not take into account the backscatter signature of a land surface under non-flooded conditions. In this study, harmonic analysis of a multi-temporal time series of >500 ENVISAT Advanced SAR (ASAR) scenes with a spatial resolution of 150m was used to characterise the seasonality in backscatter under non-flooded conditions. Pixels which were inundated during a large-scale flood event during the summer 2007 floods of the River Severn (United Kingdom) showed strong deviations from normal seasonal behaviour as inferred from the harmonic model. The residuals were classified by means of an automatic threshold optimisation algorithm after masking out areas which are unlikely to be flooded using a topography-derived index. The results were validated against a reference dataset derived from high-resolution airborne imagery. For the water class, accuracies > 80% were found for non-urban land uses. A slight underestimation of the reference flood extent can be seen, mostly due to the lower spatial resolution of the ASAR imagery. Finally, an outlook for the proposed algorithm is given in the light of the Sentinel-1 mission."
+}
+
+@article{evaluation4,
+	title = "Probabilistic mapping of flood-induced backscatter changes in SAR time series",
+	journal = "International Journal of Applied Earth Observation and Geoinformation",
+	volume = "56",
+	pages = "77 - 87",
+	year = "2017",
+	issn = "0303-2434",
+	doi = "https://doi.org/10.1016/j.jag.2016.12.003",
+	url = "http://www.sciencedirect.com/science/article/pii/S0303243416301994",
+	author = "Stefan Schlaffer and Marco Chini and Laura Giustarini and Patrick Matgen",
+	keywords = "Floods, ASAR Wide Swath mode, Time series analysis, Change detection, Bayes’ theorem, Reliability diagram",
+	abstract = "The information content of flood extent maps can be increased considerably by including information on the uncertainty of the flood area delineation. This additional information can be of benefit in flood forecasting and monitoring. Furthermore, flood probability maps can be converted to binary maps showing flooded and non-flooded areas by applying a threshold probability value pF=0.5. In this study, a probabilistic change detection approach for flood mapping based on synthetic aperture radar (SAR) time series is proposed. For this purpose, conditional probability density functions (PDFs) for land and open water surfaces were estimated from ENVISAT ASAR Wide Swath (WS) time series containing >600 images using a reference mask of permanent water bodies. A pixel-wise harmonic model was used to account for seasonality in backscatter from land areas caused by soil moisture and vegetation dynamics. The approach was evaluated for a large-scale flood event along the River Severn, United Kingdom. The retrieved flood probability maps were compared to a reference flood mask derived from high-resolution aerial imagery by means of reliability diagrams. The obtained performance measures indicate both high reliability and confidence although there was a slight under-estimation of the flood extent, which may in part be attributed to topographically induced radar shadows along the edges of the floodplain. Furthermore, the results highlight the importance of local incidence angle for the separability between flooded and non-flooded areas as specular reflection properties of open water surfaces increase with a more oblique viewing geometry."
+}
+
+@Article{evaluation5,
+	AUTHOR = {Vuolo, Francesco and Żółtak, Mateusz and Pipitone, Claudia and Zappa, Luca and Wenng, Hannah and Immitzer, Markus and Weiss, Marie and Baret, Frederic and Atzberger, Clement},
+	TITLE = {Data Service Platform for Sentinel-2 Surface Reflectance and Value-Added Products: System Use and Examples},
+	JOURNAL = {Remote Sensing},
+	VOLUME = {8},
+	YEAR = {2016},
+	NUMBER = {11},
+	ARTICLE-NUMBER = {938},
+	URL = {http://www.mdpi.com/2072-4292/8/11/938},
+	ISSN = {2072-4292},
+	ABSTRACT = {This technical note presents the first Sentinel-2 data service platform for obtaining atmospherically-corrected images and generating the corresponding value-added products for any land surface on Earth. Using the European Space Agency’s (ESA) Sen2Cor algorithm, the platform processes ESA’s Level-1C top-of-atmosphere reflectance to atmospherically-corrected bottom-of-atmosphere (BoA) reflectance (Level-2A). The processing runs on-demand, with a global coverage, on the Earth Observation Data Centre (EODC), which is a public-private collaborative IT infrastructure in Vienna (Austria) for archiving, processing, and distributing Earth observation (EO) data. Using the data service platform, users can submit processing requests and access the results via a user-friendly web page or using a dedicated application programming interface (API). Building on the processed Level-2A data, the platform also creates value-added products with a particular focus on agricultural vegetation monitoring, such as leaf area index (LAI) and broadband hemispherical-directional reflectance factor (HDRF). An analysis of the performance of the data service platform, along with processing capacity, is presented. Some preliminary consistency checks of the algorithm implementation are included to demonstrate the expected product quality. In particular, Sentinel-2 data were compared to atmospherically-corrected Landsat-8 data for six test sites achieving a R2 = 0.90 and Root Mean Square Error (RMSE) = 0.031. LAI was validated for one test site using ground estimations. Results show a very good agreement (R2 = 0.83) and a RMSE of 0.32 m2/m2 (12% of mean value).},
+	DOI = {10.3390/rs8110938}
+}
+
+@article{evaluation6,
+	author = {Duy Ba Nguyen and Alexander Gruber and Wolfgang Wagner},
+	title = {Mapping rice extent and cropping scheme in the Mekong Delta using Sentinel-1A data},
+	journal = {Remote Sensing Letters},
+	volume = {7},
+	number = {12},
+	pages = {1209-1218},
+	year  = {2016},
+	publisher = {Taylor & Francis},
+	doi = {10.1080/2150704X.2016.1225172},
+	
+	URL = { 
+	https://doi.org/10.1080/2150704X.2016.1225172
+	
+	},
+	eprint = { 
+	https://doi.org/10.1080/2150704X.2016.1225172
+	
+	}	
+}
+
+@ARTICLE{evaluation7,
+	author={B. {Bauer-Marschallinger} and V. {Freeman} and S. {Cao} and C. {Paulik} and S. {Schaufler} and T. {Stachl} and S. {Modanesi} and C. {Massari} and L. {Ciabatta} and L. {Brocca} and W. {Wagner}},
+	journal={IEEE Transactions on Geoscience and Remote Sensing},
+	title={Toward Global Soil Moisture Monitoring With Sentinel-1: Harnessing Assets and Overcoming Obstacles},
+	year={2019},
+	volume={57},
+	number={1},
+	pages={520-539},
+	keywords={hydrological techniques;irrigation;moisture;rain;remote sensing by radar;soil;synthetic aperture radar;dynamic Gaussian upscaling method;SAR imagery;field-scale information;SAR's high signal complexity;radar slope;S-1 SSM algorithm;small-scale soil moisture changes;Copernicus Global Land Service;disaster management units;surface soil moisture;C-band Synthetic Aperture Radar sensors;SSM retrieval method;globally deployable soil moisture observation data;algorithm formulation;soil water balance model;change detection algorithm;SAR data source;global soil moisture monitoring;Sentinel-1;Italy;regression-based approach;Umbria;forest;rainfall;irrigation;Soil moisture;Synthetic aperture radar;Sensors;Image resolution;Monitoring;Signal resolution;Change detection algorithms;Copernicus;image sampling;Sentinel-1;soil moisture},
+	doi={10.1109/TGRS.2018.2858004},
+	ISSN={0196-2892}}
+
+@article{evaluation8,
+	author = {Alena Dostálová and Wolfgang Wagner and Milutin Milenković and Markus Hollaus},
+	title = {Annual seasonality in Sentinel-1 signal for forest mapping and forest type classification},
+	journal = {International Journal of Remote Sensing},
+	volume = {39},
+	number = {21},
+	pages = {7738-7760},
+	year  = {2018},
+	publisher = {Taylor & Francis},
+	doi = {10.1080/01431161.2018.1479788},
+	
+	URL = { 
+	https://doi.org/10.1080/01431161.2018.1479788
+	
+	},
+	eprint = { 
+	https://doi.org/10.1080/01431161.2018.1479788
+	
+	}
+	
+}
+
+@Article{evaluation9,
+	AUTHOR = {Bauer-Marschallinger, Bernhard and Paulik, Christoph and Hochstöger, Simon and Mistelbauer, Thomas and Modanesi, Sara and Ciabatta, Luca and Massari, Christian and Brocca, Luca and Wagner, Wolfgang},
+	TITLE = {Soil Moisture from Fusion of Scatterometer and SAR: Closing the Scale Gap with Temporal Filtering},
+	JOURNAL = {Remote Sensing},
+	VOLUME = {10},
+	YEAR = {2018},
+	NUMBER = {7},
+	ARTICLE-NUMBER = {1030},
+	URL = {http://www.mdpi.com/2072-4292/10/7/1030},
+	ISSN = {2072-4292},
+	ABSTRACT = {Soil moisture is a key environmental variable, important to e.g., farmers, meteorologists, and disaster management units. We fuse surface soil moisture (SSM) estimates from spatio-temporally complementary radar sensors through temporal filtering of their joint signal and obtain a kilometre-scale, daily soil water content product named SCATSAR-SWI. With 25 km Metop ASCAT SSM and 1 km Sentinel-1 SSM serving as input, the SCATSAR-SWI is globally applicable and achieves daily full coverage over operated areas. We employ a near-real-time-capable SCATSAR-SWI algorithm on a fused 3 year ASCAT-Sentinel-1-SSM data cube over Italy, obtaining a consistent set of model parameters, unperturbed by coverage discontinuities. An evaluation of a therefrom generated SCATSAR-SWI dataset, involving a 1 km Soil Water Balance Model (SWBM) over Umbria, yields comprehensively high agreement with the reference data (median R = 0.61 vs. in situ; 0.71 vs. model; 0.83 vs. ASCAT SSM). While the Sentinel-1 signal is attenuated to some extent, the ASCAT&rsquo;s signal dynamics are fully transferred to the SCATSAR-SWI and benefit from the Sentinel-1 parametrisation. Using the SM2RAIN approach, the SCATSAR-SWI shows excellent capability to reproduce 5 day-accumulated rainfall over Italy, with R = 0.89 against observed rainfall. The SCATSAR-SWI is currently in preparation towards operational product dissemination in the Copernicus Global Land Service (CGLS).},
+	DOI = {10.3390/rs10071030}
+}

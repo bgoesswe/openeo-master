@@ -1068,10 +1068,10 @@ The core API does not define the comparison of two jobs, hence there does not ex
 
 
 \textbf{U4: Data Identifier Landing Page} \\
-Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.3.1, there exists an endpoint to retrieve detailed information about a data set. The "GET /collections/<dataset-id>" endpoint is extended, by accepting query PIDs. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and in addition the result of the query execution and the original query parameters. The landing page contains a link to another page with the file list after a query re-execution ("GET /collections/<data-pid>/result" endpoint). If the result file list differs from the original execution, there will be a warning message added to the response. 
+Depending on the back end, the input data may be restricted to the OpenEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.3.1, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<data-pid>" endpoint is introduced. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and in addition the result of the query execution and the original query parameters. The landing page contains a link to another page with the file list after a query re-execution ("GET /data/<data-pid>/result" endpoint). If the result file list differs from the original execution, there will be a list of the files that differ, otherwise it will state that the file list is equal to the original execution. 
 
 \textbf{U5: Re-use of Input Data} \\
-To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the "product\_id" entry. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
+To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the process "get\_collection" as an additional filter argument named "data\_pid". Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
 
 \section{Use Cases}
 This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before.
@@ -1127,7 +1127,7 @@ jobA.start_job()
 	\begin{minted}{python}
 pidA_url = jobA.get_data_pid_url()
 print(pidA_url)
-# Output: EODC_DRIVER_URL/collections
+# Output: EODC_DRIVER_URL/data
 #	/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
 pidA = jobA.get_data_pid()
 
@@ -1154,7 +1154,7 @@ file_list = con.get_filelist(pidA)
 	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.  
 	
 	\item \textbf{Researcher A cites the input data in a publication.} \\
-	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"EODC\_DRIVER\_URL/collections/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
+	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"EODC\_DRIVER\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
 	
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
 	In order to use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below an example of code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.   
@@ -1165,9 +1165,9 @@ import openeo
 
 # Take input data of job A by using the input data pid A
 # pidA = qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
-pgB = processes.get_collection(
+pgB = processes.get_data_by_pid(
 data_pid="qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06")
-# Alternative: data_pid="EODC_DRIVER_URL/collections/pidA" 
+# Alternative: data_pid="EODC_DRIVER_URL/data/pidA" 
 
 # Choose processes
 pgB = processes.ndvi(pgB, nir="B08", red="B04")
@@ -1365,7 +1365,7 @@ This chapter presented an implementation of the design of Chapter \ref{Design} a
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. 
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
-The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end. To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database. \\
+The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end (reference back end). To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database. \\
 
 Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. In order to minimum the performance bias, not necessary background programs are disabled for the evaluation execution.  
 
@@ -1389,10 +1389,10 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 
 
 \section{Special Test Cases}\label{Evaluation:special}
-This section evaluates special test cases to get an overview on how the solution behaves, if specific circumstances occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
+This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
 
 \subsection{Data Changes}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used in this evaluation section.   \\
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section.   \\
 The following steps are executed to discuss and evaluate the behavior on data changes:
 
 \begin{enumerate}
@@ -1476,7 +1476,7 @@ file_listB = con.get_filelist(pidB)
 	\begin{code}
 		\begin{minted}{python}
 # Take input data of job A by using the input data pid A of job A
-pgC = processes.get_collection(data_pid=pidA)
+pgC = processes.get_data_by_pid(data_pid=pidA)
 # Choose processes
 pgC = processes.ndvi(pgC, nir="B08", red="B04")
 pgC = processes.min_time(pgC)
@@ -1525,7 +1525,7 @@ file_listA["input_files"]["state"] # Returns one file entry
 	\begin{code}
 	\begin{minted}{python}
 # Take input data of job A by using the input data pid A of job A
-pgD = processes.get_collection(data_pid=pidA)
+pgD = processes.get_data_by_pid(data_pid=pidA)
 # Choose processes
 pgD = processes.ndvi(pgC, nir="B08", red="B04")
 pgD = processes.min_time(pgD)
@@ -1622,57 +1622,75 @@ versionA = jobA.get_backend_version()
 	To get the original version of the back end, EODC has to create a second instance of the back end. Then EODC has to check out the commit of the job execution version, by running "git checkout commit\_id" in the console, where "commit\_id" is the value of "versionA["commit"]".
 \end{enumerate}
 
-\section{Impact}\label{Evaluation:impact}
+\section{Performance and Storage Impact}\label{Evaluation:impact}
 
-This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 8 publications that used EODC data in the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, the concrete values and the identifier of the original paper is stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end (reference back end), without the extensions of this thesis. Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at the back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format. The reference back end, the solution back end as well as the code for the impact evaluation are available at the GitHub repository mentioned at Section \ref{Evaluation:special}.        
+This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 9 publications that used data provided by EODC from the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, Table \ref{Tab:appendix} shows the used papers used for the test cases. The used values of the spatial and temporal extent are stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end, without the extensions of this thesis (hereinafter referred to as "reference back end"). Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at each back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format. The reference back end, the solution back end as well as the code for the impact evaluation are available at the GitHub repository mentioned at Section \ref{Evaluation:special}.      
 
-\subsection*{Performance}\label{Evaluation:impact_perf}
-This section evaluates the performance impact on the EODC back end by measuring the difference of the job execution duration between the original EODC back end and the EODC back end with the solution of this thesis. The execution time of the implementation is measured by writing timestamps into the log file and calculating the duration afterwards. The duration of the Query Handler (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}) are captured during the execution of the test cases. 
+\begin{table}[]
+	\caption{List of geoscientific papers used for the input data of the impact evaluation in Section \ref{Evaluation:impact}}
+	\centering
+	\begin{tabular}{c|c|c}
+		\textbf{Test Cases} & \textbf{DOI} & \textbf{Citation}  \\ \hline
+		1 & 10.1080/01431160902887339 & \cite{evaluation1} \\ 
+		2-4 & 10.3390/rs8050402 & \cite{evaluation2} \\ 
+		5,6 & 10.1016/j.jag.2014.12.001  & \cite{evaluation3} \\
+		7 & 10.1016/j.jag.2016.12.003  & \cite{evaluation4} \\
+		8 & 10.3390/rs8110938  & \cite{evaluation5} \\
+		9 & 10.1080/2150704X.2016.1225172  & \cite{evaluation6} \\
+		10-13 & 10.1109/TGRS.2018.2858004  & \cite{evaluation7} \\
+		14 & 10.1080/01431161.2018.1479788  & \cite{evaluation8} \\
+		15-18 & 10.3390/rs10071030  & \cite{evaluation9} \\
+	\end{tabular}
+	\label{Tab:appendix}
+\end{table}
+
+\subsection{Performance}\label{Evaluation:impact_perf}
+
+In this Section we evaluate the performance impact on the EODC back end by measuring the difference of the job execution duration between the reference EODC back end and the EODC back end with the solution of this thesis. The execution time of the implementation is measured by writing timestamps into a log file and calculating the duration afterwards. The duration of the Query Handler (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}). 
 
 \begin{table}[]
 	\caption{Mean duration time over 50 runs of the solution and the reference back end by executing the test cases}
 	\centering
 	\begin{tabular}{r|r|r|r|r|r}
 		
-		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Increase} \\ \hline
-		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms & 3.87 \% \\ 
-		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms & 18.00 \% \\ 
-		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms & 16.86 \% \\ 
-		4 & 266.351 ms & 309.541 ms & 20.351 ms & 22.838 ms & 16.22 \% \\ 
-		5 & 284.324 ms & 345.757 ms & 26.081 ms & 35.351 ms & 21.61 \% \\ 
-		6 & 289.622 ms & 347.578 ms & 24.956 ms & 33.000 ms & 20.01 \% \\ 
-		7 & 270.889 ms & 327.289 ms & 25.533 ms & 30.867 ms & 20.82 \% \\ 
-		8 & 278.091 ms & 329.409 ms & 22.909 ms & 28.409 ms & 18.45 \% \\ 
-		9 & 13296.605 ms & 13604.698 ms & 259.884 ms & 48.209 ms & 2.32 \% \\ 
-		10 & 386.684 ms & 435.895 ms & 22.289 ms & 26.921 ms & 12.73 \% \\ 
-		11 & 40512.538 ms & 40770.026 ms & 212.667 ms & 44.821 ms & 0.64 \% \\ 
-		12 & 528.450 ms & 566.925 ms & 18.675 ms & 19.800 ms & 7.28 \% \\ 
-		13 & 1785.462 ms & 1818.641 ms & 18.410 ms & 14.769 ms & 1.86 \% \\ 
-		14 & 40461.526 ms & 40729.368 ms & 223.000 ms & 44.842 ms & 0.66 \% \\ 
-		15 & 422.512 ms & 466.854 ms & 20.146 ms & 24.195 ms & 10.49 \% \\ 
-		16 & 44672.378 ms & 44940.022 ms & 221.889 ms & 45.756 ms & 0.60 \% \\ 
-		17 & 753.256 ms & 787.436 ms & 15.897 ms & 18.282 ms & 4.54 \% \\ 
-		18 & 281.611 ms & 344.389 ms & 26.278 ms & 36.500 ms & 22.29 \% \\ \hline
-		\textbf{All} & \textbf{8104.569 ms} & \textbf{8202.766 ms} & \textbf{67.800 ms} & \textbf{30.397 ms} & \textbf{11.07
-		 \%} \\ 
+		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Result Files} \\ \hline
+		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms & 12 \\ 
+		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms & 16 \\ 
+		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms & 4 \\ 
+		4 & 266.351 ms & 309.541 ms & 20.351 ms & 22.838 ms & 2 \\ 
+		5 & 284.324 ms & 345.757 ms & 26.081 ms & 35.351 ms & 5 \\ 
+		6 & 289.622 ms & 347.578 ms & 24.956 ms & 33.000 ms & 3 \\ 
+		7 & 270.889 ms & 327.289 ms & 25.533 ms & 30.867 ms & 3 \\ 
+		8 & 278.091 ms & 329.409 ms & 22.909 ms & 28.409 ms & 6 \\ 
+		9 & 13296.605 ms & 13604.698 ms & 259.884 ms & 48.209 ms & 2443 \\ 
+		10 & 386.684 ms & 435.895 ms & 22.289 ms & 26.921 ms & 8 \\ 
+		11 & 40512.538 ms & 40770.026 ms & 212.667 ms & 44.821 ms & 2302 \\ 
+		12 & 528.450 ms & 566.925 ms & 18.675 ms & 19.800 ms & 6 \\ 
+		13 & 1785.462 ms & 1818.641 ms & 18.410 ms & 14.769 ms & 57 \\ 
+		14 & 40461.526 ms & 40729.368 ms & 223.000 ms & 44.842 ms & 2403 \\ 
+		15 & 422.512 ms & 466.854 ms & 20.146 ms & 24.195 ms & 10 \\ 
+		16 & 44672.378 ms & 44940.022 ms & 221.889 ms & 45.756 ms & 2435 \\ 
+		17 & 753.256 ms & 787.436 ms & 15.897 ms & 18.282 ms & 51 \\ 
+		18 & 281.611 ms & 344.389 ms & 26.278 ms & 36.500 ms & 157 \\ \hline
+		\textbf{Avg.} & \textbf{8104.569 ms} & \textbf{8202.766 ms} & \textbf{67.800 ms} & \textbf{30.397 ms} & \textbf{507.333} \\ 
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
 
-Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including to the total execution duration of the solution, the duration of the Query Handler and the Context Model creation is measured and presented in the next two columns. The last column consists of the relative increase in duration of the solution back end compared to the solution back end. The last row of the table shows the mean duration of all test cases.
-The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration between the systems is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration.   
+Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the number of resulting files of the executed query. The last row of the table shows the mean duration over all test cases.
+The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.   
   
 % The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range.
 %\todo{ What is the variance across several runs?}
 %\todo{Context Model: mock-up of result hash calculation possible ?}
 
 \subsection*{Storage}\label{Evaluation:impact_stor}
-This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostgreSQL database, the storage needed by it can be estimated using the PostgreSQL interface. Listing \ref{lst:eva_imact_1} presents the commands used to get the size of the data base entries. The id of the data record is inserted into "{}" (e.g. job id in the first one).  
+This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostgreSQL database, the storage needed by it can be estimated using the PostgreSQL interface. Listing \ref{lst:eva_imact_1} presents the commands used to get the size of the data base entries. The id of the data record is inserted into "''" (e.g. job id in the first one).  
 
 \begin{listing}[ht]
 	\begin{minted}{sql}
 -- Context Model 
-SELECT sum(pg_column_size(metrics)) as filesize, count(*) as filerow 
+SELECT sum(pg_column_size(context_model)) as filesize, count(*) as filerow 
 FROM jobs as t WHERE id = '{}';
 -- Query Table
 SELECT sum(pg_column_size(t)) as filesize, count(*) as filerow 
@@ -1685,36 +1703,37 @@ FROM queryjob as t WHERE job_id = '{}';
 	\label{lst:eva_imact_1}
 \end{listing}	
 
-\begin{table}[]
-	\caption{Mean storage over 50 runs of the solution by executing the test cases. All measured values are in Bytes.}
-	\centering
-	\begin{tabular}{r|r|r|r|r}
+%\begin{table}[]
+	%\caption{Mean storage over 50 runs of the solution by executing the test cases. All measured %values are in Bytes.}
+	%\centering
+	%\begin{tabular}{r|r|r|r|r}
 		
-	 \textbf{Test Case} & \textbf{Context Model} & \textbf{Query} & \textbf{QueryJob} & \textbf{Sum} \\ \hline
-		1 & 1043 & 1529.659 & 113 & 2685.659 \\ 
-		2 & 1043 & 1530.583 & 113 & 2686.583 \\ 
-		3 & 1043 & 1525.585 & 113 & 2681.585 \\ 
-		4 & 1043 & 1533.649 & 113 & 2689.649 \\ 
-		5 & 1043 & 1524.622 & 113 & 2680.622 \\ 
-		6 & 1043 & 1520.267 & 113 & 2676.267 \\ 
-		7 & 1043 & 1524.800 & 113 & 2680.800 \\ 
-		8 & 1043 & 1527.614 & 113 & 2683.614 \\ 
-		9 & 1043 & 1532.814 & 113 & 2688.814 \\ 
-		10 & 1043 & 1523.184 & 113 & 2679.184 \\ 
-		11 & 1043 & 1530.667 & 113 & 2686.667 \\ 
-		12 & 1043 & 1524.825 & 113 & 2680.825 \\ 
-		13 & 1043 & 1529.923 & 113 & 2685.923 \\ 
-		14 & 1043 & 1525.614 & 113 & 2681.614 \\ 
-		15 & 1043 & 1524.683 & 113 & 2680.683 \\ 
-		16 & 1043 & 1530.422 & 113 & 2686.422 \\ 
-		17 & 1043 & 1524.846 & 113 & 2680.846 \\ 
-		18 & 1043 & 1521.432 & 113 & 2677.432 \\ \hline
-		\textbf{All} & \textbf{1043} & \textbf{1526.955} & \textbf{113} & \textbf{2682.955} \\
-	\end{tabular}
-	\label{Tab:eva_storage}
-\end{table}
+	 %\textbf{Test Case} & \textbf{Context Model} & \textbf{Query} & \textbf{QueryJob} & \textbf{Sum}
+	 %\\ \hline
+%		1 & 1043 & 1529.659 & 113 & 2685.659 \\ 
+%		2 & 1043 & 1530.583 & 113 & 2686.583 \\ 
+%		3 & 1043 & 1525.585 & 113 & 2681.585 \\ 
+%		4 & 1043 & 1533.649 & 113 & 2689.649 \\ 
+%		5 & 1043 & 1524.622 & 113 & 2680.622 \\ 
+%		6 & 1043 & 1520.267 & 113 & 2676.267 \\ 
+%		7 & 1043 & 1524.800 & 113 & 2680.800 \\ 
+%		8 & 1043 & 1527.614 & 113 & 2683.614 \\ 
+%		9 & 1043 & 1532.814 & 113 & 2688.814 \\ 
+%		10 & 1043 & 1523.184 & 113 & 2679.184 \\ 
+%		11 & 1043 & 1530.667 & 113 & 2686.667 \\ 
+%		12 & 1043 & 1524.825 & 113 & 2680.825 \\ 
+%		13 & 1043 & 1529.923 & 113 & 2685.923 \\ 
+%		14 & 1043 & 1525.614 & 113 & 2681.614 \\ 
+%		15 & 1043 & 1524.683 & 113 & 2680.683 \\ 
+%		16 & 1043 & 1530.422 & 113 & 2686.422 \\ 
+%		17 & 1043 & 1524.846 & 113 & 2680.846 \\ 
+%		18 & 1043 & 1521.432 & 113 & 2677.432 \\ \hline
+%		\textbf{All} & \textbf{1043} & \textbf{1526.955} & \textbf{113} & \textbf{2682.955} \\
+%	\end{tabular}
+%	\label{Tab:eva_storage}
+%\end{table}
 
-Table \ref{Tab:eva_storage} shows the result of the queries. It contains the mean storage of the 50 runs per test case and the average storage size of all test cases in the last row. The column "Context Model" is only the size of the column "metrics" in the Job table, since the context model is stored in the column and the remaining Job table is not modified by the solution. The "Query" and "QueryJob" column show the storage needed for the Query or QueryJob table data record. The "Sum" column is calculated by summing up the Context Model, Query table and QueryJob table storage. It represents the additional storage needed by the solution compared to the reference back end. There is no element in the context model that can vary in size, so that needed size is statically at 1.043 kByte. The same occurs at the QueryJob table, which just maps the Query and Job table and contains only the identifier and timestamps for creation and modification. The Query data records has a slightly varying size, because of the string length of the parameters in the original query. The remaining parts of the Query table are static in storage usage. The original query makes up for the most size needed in the Query table (e.g. 959 Bytes of 1521.432 Bytes in Testcase 18), because of the XML annotations. In summary the average additional storage needed by the reference back end per Job with a new Query entry is 2.677 kBytes. If the used query is already in the Query table, only an additional 1.043 kBytes of storage is needed by the solution. 
+The resulting storage need of the evaluation is quite static. The mean storage of the 50 runs per test case and the average storage size of all test cases are calculated. Three parts of the implementation are storing additional information. First the context model is stored in an additional column named "context\_model" in the Job table. There is no element in the context model that can vary in size, except for the list of packages of python, which has not changed during the evaluation. This results in an additional size of 1.043 kByte for each job entry. The same occurs at the QueryJob table, which just maps the Query table and the Job table and therefore contains the needed identifiers and timestamps for creation and modification. Every record of the QueryJob table needs 0.113 kBytes of storage space. The Query data records have a varying size, because of the string length of the parameters in the original query. The remaining parts of the Query table are static in storage usage. Each Query record of the test cases needs between 1.520 kByte and 1.533 kByte storage. The original query makes up the most size needed in the Query table (e.g. 959 Bytes of 1521.432 Bytes in Testcase 18), because of the XML annotations. In summary the average additional storage needed by the reference back end per Job with a new Query entry is 2.677 kBytes. If the used query is already in the Query table, only an additional 1.043 kBytes of storage is needed by the solution. 
 
 \section{Summary}
 This chapter presented the evaluation of the implementation of Chapter \ref{Implementation} at a local machine. It includes the evaluation of the system behavior on data changes at the back end. Therefore, implementing test cases to determine, if the back end has a consistent data identification behavior. The code of the test cases are presented in this chapter and also available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/}. The usage of the query PID as input data for a different job can lead to misleading results for the user, if the original data has changed and the back end uses new data to replace the missing files. 
@@ -1766,6 +1785,11 @@ So far only the capturing of the whole process chain, including input and output
 Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but every data state in between of each process. For every process in the process graph the input data, the output data and the code executing the process get captured. This makes it easier for users to see where in the process chain the execution actually produced different results.\\ The concept leads to higher implementation and execution costs at the back end side. The effect on the performance of the execution is higher than the common context model. Whether the implementation of such a granularity is  doable is highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of single processes are not distinguishable. If a back end can support it, the granularity can be finer. In an extreme example, the data and code can be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
 %\chapter{Appendix}\label{Appendix}
+
+%\section{Papers for Evaluation}
+
+
+
 
 \backmatter
 
