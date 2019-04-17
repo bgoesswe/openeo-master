@@ -486,7 +486,7 @@ The GPF consists of a set of 20 recommendations for geoscientists regarding data
 
 \subsection{Climate Change Centre Austria (CCCA)}
 
-The \ref{ccca} is a research network for Austrian climate research online available since 2016 and has 28 members. The main tasks are the provision of climate relevant information, the inter-operable interfaces and long term archiving of scientific data. In 2017 the \gls{netcdf} data citation was added to the project. The set up of the data service and the technology used in the background is similar to the set up of the EODC back end. Therefore, the process of enabling data identification was similar to this thesis. CCCA is Open-source and available at GitHub, see the GitHub repository\footnote{https://github.com/ccca-dc}. The concept used for gaining data citation was the RDA recommendations defined in \cite{rauber2016identification}. Figure \ref{fig:ccca} shows an overview of the CCCA implementation. It uses a ckan\footnote{https://ckan.org} webserver to handle the request and responses of the user, which are then passed to an python application. The python part is responsible for the query store functionality. The core element is the \gls{tds}\footnote{https://www.unidata.ucar.edu/software/thredds/current/tds/}, which is responsible for the actual data archive.   
+The \gls{ccca} is a research network for Austrian climate research online available since 2016 and has 28 members. The main tasks are the provision of climate relevant information, the inter-operable interfaces and long term archiving of scientific data. In 2017 the \gls{netcdf} data citation was added to the project. The set up of the data service and the technology used in the background is similar to the set up of the EODC back end. Therefore, the process of enabling data identification was similar to this thesis. CCCA is Open-source and available at GitHub, see the GitHub repository\footnote{https://github.com/ccca-dc}. The concept used for gaining data citation was the RDA recommendations defined in \cite{rauber2016identification}. Figure \ref{fig:ccca} shows an overview of the CCCA implementation. It uses a ckan\footnote{https://ckan.org} webserver to handle the request and responses of the user, which are then passed to an python application. The python part is responsible for the query store functionality. The core element is the \gls{tds}\footnote{https://www.unidata.ucar.edu/software/thredds/current/tds/}, which is responsible for the actual data archive.   
 The python application part of the CCCA overview is similiar to the implementation of this thesis. The main difference are the objectives of the CCCA service compared to the EODC back end. On the CCCA platform, any climate relevant information (e.g. air temperature or frost days) can be uploaded and persisted. On the EODC back end, preprocessed global earth observation data is persisted, which is used as input data for processing chains. Therefore, the data on EODC is more homogeneous than the data on the CCCA platform. Nevertheless, the concept of enabling data identification is similar in both projects. The basic query store implementation of this thesis was inspired by the CCCA implementation. The query result differs, because EODC uses \gls{geotiff} instead of NetCDF at their back end. Another difference is that CCCA uses HTTP GET requests as query, whereas the EODC back end uses \gls{xml} based queries, which are in addition limited by the OpenEO API specification  \cite{ccca}.  
 
 \begin{figure}[h]
@@ -1285,17 +1285,31 @@ logging.info("Back End Version (commit): {}"
 	\caption{Describe jobA execution environment.}
 	\label{lst:impl_usecase2_2}
 \end{code}
-	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit to identify the used code. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
+	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit to identify the used code. Listing \ref{lst:use_case2_logfile} shows the output of the logging calls. 
 	
 \end{enumerate}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{usecase2_2}
-	\caption{Screenshot of logging output of the second Use Case.}
-	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-\todo{Bild verbessern --> evtl. zu Codeblock machen !}
+\begin{code}
+	\begin{minted}{text}
+INFO:root:Interpreter: Python 3.7.1
+INFO:root:Code Environment: ['alembic==0.9.9', 'amqp==1.4.9',
+         ..., 'GitPython==2.1.11', 'numpy==1.16.2', 'GDAL==2.4.0']
+INFO:root:Input Data PID URL:
+http://openeo.local.127.0.0.1.nip.io/collections
+              /qu-8cdac780-7f47-4fac-9c4b-7a9ffff17d1d
+INFO:root:Back End Version (commit): 
+              16c3b32b5cb2d92d1c32d8c1f929065ee6bf2831
+	\end{minted}
+	\caption{Logging output of the second Use Case.}
+	\label{lst:use_case2_logfile}
+\end{code}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{usecase2_2}
+%	\caption{Screenshot of logging output of the second Use Case.}
+%	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
+
 \subsection{Use Case 3 – Getting differences of job executions}\label{Implementation:Use Case3}
 The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments. Section \ref{UseCase3} describes the third use case in more detail.  
 \begin{enumerate}
@@ -1386,16 +1400,43 @@ logging.info(diffAC)
 		
 	\end{code}
 	 
-	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. Figure \ref{fig:eva_diff} is a screenshot of the logging messages defined in Listing \ref{lst:impl_usecase3_4}.
+	With the lines above the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. Listing \ref{lst:use_case3_logfile} shows the logging output of Listing \ref{lst:impl_usecase3_4}.
 \end{enumerate}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{usecase3_4}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{usecase3_4}
+%	\caption{Logging output of the job comparisons diffAB and diffAC.}
+%	\label{fig:eva_diff} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
+
+\begin{code}
+	\begin{minted}{text}
+INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL', 
+ 'process_graph': 'EQUAL', 'openeo_api': 'EQUAL', 
+ 'interpreter': 'EQUAL', 'code_env': 'EQUAL',
+ 'different': {'back_end_timestamp': '20190417194702.496810', 'job_id':
+ 'jb-b92c688c-7fdc-4126-bcdf-85bc07030237', 
+ 'start_time': '2019-04-17 19:47:02.496810', 
+ 'end_time': '2019-04-17 19:47:03.258261'}} 
+INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL', 
+ 'openeo_api': 'EQUAL', 'interpreter': 'EQUAL', 'code_env': 'EQUAL',
+ 'different': {'process_graph': {'imagery': {'imagery': {'extent': 
+ {'crs': 'EPSG:4326', 'east': 12.189331, 'north': 46.905246, 
+ 'south': 45.935871, 'west': 10.288696}, 'imagery': 
+ {'extent': ['2017-05-01', '2017-05-31'], 
+ 'imagery': {'name': 's2a_prd_msil1c', 'process_id': 'get_collection'}, 
+ 'process_id': 'filter_daterange'}, 'process_id': 'filter_bbox'}, 
+ 'nir': 'B08', 'process_id': 'NDVI', 'red': 'B04'}, 'process_id': 
+ 'max_time'}, 'start_time': '2019-04-17 19:47:09.089075', 
+ 'end_time': '2019-04-17 19:47:11.786845', 
+ 'back_end_timestamp': '20190417194709.089075', 
+ 'job_id': 'jb-ecdd5768-3c22-4c73-85b8-ac6f4bdc138f'}}
+	\end{minted}
 	\caption{Logging output of the job comparisons diffAB and diffAC.}
-	\label{fig:eva_diff} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-\todo{Bild verbessern --> evtl. zu Codeblock machen danach Screenshot aus dem Text nehmen!}
+	\label{lst:use_case3_logfile}
+\end{code}
+
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 \todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
