@@ -275,7 +275,7 @@ The execution of the experiment consists of the following steps:
 \end{figure}
 
 
-\subsection{Re-use of input data}\label{UseCase1}
+\subsection{Use Case 1 – Re-use of input data}\label{UseCase1}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase1}
@@ -301,7 +301,7 @@ The scenario sequence of actions is summarized in the following steps: \\
 	\item Researcher B uses the same input data, by applying the data PID of job A for job B.  
 \end{enumerate}
 
-\subsection{Providing job execution Information}\label{UseCase2}
+\subsection{Use Case 2 – Providing job execution Information}\label{UseCase2}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase2}
@@ -318,7 +318,7 @@ The scenario sequence of actions is summarized in the following steps: \\
 %	\item Back End Developer runs test jobs to find differences.
 \end{enumerate}
 
-\subsection{Compare different job executions}\label{UseCase3}
+\subsection{Use Case 3 – Compare different job executions}\label{UseCase3}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{usecase3}
@@ -361,8 +361,6 @@ The expected outcome of this thesis is to discover and develop a framework for m
 		\item How can differences in the environment between the executions be discovered?
 	\end{itemize}
 \end{itemize}
-
-
 
 \section{Methodological Approach}\label{Method}
 The use cases defined in the previous section require specific changes to the components of an earth observation back end. The following list describes the parts of the suggested solution briefly: 
@@ -684,7 +682,7 @@ For the research areas that are related to the solution of the thesis a vast amo
 
  
 \chapter{Design}\label{Design}
-This chapter describes the concept of capturing the environment of a geoscientific experiment. The aim of this chapter is to explain the general concept of how to gain reproducibility in an earth observation environment. It is structured in six parts. The first part presents an overview of the concept. The next three sections describe the main components of the overview in detail, first the data identification part, then the back end provenance and the job dependent provenance. The following section defines the resulting context model. The next section of this chapter defines the user interfaces needed to use the data of the context model from an earth observation scientist's perspective. The last section gives an overview of the capturing of \gls{udf}. The following Chapter \ref{Implementation} shows an implementation of the concept of this chapter at the EODC back end. 
+This chapter describes the concept of capturing the environment of a geoscientific experiment. The aim of this chapter is to explain the general concept of how to gain reproducibility in an earth observation environment. It is structured in six parts. The first part presents an overview of the concept. The next three sections describe the main components of the overview in detail, first the data identification part, then the back end provenance and the job dependent provenance. The following section defines the resulting context model. The next section of this chapter defines the user services needed to use the data of the context model from an earth observation scientist's perspective. The last section gives an overview of the capturing of \gls{udf}. The following Chapter \ref{Implementation} shows an implementation of the concept of this chapter at the EODC back end. 
 
 
 
@@ -709,7 +707,7 @@ This section presents an overview of the concept and in Figure \ref{fig:overview
 	The Result Handling component receives the results from the Process Execution component and persists all meta-data about the job and the result. In the meantime the resulting data is sent back to the client application, if the job is not defined as a batch job. If it is a batch job the user has to actively order the results from the back end.  
 \end{enumerate}
 
-To make the whole workflow reproducible, every single component have to be identifiable. Hence, the following elements get introduced as additions to the back end.
+To make the whole workflow reproducible, every single component has to be identifiable. Hence, the following elements get introduced as additional components to the back end.
 
  \begin{itemize}
 	\item \textbf{Query Handler} \\
@@ -723,7 +721,7 @@ To make the whole workflow reproducible, every single component have to be ident
 \end{itemize}
 
 \section{Query Handler}\label{Design:Data Identification}
-The input data of the processing is crucial for the outcome of the job execution. Even though the process graph already contains an identifier of the input data, unique for the specific back end, internal changes to the data set might not result in a new identifier. So jobs called later in time might use another version of the input data than the previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying data identification. It is assumed that the back ends preserve the data as described in Section \ref{Data Identification}. The Query Handler is the module where the data persistence is implemented and depends highly on the structure and architecture of the back end. Therefore, no common definitions can be made for all back ends in this section. In Chapter \ref{Implementation} there is a fully implemented solution at the EODC back end. The input data is represented in the context model by the following element: 
+The input data of the processing is crucial for the outcome of the job execution. Even though the process graph already contains an identifier of the input data, unique for the specific back end, internal changes to the data set might not result in a new identifier. So jobs called later in time might use another version of the input data than previous jobs. To prevent this the input data has to be persisted according to the 14 steps of data provenance defined by the RDA \cite{rauber2016identification}. Every back end is responsible for applying data identification. It is assumed that the back ends preserve the data as described in Section \ref{Data Identification}. The Query Handler is the module where the data persistence is implemented and depends highly on the structure and architecture of the back end. Therefore, no common definitions can be made for all back ends in this section. In Chapter \ref{Implementation} there is a fully implemented solution at the EODC back end. The input data is represented in the context model by the following element: 
 
 \begin{enumerate}[(a)]
 \item \textbf{Input data persistent identifier} \\
@@ -734,18 +732,17 @@ The input data of the processing is crucial for the outcome of the job execution
 The aim of this section is to describe the job execution capturing and a description of data that shall be captured. The meta-data provided by the job capturing can be categorized in static and dynamic data, where static data is defined as not dependent on job properties and dynamic data is defined as job dependent information. In the following two sections the static data (in this thesis called back end provenance) and dynamic data (in this thesis called job dependent provenance) are further described.     
 
 \subsection{Back end provenance}\label{Design:Back end provenance}
-The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent of a job execution, so it does not change through job executions, regardless of how many jobs were processed. It can only change from inside of the back end by their maintainers. The earth observation community has a great variety of different back end providers with very distinct setups. The challenge of this part of the design is to make it simple and generic. Data captured in this part of the context model is not meant to be shown to the user directly, because of security issues.  The context model elements of the back end environment are specified with a "B" in the beginning for readability reasons. Elements of the job dependent context model are specified with a "J" in the beginning. The following meta-data is suggested for the back end provenance:
-\\ \\
+The scope of this part of the context model is to get the static environment of where the job execution at the back end takes place. It contains the provenance data that is independent of a job execution, so it does not change through job executions, regardless of how many jobs were processed. It can only change from inside of the back end by their maintainers. The earth observation community has a great variety of different back end providers with very distinct setups. The challenge of this part of the design is to make it simple and generic. Data captured in this part of the context model is not meant to be shown to the user directly, because of security issues. The following meta-data is suggested for the back end provenance:
 
 \begin{enumerate}[(A)]
 	\item \textbf{Code identification} \\
-	Every earth observation back end has to provide an identifier for the used code. Therefore, a version control system has to be applied to the running services. If back end is open source, it can provide a GitHub repository were the used code is stored and publicly available. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends. In this case the information is added to the back end provenance by saving the git repository URL, the used commit identifier and local changes to the repository. If the back end is not open source a local or secure version control repository has to be implemented to keep track of the different code versions. 
+	Every earth observation back end has to provide an identifier for the used code. Therefore, a version control system has to be applied to the running services. If the back end is open source, it can provide a GitHub repository were the used code is stored and publicly available. The aim of this strategy is to get other back ends with similar settings to reuse the already working setups of the running back ends. In this case the information is added to the back end provenance by saving the git repository URL, the used commit identifier and local changes to the repository. If the back end is not open source, a local or secure version control repository has to be implemented to keep track of the different code versions. The code identifier is necessary to identify differences in the back end code and the version control system enables to jump back to versions of interest. 
 	\item \textbf{API version} \\
-	The back ends API version is the version of the interface API it currently is using. The same API calls can resolve in different results if the version of it differs, hence the API version is persisted in the context model. 
+	The back end API version is the version of the interface API it currently uses. The API defines the syntax and semantic of the communication. The same API calls can resolve in different results if the version of it differs from the original execution, hence the API version is persisted in the context model.
 	\item \textbf{Back end version} \\
-	The back end version is an identifier that gets updated on every change of the back end. This includes changes on the hardware and software, so that every change on the code identifier or the API version results in a new back end version. To provide long term stability of the capturing, it is essential to implement a tool to automatically capture the environment data and persist it in a separate back end version store. Every change on any of the previously described back end meta-data has to be detected automatically and have to result in a new back end version.    
+	The back end version is an identifier that gets updated on every change of the back end. This includes changes on the hardware and software, so that every change on the code identifier or the API version results in a new back end version. To provide long term stability of the capturing, it is essential to implement a tool to automatically capture the environment data and persist it in a separate back end version store. Every change on any of the described back end meta-data has to be detected automatically and have to result in a new back end version.    
 	\item \textbf{Publication time-stamp} \\
-	The time-stamp of when the version was accessible at the back end. The time-stamp stands for the beginning of the version of the back end. If there exists no time-stamp after that, then it is the current used version. This enables the possibility to find the version of the back end used by a job executed in the past, by only knowing the time it was executed.     
+	The time-stamp of when the version was accessible at the back end. The time-stamp stands for the beginning of a back end version. If there exists no time-stamp after that, then it is the current used version. This enables the possibility to find the version of the back end used by a job executed in the past, by only knowing the time it was executed.     
 \end{enumerate}
 
 \subsection{Job dependent environment}\label{Design:Job dependent provenance}
@@ -753,7 +750,7 @@ This section describes the job dependent provenance of the context model. The da
 The following subsections describe the single elements of the context model in more detail. 
 
 \subsubsection{Back end provenance}\label{Job:Back end provenance}
-The back end provenance described in Section \ref{Design:Back end provenance} defines the version of the code that is executed and therefore has to be added to the job context model. Over time the back end provenance will get updated so that every job need to persist a reference to the original back end configuration at the execution time. There are two solutions to achieve this. First the identifier of a specific version of the back end gets added to the context model. In this case the data of the back end environment versions have to be persisted and accessible. The second solution is to put a time-stamp of the execution into the job execution context model.
+The back end provenance described in Section \ref{Design:Back end provenance} defines the version of the code that is executed and therefore has to be added to the job context model. Over time the back end provenance will get updated so that every job need to persist a reference to the original back end version at the execution time. There are two solutions to achieve this. First the identifier of a specific version of the back end gets added to the context model. In this case the data of the back end environment versions have to be persisted and accessible. The second solution is to put a time-stamp of the execution into the job execution context model.
 
 \begin{enumerate}[(b)]
 	\item \textbf{Back end provenance / code identifier} \\
@@ -762,14 +759,14 @@ The back end provenance described in Section \ref{Design:Back end provenance} de
 
 \subsubsection{Process Environment}\label{Job:Process Data}
 This section describes the capturing of the process itself. As mentioned above the incoming process graph describes the process, but to be certain that the same process id results in the same code, the code version has to be added to the context model. To be able to identify code from different versions a source control management needs to be installed. An example of doing so is persisting the back end source code on a public platform like GitHub. The entry in the context model related to this was mentioned in Section \ref{Design:Back end provenance}.  \\
-The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. Therefore, the programming language version and the additional used libraries of it are persisted in the context model. To gain more meta-information about the processing the start time and end time can be added to the context model via timestamps. This leads to the following capturing elements in the job context model.
+The way of executing a specific process graph is not only related to the code running it, but also by the dependencies of the code. Therefore, the programming language version and the additional used libraries of it are persisted in the context model. To gain meta-information about the processing the start time and end time can be added to the context model via timestamps. This leads to the following capturing elements in the job context model.
 
 \begin{enumerate}[(a)]
 	\setcounter{enumi}{2}
 	\item \textbf{Programming language}\\
 	The programming language of the code that is used for the processing. In addition the version of the programming language has to be included in this information.
-	\item \textbf{Installed packages of the programming language}\\
-	To identify the environment of the code execution, the installed packages of the programming language shall be captured and added to the context model. The version of the packages have a high influence on the outcome, hence can be included in the context model. For example in python the installed modules are added with their versions to the context model. The information stored in this element is related to the job execution, because it depends on the work-flow of the execution, how the environment is configured, since the job execution may be done in a dynamically generated container.
+	\item \textbf{Dependencies of the programming language}\\
+	To identify the environment of the code execution, the dependencies of the programming language shall be captured and added to the context model. The version of the packages have a high influence on the outcome, hence can be included in the context model. For example in python the installed modules are added with their versions to the context model. The information stored in this element is related to the job execution, because it depends on the work-flow of the execution, how the environment is configured, since the job execution may be done in a dynamically generated container.
 	\item \textbf{Start and end time of process execution}\\
 	On the beginning of the process execution and at the end of it, a time-stamp is created. These timestamps are persisted in the context model.
 \end{enumerate}
@@ -785,28 +782,44 @@ The output data of the processing has to be captured as well to be able to compa
  
 \section{Context Model}\label{Design:Context Model}
 
-The context model is the data record that saves the provenance of a job execution. The type of storage it is persisted in, is defined by the infrastructure of the back end provider. It can be stored in a relational database or in a file-based system as a file. It has to be added to the meta-database of the back end. The back end has to persist two different types of datasets: \\
-First the back end environment dataset that saves job independent provenance and results in a back end version. The mandatory element of the back end environment is the back end version that defines the state of the back end in a specific time. The back end version need to be resolvable by a specific code version that was present in a past execution. In addition meta-data about the back end can be added. The elements ((A) - (D)) defined in Section \ref{Design:Back end provenance} are the suggestions of elements in the back end environment context model. The following list shows all of the back end environment elements: 
+The context model is the data record that saves the provenance of a job execution. The type of storage it is persisted in, is defined by the infrastructure of the back end provider. It can e.g. be stored in a relational database or in a file-based system as a file. It has to be integrated into the meta-database of the back end. The back end has to persist two different types of datasets. Figure \ref{fig:design_contextmodel} shows an overview of the elements of the back end used to run a job. In addition it shows how the context model elements are used to identify the components of the back end.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{design_context_model}
+	\caption{Overview of the back end execution components and the context model elements that identify them.}
+	\label{fig:design_contextmodel} 
+\end{figure}
+
+The back end environment dataset that saves job independent provenance and results in a back end version. The mandatory element of the back end environment is the back end version that defines the state of the back end in a specific time. The back end version need to be resolvable by a specific code version that was present in a past execution. In addition meta-data about the back end can be added. The elements ((A) - (D)) defined in Section \ref{Design:Back end provenance} are the suggestions of elements in the back end environment record. The following list recaps all of the back end environment elements: 
 
 \begin{enumerate}[(A)]
-	\item \textbf{Code identification} 
-	\item \textbf{API version} 
-	\item \textbf{Back end version} 
-	\item \textbf{Publication time-stamp} 
+	\item \textbf{Code identification} \\
+	Enables the identification of the code of a back end version.
+	\item \textbf{API version} \\
+	Enables the identification of the API version of a back end version.
+	\item \textbf{Back end version} \\ 
+	Identifies the whole back end.
+	\item \textbf{Publication time-stamp} \\ 
+	Enables the identification of a back end version at a specific time.
 \end{enumerate}
 
-The job execution context model that includes all information that is dedicated to a specific job is persisted in the context model. There are three mandatory elements in the job context model. The input data identifier has to be persisted in the context model, so that it can be identified and used in future job executions. The used version of the back end related to the execution has to be included in the context model, to be able to re-execute it with the same code in the future. The output hash has to be added to the job dependent context model, so that different results can be detected. In Section \ref{Design} the elements ((a) - (f)) are additional job specific meta-data for the context model. The following list shows the elements of the job context model: 
+The job execution context model that includes all information that is dedicated to a specific job is persisted in the context model. There are three mandatory elements in the job context model. The input data identifier has to be persisted in the context model, so that it can be identified and used in future job executions. The used version of the back end related to the execution has to be included in the context model, to be able to re-execute it with the same code in the future. The output hash has to be added to the job dependent context model, so that different results can be detected. The following list recaps the elements of the job context model described in Section \ref{Design:Job dependent provenance}: 
 
 \begin{enumerate}[(a)]
-	\item \textbf{Input data persistent identifier} 
-	\item \textbf{Back end provenance / code identifier} 
-	\item \textbf{Programming language}
-	\item \textbf{Installed packages of the programming language}
-	\item \textbf{Start and end time of process execution}
-	\item \textbf{Result hash} 
+	\item \textbf{Input data persistent identifier} \\
+	Identifies the input data of the job.
+	\item \textbf{Back end provenance / code identifier} \\
+	Identifies the back end version (C) during the execution of the job. Connects the job context model with the back end environment dataset.
+	\item \textbf{Programming language} \\
+	Identifies the programming language and version used by the job.
+	\item \textbf{Dependencies of the programming language} \\
+	Identifies the dependencies of the programming language used by the job.
+	\item \textbf{Start and end time of process execution} \\
+	Provides the start and end time of the job execution.
+	\item \textbf{Result hash} \\
+	Describes the job results for comparing it with other job results.
 \end{enumerate}
-
-
 
 \section{User Services}\label{Design:User Interface}
 
@@ -831,11 +844,10 @@ Provenance information need be provided to the user. Therefore, there have to be
 \end{enumerate}
 
 \section{User Defined Functions}\label{Design:User Defined Functions}
-This section describes a possible capturing method of User Defined Functions (UDF). UDFs are customized code written by the user that gets executed in a virtualization environment at the back end provider. In theory the user defines a docker base image and the code that should run in it. This is a black box for the back end provider, since they can not now what processes run in the docker container. Therefore, the capturing concept needs to be different then the common way of executing jobs at the back end. The code and the docker base image has to be persisted by the back end provider. In addition the timestamp of the execution, to be able to identify the back end version at the execution. This is a rather new concept in earth observation science and not implemented in the EODC back end, hence the implementation of the capturing is not part of this thesis.
-
+This section describes a possible capturing method of User Defined Functions (UDF). UDFs are customized code written by the user that gets executed in a virtualization environment at the back end provider. In theory the user defines a docker base image and the code that should run in it. This is a black box for the back end provider, since they can not know what processes run in the docker container. Therefore, the capturing concept needs to be different then the common way of executing jobs at the back end. The code and the docker base image has to be persisted by the back end provider. In addition the timestamp of the execution, to be able to identify the back end version at the execution. This is a rather new concept in earth observation science and not implemented in the EODC back end, hence the implementation of the capturing is not part of this thesis.
 
 \section{Summary}
-This chapter presented the concept of the proposed solution system. The data elements needed to be able to reproduce a job execution are presented and described. To achieve it the data identification has to be implemented according to the RDA recommendations. The back end provenance got defined by the identification of the software and the version of the back end. The job dependent environment describes the environment of the job execution information and the result hash. The meta-data of the job execution got summarized into the context model. It consists of the data needed to answer the research questions of Chapter \ref{Introduction} In addition to the data description, the needed user interfaces to provide the functionality for the users got described in the last chapter. The next chapter presents the implementation of the design of this chapter at the EODC back end.     
+This chapter presented the concept of the proposed solution system. The data elements needed to be able to reproduce a job execution are presented and described. To achieve it the data identification has to be implemented according to the RDA recommendations. The back end provenance got defined by the identification of the software and the version of the back end. The job dependent environment describes the environment of the job execution information and the result hash. The meta-data of the job execution got summarized into the context model. It consists of the data needed to answer the research questions of Chapter \ref{Introduction}. In addition to the data description, the needed user services to provide the functionality for the users got described in the last chapter. The next chapter presents the implementation of the design of this chapter at the EODC back end.     
 
 \chapter{Implementation}\label{Implementation}
 This chapter presents the EODC prototype of the concept described in Chapter \ref{Design}. The implementation consists of all suggested changes that have to be made to the OpenEO workflow including parts of the back end, core API and the client. Thus, all three parts of the OpenEO project architecture get modified in the presented solution. In the OpenEO project there is a vast amount of back ends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the back ends is used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for the purpose of this thesis. The EODC back end\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the back end part. The motivation for choosing this options is that python is the most common programming language at the contributing back ends of the OpenEO project. Both of the chosen implementations are using python as their main programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC back end driver. The resulting prototype is open source and can therefore be used by other back end providers with a similar setup.  
@@ -991,7 +1003,7 @@ Figure \ref{fig:job_context_model} shows an example context model. It consists o
 		\textbf{(a): Input data persistent identifier} & input\_data \\ \hline
 		\textbf{(b): Back end provenance / code identifier} & backend\_env \\ \hline
 		\textbf{(c): Programming language} & interpreter \\ \hline
-		\textbf{(d): Installed packages of the programming language} & code\_env \\ \hline
+		\textbf{(d): Dependencies of the programming language} & code\_env \\ \hline
 		\textbf{(e): Start and end time of the process execution} & start\_time, end\_time \\ \hline
 		\textbf{(f): Result hash} & output\_data \\ %\hline
 	%	\textbf{J7: Back end provenance} & backend\_env \\ 
@@ -1073,12 +1085,12 @@ The previous sections describe only the technical insight of the back end. This 
 	\begin{minted}{json}
 {
 "process_graph":"EQUAL",
-"interpreter":"EQUAL",
 "input_data":"EQUAL",
 "code_env":"EQUAL",
 "output_data":"EQUAL",
 "openeo_api":"EQUAL",
 "different":{
+   "interpreter":"Python 3.5",
    "job_id":"jb-47e062e4-d39c-4f7f-bc5e-aa877f039a84",
    "start_time":"2019-04-05 12:16:38.286217",
    "back_end_timestamp":"20190405121638.286217",
@@ -1096,11 +1108,11 @@ The previous sections describe only the technical insight of the back end. This 
 \item \textbf{Re-use of Input Data} \\
 	To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the process "get\_collection" as an additional filter argument named "data\_pid". Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
 \end{enumerate}
-
+\todo{Maybe add summary of changes to the EODC back end with a "killer" diagram}
 \section{Use Cases}
 This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before.
 
-\subsection{Re-Use of Input Data}\label{Implementation:Use Case1}
+\subsection{Use Case 1 – Re-Use of Input Data}\label{Implementation:Use Case1}
 The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment. The implementation of the use cases is available at GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
 
 \begin{enumerate}
@@ -1173,7 +1185,8 @@ file_list = con.get_filelist(pidA)
 		\includegraphics[width=\textwidth]{usecase1_2}
 		\caption{Screenshot of the job A landing page.}
 		\label{fig:usecase1-pid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-	\end{figure}	
+	\end{figure}
+	
 	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC back end. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the query PID information. After calling the page, the user is provided by the executed filter parameter, the dataset identifier, a description about the dataset. In addition the link to get the re-execution results of the query and the resolvable query pid is added to the page (see Figure \ref{fig:usecase1-pid}). \\
 	To gather the information about the input data directly in the python client code, the last three calls of the code block above can be used.  
 	
@@ -1215,8 +1228,8 @@ jobB.start_job()
 	\label{fig:impl_usecase1_max} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-\subsection{Capturing job dependent environments}\label{Implementation:Use Case2}
-This scenario focuses on the execution environment. It handles the need of researchers to describe the execution process. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
+\subsection{Use Case 2 – Capturing job dependent environments}\label{Implementation:Use Case2}
+This scenario focuses on the execution environment. It handles the need of researchers to describe the execution process. Section \ref{UseCase2} describes the second use case in more detail. The implementation at the EODC back end gives the users the option to gain additional meta-data about the execution. In the following the steps of the scenario are run with the implemented instance of the EODC back end.    
 
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
@@ -1266,12 +1279,13 @@ backend_version = jobA.get_backend_version()
 logging.info("Interpreter: {}".format(interpreter))
 logging.info("Code Environment: {}".format(code_env))
 logging.info("Input Data PID URL: {}".format(input_data))
-logging.info("Back End Version (commit): {}".format(backend_version["commit"]))
+logging.info("Back End Version (commit): {}"
+             .format(backend_version["commit"]))
 	\end{minted}
 	\caption{Describe jobA execution environment.}
 	\label{lst:impl_usecase2_2}
 \end{code}
-	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit used for the experiment. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
+	After the execution of the lines above, the researcher is able to get the used programming language including the version and installed packages. In addition the back end version describes the used processing code. For more transparency the researcher can link to the used GitHub repository and the commit to identify the used code. Figure \ref{fig:usecase2_2} shows the output of the logging calls. 
 	
 \end{enumerate}
 
@@ -1281,9 +1295,9 @@ logging.info("Back End Version (commit): {}".format(backend_version["commit"]))
 	\caption{Screenshot of logging output of the second Use Case.}
 	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
-\subsection{Getting differences of job executions}\label{Implementation:Use Case3}
-The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments.  
+\todo{Bild verbessern --> evtl. zu Codeblock machen !}
+\subsection{Use Case 3 – Getting differences of job executions}\label{Implementation:Use Case3}
+The last use case is focused on the users of OpenEO. It describes the need of transparency of job executions for the users. If results differ with the same job later in time, the user can access meta-data to find reasons why it happened. Other users might compare different job execution environments. Section \ref{UseCase3} describes the third use case in more detail.  
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a back end.}\\
 	The researcher A runs a job at the EODC back end with the following python client code. 
@@ -1381,10 +1395,10 @@ logging.info(diffAC)
 	\caption{Logging output of the job comparisons diffAB and diffAC.}
 	\label{fig:eva_diff} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
+\todo{Bild verbessern --> evtl. zu Codeblock machen danach Screenshot aus dem Text nehmen!}
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
-
+\todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
 \chapter{Evaluation}\label{Evaluation}
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. 
 
@@ -1411,12 +1425,22 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 	\label{Tab:eva_hardware}
 \end{table}
 
+\section{Data Identification}\label{Evaluation:dataidentification}
+\todo{Map RDA to Implementation}
 
 \section{Special Test Cases}\label{Evaluation:special}
+\todo{Change to first text then code: Always start a description explaining what’s the goal of this test and why you show it. Readers are not going to guess.}
 This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
 
-\subsection{Data Changes}\label{Evaluation:special_dataid}
+\subsection{Data Identification}\label{Evaluation:special_dataid}
 This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section.   \\
+
+\textbf{Is it possible to re-execute a query after a data set is updated?} \\
+\textbf{Is it possible to re-execute a query after a data set is updated with the original one deleted?} \\
+\textbf{Is it possible to re-execute a query after a data set is deleted?} \\
+\todo{Restructure to answer the questions so that everyone gets it -.-}
+\todo{See E-Mail for further questions e.g. EODC policy}
+
 The following steps are executed to discuss and evaluate the behavior on data changes:
 
 \begin{enumerate}
@@ -1703,7 +1727,16 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 
 Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the number of resulting files of the executed query. The last row of the table shows the mean duration over all test cases.
 The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.   
-  
+\todo{Show the whole context model and what time is needed to capture the single parts}
+\todo{Draw some plots and do basic statistics to answer (see enumeration):  Edzer wants to know how good your solution is – how would you prove that to him?}
+
+\begin{enumerate}
+	\item How much time creating a context model adds to computation?
+	\item How much time data citation components adds to computation?
+	\item Is it a constant value that is added?
+	\item If not, what does it depend on?
+\end{enumerate} 
+
 % The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range.
 %\todo{ What is the variance across several runs?}
 %\todo{Context Model: mock-up of result hash calculation possible ?}
@@ -1758,7 +1791,7 @@ FROM queryjob as t WHERE job_id = '{}';
 %\end{table}
 
 The resulting storage need of the evaluation is quite static. The mean storage of the 50 runs per test case and the average storage size of all test cases are calculated. Three parts of the implementation are storing additional information. First the context model is stored in an additional column named "context\_model" in the Job table. There is no element in the context model that can vary in size, except for the list of packages of python, which has not changed during the evaluation. This results in an additional size of 1.043 kByte for each job entry. The same occurs at the QueryJob table, which just maps the Query table and the Job table and therefore contains the needed identifiers and timestamps for creation and modification. Every record of the QueryJob table needs 0.113 kBytes of storage space. The Query data records have a varying size, because of the string length of the parameters in the original query. The remaining parts of the Query table are static in storage usage. Each Query record of the test cases needs between 1.520 kByte and 1.533 kByte storage. The original query makes up the most size needed in the Query table (e.g. 959 Bytes of 1521.432 Bytes in Testcase 18), because of the XML annotations. In summary the average additional storage needed by the reference back end per Job with a new Query entry is 2.677 kBytes. If the used query is already in the Query table, only an additional 1.043 kBytes of storage is needed by the solution. 
-
+\todo{Show the whole context model and what storage is needed to capture the single parts}
 \section{Summary}
 This chapter presented the evaluation of the implementation of Chapter \ref{Implementation} at a local machine. It includes the evaluation of the system behavior on data changes at the back end. Therefore, implementing test cases to determine, if the back end has a consistent data identification behavior. The code of the test cases are presented in this chapter and also available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/}. The usage of the query PID as input data for a different job can lead to misleading results for the user, if the original data has changed and the back end uses new data to replace the missing files. 
 In the next section of this chapter, the captured data of the job execution is discussed, by executing a test case on how an job can be executed in the same way as the original execution. The data to re-execute the job is captured, but the reproduction of the old back end is not done in an automatic manner and is up to the EODC back end provider. In the last section of this chapter, the impact of the solution on the EODC back end is evaluated. Due to the local environment of the evaluation setup, the outcome is limited to relative changes on performance, by comparing the solution with an reference back end. The solution back end has a lower impact on complex test cases, due to the high impact of the execution duration of the processing. Other test cases need up to a fifth more time for the execution. The additional storage needed by the solution per execution is almost static and can be estimated good by the back end provider. The results of this chapter lead to further discussion in the next chapter, which is the conclusion and future work of the thesis.
