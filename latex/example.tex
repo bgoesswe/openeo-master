@@ -1520,6 +1520,8 @@ This section describes situations, where data changes on the EODC back end occur
 
 \begin{enumerate}
 	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
+	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry.
+\todo{show query table}
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
@@ -1546,8 +1548,7 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\caption{Step 1: Researcher runs jobA and retrieves the result files status.}
 		\label{lst:eva_datachange_1}
 	\end{code}
-	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. Figure \ref{fig:eva_data_changes_1_query} shows the original query that got executed at the back end. It is a XML schema consisting the filter values defined in the process graph (pgA). The time stamp of the original query execution is highlighted in the figure of the query. The content of the database tables as well as query re-execution results after each execution step are available in the result folder\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/results} of the GitHub repository. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. Therefore, the "state" of the re-execution contains the value "EQUAL".
-	
+ Figure \ref{fig:eva_data_changes_1_query} shows the original query that got executed at the back end. It is a XML schema consisting the filter values defined in the process graph (pgA). The time stamp of the original query execution is highlighted in the figure of the query. The content of the database tables as well as query re-execution results after each execution step are available in the result folder\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/results} of the GitHub repository. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. Therefore, the "state" of the re-execution contains the value "EQUAL".
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=\textwidth]{eva_data_changes_1_query}
@@ -1561,12 +1562,14 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 # Update the first file of the pidA query resulting files.
 con.update_file()
 		\end{minted}
+		
 		\caption{Step 2: Update one of the pidA resulting files, but keep the original file.}
 		\label{lst:eva_datachange_2}
 	\end{code}
+\todo{show diagram of the layer between and the specific file that gets modified}
 	The "update\_file()" method is added to the python client and EODC back end to let the back end simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
 	
-	\item \textbf{Second re-execution of pidA query} \\
+	\item \textbf{Re-execution of pidA query} \\
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Get state of the resultfiles, so if they changed since 
@@ -1671,7 +1674,7 @@ file_listA["input_files"]["state"] # Returns one file entry
 	\label{lst:eva_datachange_7}
 	\end{code}	
 	The re-execution of the query pidA results in a file list without the deleted file. Since files are filtered out by the query due to the execution time-stamp, the new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" attribute consists of the list of files that replaced files that are no longer available. Figure \ref{fig:eva_data_changes_7_state} shows the content of the "state" attribute of Listing \ref{lst:eva_datachange_7}. The back end returns the most recent file version, even if there are version between the original and the most recent one available. In the result of Listing \ref{lst:eva_datachange_7} the "state" contains only the one file that replaces the original file. So users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list comes from EODC, because of the additional needed storage size it would cause. If the number of resulting files is different at a re-execution, the query gets executed without the original time-stamp filter and the result is compared to the re-execution with the original execution time-stamp. All files that are missing in the re-execution with the original execution time-stamp are added to the "state" attribute. The researcher can use this information to order older version from EODC or ESA.   
-
+\todo{Add message, which shows the files that differ}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{eva_data_changes_7_state}
@@ -1841,7 +1844,7 @@ Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the t
 The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.   
 \todo{Show the whole context model and what time is needed to capture the single parts}
 \todo{Draw some plots and do basic statistics to answer (see enumeration):  Edzer wants to know how good your solution is – how would you prove that to him?}
-
+\todo{Go into more detail at the query hash of the file list and the context result hash}
 \begin{enumerate}
 	\item How much time creating a context model adds to computation?
 	\item How much time data citation components adds to computation?
