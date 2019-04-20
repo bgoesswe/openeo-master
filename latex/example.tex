@@ -1513,61 +1513,121 @@ In Section \ref{Design:Data Identification} it is defined that the back end need
 This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
 
 \subsection{Data Identification}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section.   \\
-
-\todo{Do things like in the thesis: Improving verifyability and repeatability for data-driven workflows --> show table after the execution and after the table to see what happens...}
-\textbf{Is it possible to re-execute a query after a data set is updated?} \\
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. For each test case the first step is to run a job on the empty database to create a query Table entry. This is described in the following step: \\
 
 \begin{enumerate}
 	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
-	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry.
-\todo{show query table}
+	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id and is not modified by the solution. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry. Table \ref{Tab:eva_datachanges1} shows the state of the query table after the execution of the following python code.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
-con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
-# Choose dataset
-processes = con.get_processes()
-pgA = processes.get_collection(name="s2a_prd_msil1c")
-pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
-pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, 
-east=12.189331, north=46.905246, crs="EPSG:4326")
-# Choose processes
-pgA = processes.ndvi(pgA, nir="B08", red="B04")
-pgA = processes.min_time(pgA)
-# Create and start job A out of the process graph A (pgA)
-jobA = con.create_job(pgA.graph)
-jobA.start_job()
-# Get query PID of jobA
-pidA = jobA.get_data_pid()
-# Re-execute the query to print the used files.
-file_listA = con.get_filelist(pidA)
-# Get state of the resultfiles, so if they changed since 
-# the original execution 
-file_listA["input_files"]["state"] # Returns "EQUAL"
+		con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
+		# Choose dataset
+		processes = con.get_processes()
+		pgA = processes.get_collection(name="s2a_prd_msil1c")
+		pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
+		pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, 
+		east=12.189331, north=46.905246, crs="EPSG:4326")
+		# Choose processes
+		pgA = processes.ndvi(pgA, nir="B08", red="B04")
+		pgA = processes.min_time(pgA)
+		# Create and start job A out of the process graph A (pgA)
+		jobA = con.create_job(pgA.graph)
+		jobA.start_job()
+		# Get query PID of jobA
+		pidA = jobA.get_data_pid()
+		# Re-execute the query to print the used files.
+		file_listA = con.get_filelist(pidA)
+		# Get state of the resultfiles, so if they changed since 
+		# the original execution 
+		file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
-		\caption{Step 1: Researcher runs jobA and retrieves the result files status.}
+		\caption{Researcher runs jobA and retrieves the result files status.}
 		\label{lst:eva_datachange_1}
 	\end{code}
- Figure \ref{fig:eva_data_changes_1_query} shows the original query that got executed at the back end. It is a XML schema consisting the filter values defined in the process graph (pgA). The time stamp of the original query execution is highlighted in the figure of the query. The content of the database tables as well as query re-execution results after each execution step are available in the result folder\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/results} of the GitHub repository. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. Therefore, the "state" of the re-execution contains the value "EQUAL".
+	Figure \ref{fig:eva_data_changes_1_query} shows the original query that got executed at the back end. It is a XML schema consisting the filter values defined in the process graph (pgA). The time stamp of the original query execution is highlighted in the figure of the query. The content of the database tables as well as query re-execution results after each execution step are available in the result folder\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/results} of the GitHub repository. 
+	
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=\textwidth]{eva_data_changes_1_query}
-		\caption{Step 1: Original query of jobA at the first evaluation step.}
+		\caption{Original query of jobA at the first evaluation step.}
 		\label{fig:eva_data_changes_1_query} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 	\end{figure}
 	
+	Listing \ref{lst:eva_datachange_nq1} shows the normalized query created by the Query Handler. It contains all possible filter arguments and their values in a JSON object alphabetically sorted.
+	
+	\begin{code}
+		\begin{minted}[fontsize=\footnotesize]{text}
+		{'bands': None, 
+		'data_id': None, 
+		'derived_from': None, 
+		'extent': {'extent': {'crs': 'EPSG:4326', 'east': 12.189331, 
+		'north': 46.905246, 'south': 45.935871, 'west': 10.288696}}, 
+		'license': None, 
+		'name': 's2a_prd_msil1c', 
+		'time': {'extent': ['2017-05-01', '2017-05-31']}}
+		\end{minted}
+		\caption{Normalized query of the first query entry.}
+		\label{lst:eva_datachange_nq1}
+	\end{code}
+	
+	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query in Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. The path of each file is containing meta-data about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at EODC. The next folders define the date of the data record. The filename according to the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}, where the Nxxyy value defines the basline number, ROOO defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, so identifies products that came from the data of the same sensing time. The timestamp entry shows when the data was first available at EODC. The time of the date is not displayed at the query, since it is always at the beginning of the day, so for the first entry this means available since 8.5. 2017 at 00:00 o'clock.
+	\todo{evtl. Timestamps wieder raus tuen und extra querien wenn der Vergleich kommt...}
+	\begin{code}
+		\begin{minted}[fontsize=\footnotesize]{text}
+{'timestamp': '2017-05-08', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+{'timestamp': '2017-05-08', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+...
+		\end{minted}
+		\caption{First four resulting files of the file list.}
+		\label{lst:eva_datachange_rf1}
+	\end{code}
+
+Table \ref{Tab:eva_datachanges1} shows the content of the query table after the execution of this step. There is one entry with a new generated query pid, by the Query Handler, since there was no query entry in the database that matches the normalized hash and the result hash. 
+
+	\begin{table}[]
+		\caption{Query table after the execution of Listing \ref{lst:eva_datachange_1}}
+		\centering
+		\begin{tabular}{c|l}
+			\textbf{Column} & \textbf{Entry 1} \\ \hline
+			query\_pid & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ 
+			dataset\_pid & s2a\_prd\_msil1c  \\ 
+			original & see Figure \ref{fig:eva_data_changes_1_query}   \\
+			normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
+			norm\_hash & 0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d  \\
+			result\_hash & abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455   \\
+			updated\_at & 2019-03-31 17:36:44.613893   \\
+			meta\_data & {'result\_files': 51}  \\
+			created\_at & 2019-03-31 17:36:43.064445   \\
+		\end{tabular}
+		\label{Tab:eva_datachanges1}
+	\end{table}
+\end{enumerate}
+
+{ \large \textbf{Is it possible to re-execute a query after a data set is updated?} } \\
+
+\begin{enumerate}[2]
 	\item \textbf{Update one of the resulting files of the pidA query} \\
+The "update\_file()" method is added to the python client and EODC back end to let the back end simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Update the first file of the pidA query resulting files.
 con.update_file()
 		\end{minted}
-		
 		\caption{Step 2: Update one of the pidA resulting files, but keep the original file.}
 		\label{lst:eva_datachange_2}
 	\end{code}
 \todo{show diagram of the layer between and the specific file that gets modified}
-	The "update\_file()" method is added to the python client and EODC back end to let the back end simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
+	
 	
 	\item \textbf{Re-execution of pidA query} \\
 	\begin{code}
@@ -1621,39 +1681,12 @@ file_listC = con.get_filelist(pidC)
 	To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. 
 \end{enumerate}
 
-
 \todo{Restructure to answer the questions so that everyone gets it -.-}
 \todo{See E-Mail for further questions e.g. EODC policy}
 
-\textbf{Is it possible to re-execute a query after a data set is updated with the original one deleted?} \\
-\begin{enumerate}
-	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
-	\begin{code}
-		\begin{minted}[fontsize=\small]{python}
-con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
-# Choose dataset
-processes = con.get_processes()
-pgA = processes.get_collection(name="s2a_prd_msil1c")
-pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
-pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, east=12.189331, 
-north=46.905246, crs="EPSG:4326")
-# Choose processes
-pgA = processes.ndvi(pgA, nir="B08", red="B04")
-pgA = processes.min_time(pgA)
-# Create and start job A out of the process graph A (pgA)
-jobA = con.create_job(pgA.graph)
-jobA.start_job()
-# Get query PID of jobA
-pidA = jobA.get_data_pid()
-# Re-execute the query to print the used files.
-file_listA = con.get_filelist(pidA)
-# Get state of the resultfiles, so if they changed since 
-# the original execution 
-file_listA["input_files"]["state"] # Returns "EQUAL"
-		\end{minted}
-		\caption{Step 1: Researcher runs jobA and retrieves the result files status.}
-		\label{lst:eva_datachange_1_1}
-	\end{code}
+{ \large \textbf{Is it possible to re-execute a query after a data set is updated with the original one deleted?}} \\
+\begin{enumerate}[2]
+
 	\item \textbf{Update one of the resulting files of the pidA query and remove the original one.}\\ 
 	\begin{code}
 	\begin{minted}{python}
@@ -1701,7 +1734,7 @@ pidD = jobD.get_data_pid() # pidD != pidA
 	Listing \ref{lst:eva_datachange_8} shows the code of running a new jobD with the query PID pidA like in Step 5. Step 6 deleted one file of the query PID from the back end. After the re-execution of the query, the back end notices that the number of result files is different than the original execution. It then looks for updated files like described in Step 7 and adds the most recent version of the missing file to the query result. This leads to a new query PID for jobD, since the query result has changed.  
 \end{enumerate}
 
-\textbf{Is it possible to re-execute a query after a data set is deleted?} \\
+{ \large \textbf{Is it possible to re-execute a query after a data set is deleted?}} \\
 \todo{Answer the question}
 \todo{Update the statement about EODC according to the E-Mail of Luca Foresta}
 The test case shows how the solution behaves in update and deletion scenarios. The query PID gets updated on any changes of the result, even if it is used as input parameter for a new job. This leads to a consistent query PID. The researcher can see how the data has changed in the re-execution functionality. Note that the test case does not consist a case where a dataset got deleted without an updated dataset, since the behavior is the same as for the updated test case (see Step 6), except for an empty "state" attribute. 
