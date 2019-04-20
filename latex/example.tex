@@ -1511,9 +1511,16 @@ In Section \ref{Design:Data Identification} it is defined that the back end need
 \section{Special Test Cases}\label{Evaluation:special}
 \todo{Change to first text then code: Always start a description explaining what’s the goal of this test and why you show it. Readers are not going to guess.}
 This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
-
+\todo{Look for ?? entries}
 \subsection{Data Identification}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. For each test case the first step is to run a job on the empty database to create a query Table entry. This is described in the following step: \\
+This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview on Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. For each test case the first step is to run a job on the empty database to create a query Table entry. This is described in the following step: \\
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.4]{evaluation_data_simulation}
+	\caption{Overview of the data update simulation. It shows the extension on the data identification implementation of Figure \ref{fig:impldataid}.}
+	\label{fig:eva_data_simulation} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 \begin{enumerate}
 	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
@@ -1574,16 +1581,16 @@ This section describes situations, where data changes on the EODC back end occur
 	\todo{evtl. Timestamps wieder raus tuen und extra querien wenn der Vergleich kommt...}
 	\begin{code}
 		\begin{minted}[fontsize=\footnotesize]{text}
-{'timestamp': '2017-05-08', 
+{'timestamp': '2017-05-08 00:00:00', 
 'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
-{'timestamp': '2017-05-08',
+{'timestamp': '2017-05-08 00:00:00',
 'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
-{'timestamp': '2017-05-08', 
+{'timestamp': '2017-05-08 00:00:00', 
 'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
-{'timestamp': '2017-05-08',
+{'timestamp': '2017-05-08 00:00:00',
 'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 ...
@@ -1613,23 +1620,48 @@ Table \ref{Tab:eva_datachanges1} shows the content of the query table after the 
 	\end{table}
 \end{enumerate}
 
-{ \large \textbf{Is it possible to re-execute a query after a data set is updated?} } \\
+\subsubsection{Test Case 1: Is it possible to re-execute a query after a data set is updated?}
+%{ \large \textbf{} } \\
 
 \begin{enumerate}[2]
 	\item \textbf{Update one of the resulting files of the pidA query} \\
-The "update\_file()" method is added to the python client and EODC back end to let the back end simulate the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
+The "update\_file()" method is added to the python client and EODC back end to let the back end activate the "Data Update Simulator" shown in Figure \ref{fig:eva_data_simulation}. If it is activated it simulates the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Update the first file of the pidA query resulting files.
 con.update_file()
 		\end{minted}
-		\caption{Step 2: Update one of the pidA resulting files, but keep the original file.}
+		\caption{Update one of the pidA resulting files, but keep the original file.}
 		\label{lst:eva_datachange_2}
 	\end{code}
-\todo{show diagram of the layer between and the specific file that gets modified}
-	
+
+Listing \ref{lst:eva_datachange_fl2} shows the resulting file list with the activated "Data Update Simulator". There is now an additional file with an "\_new" in the end of the path, but with the same meta-data in the file path and name as the first file. In addition the creation timestamp is set to the time of the execution of Listing \ref{lst:eva_datachange_2}.
+
+	\begin{code}
+	\begin{minted}[fontsize=\small]{text}
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
+{'timestamp': '2019-03-31 17:44:43', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+...
+ 	\end{minted}
+	\caption{Modified file list output of the "Data Update Simulator" component.}
+	\label{lst:eva_datachange_fl2}
+\end{code}
 	
 	\item \textbf{Re-execution of pidA query} \\
+In Listing \ref{lst:eva_datachange_3} the query with the identifier pidA gets re-executed, after the activation of the "Data Update Simulator" component in the previous step. The second query re-execution results in the same file list as the first (see Listing \ref{lst:eva_datachange_rf3}), since the old file is still available and the updated file is filtered out by the time-stamp of the original execution (see time-stamp element in the query at Figure \ref{fig:eva_data_changes_1_query}). The query contains the execution time-stamp of the original query and filters every file out of the result list that has a creation time-stamp after that.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Get state of the resultfiles, so if they changed since 
@@ -1637,12 +1669,32 @@ con.update_file()
 file_listA = con.get_filelist(pidA)
 file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
-		\caption{Step 3: Re-execute pidA query after one file got updated.}
+		\caption{Re-execute pidA query after one file got updated.}
 		\label{lst:eva_datachange_3}
 	\end{code}
-	The second query re-execution results in the same file list as the first, since the old file is still available and the updated file is filtered out by the time-stamp of the original execution (see time-stamp in the query at Figure \ref{fig:eva_data_changes_1_query}). The query contains the execution time-stamp of the original query and filters every file out of the result that has a creation time-stamp after that. 
+
+	\begin{code}
+	\begin{minted}[fontsize=\footnotesize]{text}
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+...
+	\end{minted}
+	\caption{First four resulting files of the file list.}
+	\label{lst:eva_datachange_rf3}
+\end{code}
 	
 	\item \textbf{Run duplicate of jobA named jobB} \\
+In the first line of Listing \ref{lst:eva_datachange_4} the process graph of jobA is used to create a new job instance named jobB. Therefore, jobB uses the same process graph as jobA, but gets executed after the update of the file in the second step. That is why jobB gets a new query PID and the resulting files differ, by the updated file. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Reuse the defined process Graph (pgA) from jobA at Step 1 to create jobB
@@ -1657,8 +1709,9 @@ file_listB = con.get_filelist(pidB)
 		\caption{Step 4: Create jobB, which uses the same process graph as jobA.}
 		\label{lst:eva_datachange_4}
 	\end{code}
-	In the first line of Listing \ref{lst:eva_datachange_4} the process graph of jobA is used to create a new job instance named jobB. Therefore, jobB uses the same process graph as jobA, but gets executed after the update of the file in Step 2. That is why jobB gets a new query PID and the resulting files differ, by the updated file. 
+	
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobC}\\
+To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Take input data of job A by using the input data pid A of job A
@@ -1678,7 +1731,6 @@ file_listC = con.get_filelist(pidC)
 		\caption{Step 5: Create job C, which uses the input data identified by pidA.}
 		\label{lst:eva_datachange_5}
 	\end{code}
-	To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. 
 \end{enumerate}
 
 \todo{Restructure to answer the questions so that everyone gets it -.-}
