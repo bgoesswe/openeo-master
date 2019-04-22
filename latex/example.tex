@@ -1505,7 +1505,8 @@ In Section \ref{Design:Data Identification} it is defined that the back end need
 	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
 	These recommendations are not implemented at the moment, since there are no migrations planned at the moment.
 \end{itemize}
-
+\todo{See E-Mail for further questions e.g. EODC policy}
+\todo{Update the statement about EODC according to the E-Mail of Luca Foresta}
 \todo{Read through RDA mapping --> maybe move to Implementation ?}
 
 \section{Special Test Cases}\label{Evaluation:special}
@@ -1601,11 +1602,23 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 
 Table \ref{Tab:eva_datachanges1} shows the content of the query table after the execution of this step. There is one entry with a new generated query pid, by the Query Handler, since there was no query entry in the database that matches the normalized hash and the result hash. 
 
+%\begin{table}[]
+%	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_1}}
+%	\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+%		\hline	\textbf{query\_pid} & \textbf{dataset\_pid} & \textbf{original} & \textbf{normalized} & \textbf{norm\_hash} & \textbf{result\_hash} &
+%		\textbf{updated\_at} & \textbf{meta\_data} &   
+%		\textbf{created\_at} \\ \hline
+%		qu-a3bbe4a0-a875-4687-bb78-9457f33134a9 & s2a\_prd\_msil1c & see Figure \ref{fig:eva_data_changes_1_query} & see Listing \ref{lst:eva_datachange_nq1} & 0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d & abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455 & 2019-03-31 17:36:44.613893 & {'result\_files': 51} & 2019-03-31 17:36:43.064445 \\ \hline
+%	\end{tabular}
+%	\label{Tab:eva_datachanges1}
+%\end{table}
+
 	\begin{table}[]
 		\caption{Query table after the execution of Listing \ref{lst:eva_datachange_1}}
 		\centering
-		\begin{tabular}{c|l}
-			\textbf{Column} & \textbf{Entry 1} \\ \hline
+		\begin{tabular}{|r|l|}
+			\hline \multicolumn{2}{|c|}{\textbf{Query pidA}} \\
+			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
 			query\_pid & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ 
 			dataset\_pid & s2a\_prd\_msil1c  \\ 
 			original & see Figure \ref{fig:eva_data_changes_1_query}   \\
@@ -1614,16 +1627,17 @@ Table \ref{Tab:eva_datachanges1} shows the content of the query table after the 
 			result\_hash & abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455   \\
 			updated\_at & 2019-03-31 17:36:44.613893   \\
 			meta\_data & {'result\_files': 51}  \\
-			created\_at & 2019-03-31 17:36:43.064445   \\
+			created\_at & 2019-03-31 17:36:43.064445   \\ \hline
 		\end{tabular}
 		\label{Tab:eva_datachanges1}
 	\end{table}
 \end{enumerate}
 
-\subsubsection{Test Case 1: Is it possible to re-execute a query after a data set is updated?}
+\subsubsection{Test Case 1: Is it possible to re-execute a query after a data file is updated?}	\label{Tab:eva_datachanges_tc1}
 %{ \large \textbf{} } \\
 
-\begin{enumerate}[2]
+\begin{enumerate}
+	\setcounter{enumi}{+1}
 	\item \textbf{Update one of the resulting files of the pidA query} \\
 The "update\_file()" method is added to the python client and EODC back end to let the back end activate the "Data Update Simulator" shown in Figure \ref{fig:eva_data_simulation}. If it is activated it simulates the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
 	\begin{code}
@@ -1661,7 +1675,7 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 \end{code}
 	
 	\item \textbf{Re-execution of pidA query} \\
-In Listing \ref{lst:eva_datachange_3} the query with the identifier pidA gets re-executed, after the activation of the "Data Update Simulator" component in the previous step. The second query re-execution results in the same file list as the first (see Listing \ref{lst:eva_datachange_rf3}), since the old file is still available and the updated file is filtered out by the time-stamp of the original execution (see time-stamp element in the query at Figure \ref{fig:eva_data_changes_1_query}). The query contains the execution time-stamp of the original query and filters every file out of the result list that has a creation time-stamp after that.
+In Listing \ref{lst:eva_datachange_3} the query with the identifier pidA gets re-executed, after the activation of the "Data Update Simulator" component in the previous step. The second query re-execution results in the same file list as the first (see Listing \ref{lst:eva_datachange_rf3}), since the old file is still available and the updated file is added after the execution time-stamp of the original execution (see time-stamp element in the query at Figure \ref{fig:eva_data_changes_1_query}). The query contains the execution time-stamp of the original query and filters every file out of the result that has a creation time-stamp after that.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Get state of the resultfiles, so if they changed since 
@@ -1694,7 +1708,7 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 \end{code}
 	
 	\item \textbf{Run duplicate of jobA named jobB} \\
-In the first line of Listing \ref{lst:eva_datachange_4} the process graph of jobA is used to create a new job instance named jobB. Therefore, jobB uses the same process graph as jobA, but gets executed after the update of the file in the second step. That is why jobB gets a new query PID and the resulting files differ, by the updated file. 
+Listing \ref{lst:eva_datachange_4} shows the execution of a second job using the same process graph as jobA. In the first line of Listing \ref{lst:eva_datachange_4} the process graph of jobA (defined in Listing \ref{lst:eva_datachange_1}) is used to create a new job instance named jobB. Therefore, jobB uses the same process graph as jobA, but gets executed after the update of the file. This leads to a different file list, where the original and the new file is in the query result file list (see Listing \ref{lst:eva_datachange_fl3}).
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Reuse the defined process Graph (pgA) from jobA at Step 1 to create jobB
@@ -1709,9 +1723,59 @@ file_listB = con.get_filelist(pidB)
 		\caption{Step 4: Create jobB, which uses the same process graph as jobA.}
 		\label{lst:eva_datachange_4}
 	\end{code}
-	
+
+	\begin{code}
+	\begin{minted}[fontsize=\small]{text}
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
+{'timestamp': '2019-03-31 17:44:43', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+...
+	\end{minted}
+	\caption{Resulting file list of jobB.}
+	\label{lst:eva_datachange_fl3}
+\end{code}
+
+Table \ref{Tab:eva_datachanges3} shows the Query table of the meta-database after the execution of Listing \ref{lst:eva_datachange_4}. There is now an additional query entry. In the table the important differences are marked red. There is a different result hash, since the number of result files has increased (see Listing \ref{lst:eva_datachange_fl3}). The normalized query is still the same, but since the result of the query changed a new query pid is generated. 
+
+	\begin{table}[]
+	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}}
+	\centering
+	\begin{tabular}{|r|l|}
+		\hline \multicolumn{2}{|c|}{\textbf{Query pidA (full entry in Table \ref{Tab:eva_datachanges1})}} \\
+		\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
+		query\_pid & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
+		norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
+		result\_hash & {\color{red}abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455}   \\
+		meta\_data & {'result\_files': 51}  \\
+		\hline \multicolumn{2}{|c|}{\textbf{Query pidB}} \\
+		\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
+		query\_pid & { \color{red} qu-23f5a313-e804-4faa-aa33-60ed1ac69e2d}  \\ 
+		dataset\_pid & s2a\_prd\_msil1c  \\ 
+		original & see Figure \ref{fig:appendix_pidB} in the appendix \\
+		normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
+		norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
+		result\_hash & {\color{red}28088d113de19ce037e9651a64bae3f7957822665f17d8f4e2c7e6b2cf4250b3 }  \\
+		updated\_at & 2019-03-31 18:01:49.214956   \\
+		meta\_data & {\color{red}'result\_files': 52}  \\
+		created\_at & 2019-03-31 18:01:47.695042   \\ \hline
+	\end{tabular}
+	\label{Tab:eva_datachanges3}
+\end{table}
+
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobC}\\
-To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. 
+To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. Therefore, the Query table is still in the state of Table \ref{Tab:eva_datachanges3}. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Take input data of job A by using the input data pid A of job A
@@ -1728,46 +1792,93 @@ file_listC = con.get_filelist(pidC)
 # Compare resulting files with the original execution of jobA
 (file_listA == file_listC) # Returns True
 		\end{minted}
-		\caption{Step 5: Create job C, which uses the input data identified by pidA.}
+		\caption{Create job C, which uses the input data identified by pidA.}
 		\label{lst:eva_datachange_5}
 	\end{code}
 \end{enumerate}
 
-\todo{Restructure to answer the questions so that everyone gets it -.-}
-\todo{See E-Mail for further questions e.g. EODC policy}
+Table \ref{Tab:eva_datachanges4} presents the mapping between the executed jobs and the input data query pid of Test Case 1. The result seems consistent if files are updated at the back end. Jobs that used the original query pid as input data, also have used the data defined by the pid, even after the update, since the original file was still available. The current way of reproducing a job in OpenEO, by applying the same process graph (jobB), fails since the resulting files differ from the original execution (jobA). The time-stamp information for the filtering is missing. Hence,  the input data of jobB result in a different query pid.     
 
-{ \large \textbf{Is it possible to re-execute a query after a data set is updated with the original one deleted?}} \\
-\begin{enumerate}[2]
+	\begin{table}[]
+	\caption{Resulting mapping of the jobs and the used query pid of Test Case 1.}
+	\centering
+	\begin{tabular}{|r|l|}
+		\hline \multicolumn{1}{|c|}{\textbf{Job}}  &  \multicolumn{1}{c|}{\textbf{Query PID}} \\ \hline
+		jobA & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ 
+		jobB & qu-23f5a313-e804-4faa-aa33-60ed1ac69e2d \\
+		jobC & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ \hline
+	\end{tabular}
+	\label{Tab:eva_datachanges4}
+\end{table}
 
+\subsubsection{Test Case 2: Is it possible to re-execute a query after a data file is updated with the original one deleted?}
+
+\begin{enumerate}
+	\setcounter{enumi}{+1}
 	\item \textbf{Update one of the resulting files of the pidA query and remove the original one.}\\ 
+	The method in Listing \ref{lst:eva_datachange_6} updates the first file of the query result as described in Section \ref{Tab:eva_datachanges_tc1} and removes the original file. Listing \ref{lst:eva_datachange_fl4} shows the updated file list, where the first entry replaced the original first file (see Listing \ref{lst:eva_datachange_fl2}).
 	\begin{code}
 	\begin{minted}{python}
 con.update_file(deleted=True)
 	\end{minted}
-	\caption{Step 6: Update one of the pidA resulting files and delete the original file.}
+	\caption{Update one of the pidA resulting files and delete the original file.}
 	\label{lst:eva_datachange_6}
 	\end{code}
-	The method in Listing \ref{lst:eva_datachange_6} updates the first file of the query result as described in Step 2 and removes the original file.  
+
+\begin{code}
+	\begin{minted}[fontsize=\small]{text} 
+	{'timestamp': '2019-03-31 17:44:43', 
+	'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+	S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
+	{'timestamp': '2017-05-08 00:00:00',
+	'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+	S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+	{'timestamp': '2017-05-08 00:00:00', 
+	'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+	S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+	{'timestamp': '2017-05-08 00:00:00',
+	'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+	S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+	...
+	\end{minted}
+	\caption{Modified file list output of the "Data Update Simulator" component, by removing the original file from the list.}
+	\label{lst:eva_datachange_fl4}
+\end{code}	
+	
 	\item \textbf{Get File-list of pidA}\\ 
+The re-execution of the query pidA results in a file list without the deleted file. Since files are filtered out by the query due to the execution time-stamp, the new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" attribute consists of the list of files that replaced files that are no longer available. Listing \ref{lst:eva_datachange_state} shows the content of the "state" attribute of Listing \ref{lst:eva_datachange_7}. The back end returns the most recent file version, even if there are versions between the original and the most recent file available. In the result of Listing \ref{lst:eva_datachange_7} the "state" contains only the one file that replaces the original file. So users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list comes from EODC, because of the additional needed storage size it would cause and the rare occasion of an data update. If the number of resulting files is different at a re-execution, the query gets executed without the original time-stamp filter and the result is compared to the re-execution with the original execution time-stamp. All files that are missing in the re-execution with the original execution time-stamp are added to the "state" attribute. The researcher can use the identifying file path to order older version from EODC or ESA.   
 	\begin{code}
 	\begin{minted}[fontsize=\small]{python}
 # re-execute query and get the resulting file list from the back end
 file_listA = con.get_filelist(pidA)
+# Stdout: Warning: The resulting file list changed from the original query
+# execution! Look into the "state" attribute to see the list of files that
+# have changed. 
 file_listA["input_files"]["state"] # Returns one file entry
 	\end{minted}
-	\caption{Step 7: Re-execute pidA query after one file got updated and the old version got erased.}
+	\caption{Re-execute pidA query after one file got updated and the old version got erased.}
 	\label{lst:eva_datachange_7}
 	\end{code}	
-	The re-execution of the query pidA results in a file list without the deleted file. Since files are filtered out by the query due to the execution time-stamp, the new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" attribute consists of the list of files that replaced files that are no longer available. Figure \ref{fig:eva_data_changes_7_state} shows the content of the "state" attribute of Listing \ref{lst:eva_datachange_7}. The back end returns the most recent file version, even if there are version between the original and the most recent one available. In the result of Listing \ref{lst:eva_datachange_7} the "state" contains only the one file that replaces the original file. So users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list comes from EODC, because of the additional needed storage size it would cause. If the number of resulting files is different at a re-execution, the query gets executed without the original time-stamp filter and the result is compared to the re-execution with the original execution time-stamp. All files that are missing in the re-execution with the original execution time-stamp are added to the "state" attribute. The researcher can use this information to order older version from EODC or ESA.   
-\todo{Add message, which shows the files that differ}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{eva_data_changes_7_state}
-	\caption{Step 1: State of the re-execution of pidA at the 7th evaluation step.}
-	\label{fig:eva_data_changes_7_state} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+	
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{eva_data_changes_7_state}
+%	\caption{Step 1: State of the re-execution of pidA at the 7th evaluation step.}
+%	\label{fig:eva_data_changes_7_state} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
+
+\begin{code}
+	\begin{minted}[fontsize=\small]{text} 
+[{'timestamp': '2019-03-31 17:44:43', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/24/
+ S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new.zip'}]
+	\end{minted}
+	\caption{List of files that replaced original files of the query result.}
+	\label{lst:eva_datachange_state}
+\end{code}
 
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobD}\\
+	Listing \ref{lst:eva_datachange_8} shows the code of running a new jobD with the query PID pidA. The code is executed after one file is deleted from the resulting file list of pidA. After the creation of the job, the back end notices that the number of result files is different than the original execution of the input query pid. Therefore, a warning message is displayed into the console of the researcher. If the job gets then started nevertheless, the back end looks for updated files like described in the previous step and adds the most recent version of the missing file to the query result. This leads to a new query PID for jobD, since the query result has changed. Table \ref{Tab:eva_datachanges5} show the query table status after the execution. The second query entry has a different result hash, since one file changed and therefore, gets a new query pid.  
 	\begin{code}
 	\begin{minted}[fontsize=\small]{python}
 # Take input data of job A by using the input data pid A of job A
@@ -1777,19 +1888,48 @@ pgD = processes.ndvi(pgC, nir="B08", red="B04")
 pgD = processes.min_time(pgD)
 # Create and start Job D
 jobD = con.create_job(pgD.graph)
+# Stdout: Warning: The resulting file list changed from the original query
+# execution! Look into the "state" attribute to see the list of files that
+# have changed. 
 jobD.start_job()
 pidD = jobD.get_data_pid() # pidD != pidA
 	\end{minted}
-	\caption{Step 8: Run duplicate of jobA, by using the data PID of jobA named jobD.}
+	\caption{Run duplicate of jobA, by using the data PID of jobA named jobD.}
 	\label{lst:eva_datachange_8}
 	\end{code}
-	Listing \ref{lst:eva_datachange_8} shows the code of running a new jobD with the query PID pidA like in Step 5. Step 6 deleted one file of the query PID from the back end. After the re-execution of the query, the back end notices that the number of result files is different than the original execution. It then looks for updated files like described in Step 7 and adds the most recent version of the missing file to the query result. This leads to a new query PID for jobD, since the query result has changed.  
+
+	\begin{table}[]
+	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}}
+	\centering
+	\begin{tabular}{|r|l|}
+		\hline \multicolumn{2}{|c|}{\textbf{Query pidA (full entry in Table \ref{Tab:eva_datachanges1})}} \\
+		\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
+		query\_pid & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
+		norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
+		result\_hash & {\color{red}abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455}   \\
+		meta\_data & {'result\_files': 51}  \\
+		\hline \multicolumn{2}{|c|}{\textbf{Query pidD}} \\
+		\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
+		query\_pid & { \color{red} qu-3544aeae-cd24-4b6d-ad34-0d674c2a400f}  \\ 
+		dataset\_pid & s2a\_prd\_msil1c  \\ 
+		original & see Figure \ref{fig:appendix_pidD} in the appendix \\
+		normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
+		norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
+		result\_hash & {\color{red}28088d113de19ce037e9651a64bae3f7957822665f17d8f4e2c7e6b2cf4250b3}  \\
+		updated\_at & 2019-03-31 18:10:26.931578   \\
+		meta\_data & {'result\_files': 51}  \\
+		created\_at & 2019-03-31 18:10:25.46402   \\ \hline
+	\end{tabular}
+	\label{Tab:eva_datachanges5}
+\end{table}
 \end{enumerate}
 
-{ \large \textbf{Is it possible to re-execute a query after a data set is deleted?}} \\
-\todo{Answer the question}
-\todo{Update the statement about EODC according to the E-Mail of Luca Foresta}
-The test case shows how the solution behaves in update and deletion scenarios. The query PID gets updated on any changes of the result, even if it is used as input parameter for a new job. This leads to a consistent query PID. The researcher can see how the data has changed in the re-execution functionality. Note that the test case does not consist a case where a dataset got deleted without an updated dataset, since the behavior is the same as for the updated test case (see Step 6), except for an empty "state" attribute. 
+The result of the second Test Case shows how the back end behaves on data updated that replace the original data. If the file is deleted, the researcher gets a warning message and a list of files that are replacing the original files. Since the path of the file identifies the date and tile that was used, the researcher ask EODC about the concrete changed file. On creation of the new jobD that uses the input data identifier pidA, the user gets notified that the result files changed, before the execution happens. Then the user can decide to start the job anyway or contact EODC about the modified files.
+
+\subsubsection{Test Case 3: Is it possible to re-execute a query after a data file is deleted}
+The deletion of a file without a new file replacing it, is not within the policies of EODC, since they would delete their range on available data. If this happens nevertheless, there is in the current solution no possibility to get the exact files that were removed. The number of result files in the meta\_data column show how many files changed. To achieve the knowledge of missing files, the whole result files need to be added to the query table, so that it can be compared with the result of the re-execution. In the current solution EODC needs to be notified about the missing files and they have to look up what files were deleted to identify the original files and copy them from ESA again. 
+%The researcher can query the data at ESA directly with the same filter arguments and can compare the resulting file list with the ones from the re-execution of EODC, but the solution is not doing it automatically.  
+
 %The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
 
 \subsection{Job Capturing}\label{Evaluation:special_jobcap}
@@ -2041,7 +2181,21 @@ In the solution of this work the meta-data is captured for identifying how jobs 
 So far only the capturing of the whole process chain, including input and output data, are described. The general idea (presented in Section \ref{Implementation:Job dependent provenance}) of the job dependent provenance capturing is to capture the input data of the process graph, the whole process graph and the output of the process graph. This is a common concept the back end providers can agree on, since it is not affecting the back end providers implementations much. Moreover, it is capable of giving the user a simple overview of how the results are generated and what the differences between job executions are.To make the comparison of different execution behaviors more informative, the granularity of the capturing can be improved. \\
 Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but every data state in between of each process. For every process in the process graph the input data, the output data and the code executing the process get captured. This makes it easier for users to see where in the process chain the execution actually produced different results.\\ The concept leads to higher implementation and execution costs at the back end side. The effect on the performance of the execution is higher than the common context model. Whether the implementation of such a granularity is  doable is highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of single processes are not distinguishable. If a back end can support it, the granularity can be finer. In an extreme example, the data and code can be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
-%\chapter{Appendix}\label{Appendix}
+\chapter{Appendix}\label{Appendix}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{appendix_pidB}
+	\caption{Original query of jobB from the evaluation in Section \ref{Evaluation:special_dataid}.}
+	\label{fig:appendix_pidB} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{appendix_pidD}
+	\caption{Original query of jobD from the evaluation in Section \ref{Evaluation:special_dataid}.}
+	\label{fig:appendix_pidD} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 %\section{Papers for Evaluation}
 
