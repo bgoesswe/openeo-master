@@ -1528,26 +1528,26 @@ This section describes situations, where data changes on the EODC back end occur
 	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id and is not modified by the solution. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry. Table \ref{Tab:eva_datachanges1} shows the state of the query table after the execution of the following python code.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
-		con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
-		# Choose dataset
-		processes = con.get_processes()
-		pgA = processes.get_collection(name="s2a_prd_msil1c")
-		pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
-		pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, 
-		east=12.189331, north=46.905246, crs="EPSG:4326")
-		# Choose processes
-		pgA = processes.ndvi(pgA, nir="B08", red="B04")
-		pgA = processes.min_time(pgA)
-		# Create and start job A out of the process graph A (pgA)
-		jobA = con.create_job(pgA.graph)
-		jobA.start_job()
-		# Get query PID of jobA
-		pidA = jobA.get_data_pid()
-		# Re-execute the query to print the used files.
-		file_listA = con.get_filelist(pidA)
-		# Get state of the resultfiles, so if they changed since 
-		# the original execution 
-		file_listA["input_files"]["state"] # Returns "EQUAL"
+con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
+# Choose dataset
+processes = con.get_processes()
+pgA = processes.get_collection(name="s2a_prd_msil1c")
+pgA = processes.filter_daterange(pgA, extent=["2017-05-01", "2017-05-31"])
+pgA = processes.filter_bbox(pgA, west=10.288696, south=45.935871, 
+east=12.189331, north=46.905246, crs="EPSG:4326")
+# Choose processes
+pgA = processes.ndvi(pgA, nir="B08", red="B04")
+pgA = processes.min_time(pgA)
+# Create and start job A out of the process graph A (pgA)
+jobA = con.create_job(pgA.graph)
+jobA.start_job()
+# Get query PID of jobA
+pidA = jobA.get_data_pid()
+# Re-execute the query to print the used files.
+file_listA = con.get_filelist(pidA)
+# Get state of the resultfiles, so if they changed since 
+# the original execution 
+file_listA["input_files"]["state"] # Returns "EQUAL"
 		\end{minted}
 		\caption{Researcher runs jobA and retrieves the result files status.}
 		\label{lst:eva_datachange_1}
@@ -1565,14 +1565,14 @@ This section describes situations, where data changes on the EODC back end occur
 	
 	\begin{code}
 		\begin{minted}[fontsize=\footnotesize]{text}
-		{'bands': None, 
-		'data_id': None, 
-		'derived_from': None, 
-		'extent': {'extent': {'crs': 'EPSG:4326', 'east': 12.189331, 
-		'north': 46.905246, 'south': 45.935871, 'west': 10.288696}}, 
-		'license': None, 
-		'name': 's2a_prd_msil1c', 
-		'time': {'extent': ['2017-05-01', '2017-05-31']}}
+{'bands': None, 
+'data_id': None, 
+'derived_from': None, 
+'extent': {'extent': {'crs': 'EPSG:4326', 'east': 12.189331, 
+'north': 46.905246, 'south': 45.935871, 'west': 10.288696}}, 
+'license': None, 
+'name': 's2a_prd_msil1c', 
+'time': {'extent': ['2017-05-01', '2017-05-31']}}
 		\end{minted}
 		\caption{Normalized query of the first query entry.}
 		\label{lst:eva_datachange_nq1}
@@ -1750,7 +1750,7 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 Table \ref{Tab:eva_datachanges3} shows the Query table of the meta-database after the execution of Listing \ref{lst:eva_datachange_4}. There is now an additional query entry. In the table the important differences are marked red. There is a different result hash, since the number of result files has increased (see Listing \ref{lst:eva_datachange_fl3}). The normalized query is still the same, but since the result of the query changed a new query pid is generated. 
 
 	\begin{table}[]
-	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}}
+	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}. Important elements are highlighted blue if they are the same and red if they are different.}
 	\centering
 	\begin{tabular}{|r|l|}
 		\hline \multicolumn{2}{|c|}{\textbf{Query pidA (full entry in Table \ref{Tab:eva_datachanges1})}} \\
@@ -1899,7 +1899,7 @@ pidD = jobD.get_data_pid() # pidD != pidA
 	\end{code}
 
 	\begin{table}[]
-	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}}
+	\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}. Important elements are highlighted blue if they are the same and red if they are different.}
 	\centering
 	\begin{tabular}{|r|l|}
 		\hline \multicolumn{2}{|c|}{\textbf{Query pidA (full entry in Table \ref{Tab:eva_datachanges1})}} \\
@@ -1941,6 +1941,7 @@ The aim of the implementation is to capture enough data to make it possible to r
 
 \begin{enumerate}
 	\item \textbf{Run Job A, which creates query pidA and job\_idA.} \\
+	The first step shows the definition, creation and execution of jobA. The last two lines show how the version can be retrieved from the back end. The "con.version()" method returns the current version of the back end, but can also take a time-stamp as a parameter to get the version of that time. The "jobA.get\_backend\_version()" method returns the version of the back end during the execution of jobA. Both version are at the end of Step 1 identical. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 import openeo
@@ -1974,11 +1975,10 @@ versionA = jobA.get_backend_version()
 	\end{minted}
 	\caption{Step 1: Version of the jobA execution version\_old.}
 	\label{lst:eva_jobcapture_1_1}
-\end{code}
-
-	The first step shows the definition, creation and execution of jobA. The last two lines show how the version can be retrieved from the back end. The "con.version()" method returns the current version of the back end, but can also take a time-stamp as a parameter to get the version of that time. The "jobA.get\_backend\_version()" method returns the version of the back end during the execution of jobA. Both version are at the end of Step 1 identical.  
+\end{code} 
 
 	\item \textbf{Publish job\_idA and pidA.} \\
+	The researcher can get the persistent input data identifier pidA and the job identifier jobA\_id to cite the provenance of the execution. The time-stamp of the execution in the context model can be used to identify the back end version used for the calculation.
 	\begin{code}
 	\begin{minted}[fontsize=\small]{python}
 # Get input data pid of jobA 
@@ -1988,10 +1988,13 @@ jobA_id = jobA.job_id
 	\caption{Researcher gets the input data PID of jobA and the job\_id of jobA.}
 	\label{lst:eva_jobcapture_2}
 	\end{code}
-	The researcher can get the persistent input data identifier pidA and the job identifier jobA\_id to cite the provenance of the execution. The time-stamp of the execution in the context model can be used to identify the back end version used for the calculation.
+
 	\item \textbf{Update back end version} \\
 	In this step the back end gets modified slightly, by updating a python package to the requirements file of the job execution. The file gets edited by replacing the line "urllib3==1.23" with "urllib3==1.24.1". After editing the file the "git commit" command gets called. 
 	\item \textbf{Get original context of jobA} \\
+	Listing \ref{lst:eva_jobcapture_4} shows the code the researcher has to run to get the original version of the jobA execution. The variable "versionA" is containing the same version that is displayed in Listing \ref{lst:eva_jobcapture_1_1}. 
+	\item \textbf{Re-run jobA with the original version.} \\
+	To get the original version of the back end, EODC has to create a second instance of the back end. Then EODC has to check out the commit of the job execution version, by running "git checkout commit\_id" in the console, where "commit\_id" is the value of "versionA["commit"]".
 	\begin{code}
 	\begin{minted}[fontsize=\small]{python}
 import openeo
@@ -2005,9 +2008,7 @@ versionA = jobA.get_backend_version()
 	\caption{Researcher gets the original back end version of the jobA execution.}
 	\label{lst:eva_jobcapture_4}
 	\end{code}	
-	Listing \ref{lst:eva_jobcapture_4} shows the code the researcher has to run to get the original version of the jobA execution. The variable "versionA" is containing the same version that is displayed in Listing \ref{lst:eva_jobcapture_1_1}. 
-	\item \textbf{Re-run jobA with the original version.} \\
-	To get the original version of the back end, EODC has to create a second instance of the back end. Then EODC has to check out the commit of the job execution version, by running "git checkout commit\_id" in the console, where "commit\_id" is the value of "versionA["commit"]".
+
 \end{enumerate}
 
 \section{Performance and Storage Impact}\label{Evaluation:impact}
@@ -2066,7 +2067,50 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 \end{table}
 
 Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the number of resulting files of the executed query. The last row of the table shows the mean duration over all test cases.
-The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation. The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query. The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.   
+The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation.  \\
+
+\begin{itemize}
+	\item \textbf{query\_pid}
+	The query\_pid is generated by the python uuid module has a constant duration time.
+	\item \textbf{dataset\_pid}
+	The dataset\_pid is taken from the filter arguments of EODC and has a constant duration time.
+	\item \textbf{original}
+	The original query is passed by the Query Execution component of EODC, unmodified and therefore constant in duration time.
+	\item \textbf{normalized}
+	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The parsing is happening independently of the Query Handler. The sorting takes nearly constant duration time, since there are 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. So depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations. In this evaluation the there are always all filter arguments used, so it has a constant duration time and is the upper limit on duration time.  
+	\item \textbf{norm\_hash}
+	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant and the upper limit of duration time. 
+	\item \textbf{result\_hash}
+	The duration of the result hash creation is dependent on the resulting file list. It takes the most time in the query record generation and .  
+	\todo{additional analysis}
+	\item \textbf{meta\_data}
+	The meta data consists only on the number of result files. This is measured by the build in len() operator in python, which has a static performance independent on the length of a list according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}.
+	\item \textbf{created\_at and updated\_at}
+	Automatically generated by the PostgreSQL database, independent on the query and therefore constant in duration time. 
+\end{itemize}
+
+\begin{enumerate}[(a)]
+	\item \textbf{Input data persistent identifier} \\
+	The Query Handler adds the mapping of the job to the data pid, by adding a record to the QueryJob table. The duration is independent on the job complexity and has a constant performance.
+	\item \textbf{Back end provenance / code identifier} \\
+	The time-stamp of the execution identifies the back end, therefore constant in terms of performance.
+	\item \textbf{Programming language} \\
+	Independent on the complexity of the job, hence constant duration time.
+	\item \textbf{Dependencies of the programming language} \\
+	Independent on the complexity of the job, hence constant duration time.
+	\item \textbf{Start and end time of process execution} \\
+	Automatically generated by the PostgreSQL database, independent on the job and therefore constant in duration time. 
+	\item \textbf{Result hash} \\
+	Dependent on the output of the job.
+	\todo{additional analysis}
+\end{enumerate}
+
+
+
+The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query.
+
+ The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.
+   
 \todo{Show the whole context model and what time is needed to capture the single parts}
 \todo{Draw some plots and do basic statistics to answer (see enumeration):  Edzer wants to know how good your solution is – how would you prove that to him?}
 \todo{Go into more detail at the query hash of the file list and the context result hash}
@@ -2182,20 +2226,20 @@ So far only the capturing of the whole process chain, including input and output
 Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but every data state in between of each process. For every process in the process graph the input data, the output data and the code executing the process get captured. This makes it easier for users to see where in the process chain the execution actually produced different results.\\ The concept leads to higher implementation and execution costs at the back end side. The effect on the performance of the execution is higher than the common context model. Whether the implementation of such a granularity is  doable is highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of single processes are not distinguishable. If a back end can support it, the granularity can be finer. In an extreme example, the data and code can be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
 \chapter{Appendix}\label{Appendix}
+\todo{Appendix wieder hinzufügen}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{appendix_pidB}
+%	\caption{Original query of jobB from the evaluation in Section \ref{Evaluation:special_dataid}.}
+%	\label{fig:appendix_pidB} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{appendix_pidB}
-	\caption{Original query of jobB from the evaluation in Section \ref{Evaluation:special_dataid}.}
-	\label{fig:appendix_pidB} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{appendix_pidD}
-	\caption{Original query of jobD from the evaluation in Section \ref{Evaluation:special_dataid}.}
-	\label{fig:appendix_pidD} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\textwidth]{appendix_pidD}
+%	\caption{Original query of jobD from the evaluation in Section \ref{Evaluation:special_dataid}.}
+%	\label{fig:appendix_pidD} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+%\end{figure}
 
 %\section{Papers for Evaluation}
 
