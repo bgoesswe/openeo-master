@@ -1578,8 +1578,8 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\label{lst:eva_datachange_nq1}
 	\end{code}
 	
-	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query in Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. The path of each file is containing meta-data about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at EODC. The next folders define the date of the data record. The filename according to the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}, where the Nxxyy value defines the basline number, ROOO defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, so identifies products that came from the data of the same sensing time. The timestamp entry shows when the data was first available at EODC. The time of the date is not displayed at the query, since it is always at the beginning of the day, so for the first entry this means available since 8.5. 2017 at 00:00 o'clock.
-	\todo{evtl. Timestamps wieder raus tuen und extra querien wenn der Vergleich kommt...}
+	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query in Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. The path of each file is containing meta-data about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at EODC. The next folders define the date of the data record. The filename according to the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}, where the Nxxyy value defines the basline number, Rxxx defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, therefore identifies products that came from the data of the same sensing time. The time-stamp entry shows when the data was first available at EODC. The time of the date is not displayed at the query, since it is always at the beginning of the day, so for the first entry this means available since 8.5. 2017 at 00:00 o'clock.
+	
 	\begin{code}
 		\begin{minted}[fontsize=\footnotesize]{text}
 {'timestamp': '2017-05-08 00:00:00', 
@@ -2042,26 +2042,26 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 	\centering
 	\begin{tabular}{r|r|r|r|r|r}
 		
-		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Result Files} \\ \hline
-		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms & 12 \\ 
-		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms & 16 \\ 
-		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms & 4 \\ 
-		4 & 266.351 ms & 309.541 ms & 20.351 ms & 22.838 ms & 2 \\ 
-		5 & 284.324 ms & 345.757 ms & 26.081 ms & 35.351 ms & 5 \\ 
-		6 & 289.622 ms & 347.578 ms & 24.956 ms & 33.000 ms & 3 \\ 
-		7 & 270.889 ms & 327.289 ms & 25.533 ms & 30.867 ms & 3 \\ 
-		8 & 278.091 ms & 329.409 ms & 22.909 ms & 28.409 ms & 6 \\ 
-		9 & 13296.605 ms & 13604.698 ms & 259.884 ms & 48.209 ms & 2443 \\ 
-		10 & 386.684 ms & 435.895 ms & 22.289 ms & 26.921 ms & 8 \\ 
-		11 & 40512.538 ms & 40770.026 ms & 212.667 ms & 44.821 ms & 2302 \\ 
-		12 & 528.450 ms & 566.925 ms & 18.675 ms & 19.800 ms & 6 \\ 
-		13 & 1785.462 ms & 1818.641 ms & 18.410 ms & 14.769 ms & 57 \\ 
-		14 & 40461.526 ms & 40729.368 ms & 223.000 ms & 44.842 ms & 2403 \\ 
-		15 & 422.512 ms & 466.854 ms & 20.146 ms & 24.195 ms & 10 \\ 
-		16 & 44672.378 ms & 44940.022 ms & 221.889 ms & 45.756 ms & 2435 \\ 
-		17 & 753.256 ms & 787.436 ms & 15.897 ms & 18.282 ms & 51 \\ 
-		18 & 281.611 ms & 344.389 ms & 26.278 ms & 36.500 ms & 157 \\ \hline
-		\textbf{Avg.} & \textbf{8104.569 ms} & \textbf{8202.766 ms} & \textbf{67.800 ms} & \textbf{30.397 ms} & \textbf{507.333} \\ 
+		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c|}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Difference} \\ \hline
+		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms & 31.000 ms \\ 
+		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms & 50.195 ms \\ 
+		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms & 51.829 ms \\ 
+		4 & 266.351 ms & 309.541 ms & 20.351 ms & 22.838 ms & 43.190 ms \\ 
+		5 & 284.324 ms & 345.757 ms & 26.081 ms & 35.351 ms & 61.433 ms \\ 
+		6 & 289.622 ms & 347.578 ms & 24.956 ms & 33.000 ms & 57.956 ms \\ 
+		7 & 270.889 ms & 327.289 ms & 25.533 ms & 30.867 ms & 56.400 ms \\ 
+		8 & 278.091 ms & 329.409 ms & 22.909 ms & 28.409 ms & 651.318 ms \\ 
+		9 & 13296.605 ms & 13604.698 ms & 259.884 ms & 48.209 ms & 308.093 ms \\ 
+		10 & 386.684 ms & 435.895 ms & 22.289 ms & 26.921 ms & 49.211 ms \\ 
+		11 & 40512.538 ms & 40770.026 ms & 212.667 ms & 44.821 ms & 257.488 ms \\ 
+		12 & 528.450 ms & 566.925 ms & 18.675 ms & 19.800 ms & 38.475 ms \\ 
+		13 & 1785.462 ms & 1818.641 ms & 18.410 ms & 14.769 ms & 33.179 ms \\ 
+		14 & 40461.526 ms & 40729.368 ms & 223.000 ms & 44.842 ms & 267.842 ms  \\ 
+		15 & 422.512 ms & 466.854 ms & 20.146 ms & 24.195 ms & 44.342 ms \\ 
+		16 & 44672.378 ms & 44940.022 ms & 221.889 ms & 45.756 ms & 267.644 ms \\ 
+		17 & 753.256 ms & 787.436 ms & 15.897 ms & 18.282 ms & 34.180 ms \\ 
+		18 & 281.611 ms & 344.389 ms & 26.278 ms & 36.500 ms & 62.778 ms \\ \hline
+		\textbf{Avg.} & \textbf{8104.569 ms} & \textbf{8202.766 ms} & \textbf{67.800 ms} & \textbf{30.397 ms} & \textbf{131.475 ms} \\ 
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
@@ -2069,25 +2069,30 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the number of resulting files of the executed query. The last row of the table shows the mean duration over all test cases.
 The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation.  \\
 
+\subsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
+
 \begin{itemize}
-	\item \textbf{query\_pid}
-	The query\_pid is generated by the python uuid module has a constant duration time.
-	\item \textbf{dataset\_pid}
-	The dataset\_pid is taken from the filter arguments of EODC and has a constant duration time.
-	\item \textbf{original}
-	The original query is passed by the Query Execution component of EODC, unmodified and therefore constant in duration time.
-	\item \textbf{normalized}
-	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The parsing is happening independently of the Query Handler. The sorting takes nearly constant duration time, since there are 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. So depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations. In this evaluation the there are always all filter arguments used, so it has a constant duration time and is the upper limit on duration time.  
-	\item \textbf{norm\_hash}
-	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant and the upper limit of duration time. 
-	\item \textbf{result\_hash}
-	The duration of the result hash creation is dependent on the resulting file list. It takes the most time in the query record generation and .  
+	\item \textbf{query\_pid} \\
+	The query\_pid is generated by the python uuid module, hence has a constant duration time.
+	\item \textbf{dataset\_pid} \\
+	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has a constant duration time.
+	\item \textbf{original} \\
+	The original query is passed by the Query Execution component of EODC, unmodified and therefore takes constant execution time.
+	\item \textbf{normalized} \\
+	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. Depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations and computation time. In this evaluation all possible filter arguments were used for each test case, therefore it has a constant duration time.  
+	\item \textbf{norm\_hash} \\
+	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant and the upper limit of the possible duration time. 
+	\item \textbf{result\_hash} \\
+	The duration of the result hash creation is dependent on the resulting file list. It takes the most time in the query record generation and.
 	\todo{additional analysis}
-	\item \textbf{meta\_data}
+	\item \textbf{meta\_data} \\
 	The meta data consists only on the number of result files. This is measured by the build in len() operator in python, which has a static performance independent on the length of a list according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}.
-	\item \textbf{created\_at and updated\_at}
+	\item \textbf{created\_at and updated\_at} \\
 	Automatically generated by the PostgreSQL database, independent on the query and therefore constant in duration time. 
 \end{itemize}
+\todo{Performance der statischen Sachen messen}
+\todo{Graphik der dynamischen Sache erstellen / messen}
+\subsection{Performance of Context Model Creation}\label{Evaluation:impact_perf_context}
 
 \begin{enumerate}[(a)]
 	\item \textbf{Input data persistent identifier} \\
@@ -2104,10 +2109,11 @@ The execution time of the reference back end is directly depending on the spatia
 	Dependent on the output of the job.
 	\todo{additional analysis}
 \end{enumerate}
+\todo{Performance der statischen Sachen messen}
+\todo{Graphik der dynamischen Sache erstellen / messen}
 
 
 
-The performance of the Query Handler is similar between the test runs, except for the more complex test cases. The increase of execution time is due to the bigger query result set and the calculation of the SHA-256 hash of it. To see the relation between the Query Handler performance and the resulting file list, the number of files is added to Table \ref{Tab:eva_performance}. The resulting performance of the Query Handler is not increasing much on results with under 200 files. If the file amount is over 2000 the difference can be seen on the duration time, by increasing with a factor 10. The other parts of the Query record are not depending on the size of the query result, but on the original query. The original query is not changing in terms of size, because only the filter arguments change their values inside of the query.
 
  The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.
    
