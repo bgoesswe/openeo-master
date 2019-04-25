@@ -787,7 +787,7 @@ The context model is the data record that saves the provenance of a job executio
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{design_context_model}
-	\caption{Overview of the back end execution components and the context model elements that identify them.}
+	\caption{Overview of the back end execution components and the context model elements that identifies them.}
 	\label{fig:design_contextmodel} 
 \end{figure}
 
@@ -952,6 +952,7 @@ The following list describes how the elements of the query data set record are c
 	\textit{Example: "\{ "number\_of\_files": 10\}"}    	 
 \end{enumerate}
 
+
 \section{Back end provenance}\label{Implementation:Back end provenance}
 
 The aim of the back end provenance is to persist the versions of the back end and therefore the version of the software used to execute the jobs. The following subsections explain how the, in Section \ref{Design:Back end provenance} defined, provenance data elements are read from the GitHub repository.  
@@ -1110,7 +1111,47 @@ The previous sections describe only the technical insight of the back end. This 
 \end{enumerate}
 \todo{Maybe add summary of changes to the EODC back end with a "killer" diagram}
 \section{Use Cases}
-This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before.
+This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before. In the first section there is an overview how the data identification recommendations by \acrshort{rda} are implemented. 
+
+\subsection{Data Identification}\label{Evaluation:dataidentification}
+The Design (Section \ref{Design:Data Identification}) defines that the back end needs to implement the \acrshort{rda} data identification recommendations. Therefore the following enumeration shows how the recommendations are achieved in this implementation. 
+
+\begin{itemize}
+	\item \textbf{R1: Data Versioning} \\
+	Persistence of old data versions may not be applied, due to the size of the data. The versioning of data is implemented by EODC. The path to the files are the version identifier, since modified files must have a different file name.
+	\item \textbf{R2: Timestamping} \\
+	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name after updates, the creation time-stamp of the updated file is the update time-stamp of the original file. 
+	\item \textbf{R3: Query Store Facilities} \\
+	The query store is implemented by an additional table in the EODC meta-database (PostgreSQL) used for OpenEO. The Query Table stores the following data about each query:
+	\begin{itemize}
+		\item The original executed \acrshort{csw} query in XML format
+		\item The unique query is generated out of the JSON object created by the EODC back end after parsing the filter arguments of the process graph. To assure uniqueness the JSON is sorted alphabetically.
+		\item Hash of the unique query after removing all characters with no semantic meaning from it.
+		\item Hash of the alphabetically sorted resulting file list after removing all characters with no semantic meaning from it. 
+		\item Time-stamp of the original query execution.
+		\item Dataset identifier is set to the used collection identifier of the query.
+		\item Generated persistent identifier of the query using the uuid library of python.
+		\item JSON object with the number of result files.
+	\end{itemize}
+	\item \textbf{R4: Query Uniqueness} \\
+	The alphabetically sorted filter JSON object provided by the EODC back end (See Figure \ref{fig:processgraph_example}).
+	\item \textbf{R5: Stable Sorting} \\
+	Stable sorting is assured by the original \acrshort{csw} query, where the resulting file list is sorted in ascending order (alphabetically).
+	\item \textbf{R6: Result Set Verification} \\
+	The resulting file list is given as a list object sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
+	\item \textbf{R7: Query Timestamping} \\
+	The time-stamp of the original query execution is stored. 
+	\item \textbf{R8: Query PID}\\
+	The Query PID is getting created (using Python UUID\footnote{https://docs.python.org/3/library/uuid.html}), if the same unique query and resulting hash combination is not in the database yet.
+	\item \textbf{R9: Store the Query} \\
+	The Query Store is implemented as an additional table of an already existent relational meta-data base of EODC for OpenEO (PostgreSQL). 
+	\item \textbf{R10: Automated Citation Texts} \\
+	The citation text for the data-set is already available at EODC, the generated data PID is added to it. 
+	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
+	The landing page is at the EODC back end defined as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
+	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
+	These recommendations are not implemented in this thesis, since there are no migrations planned at EODC.
+\end{itemize}
 
 \subsection{Use Case 1 – Re-Use of Input Data}\label{Implementation:Use Case1}
 The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment. The implementation of the use cases is available at GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
@@ -1456,65 +1497,36 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 	\centering
 	\begin{tabular}{l|l}
 		\multicolumn{2}{c}{\textbf{Hardware}} \\ \hline
-		\textbf{\acrshort{cpu}} & Intel Core i5-6200U CPU @ 2.40GHz \\ 
-		\textbf{\acrshort{gpu}} & NVIDIA GeForce 940MX (2GB DDR3)  \\ 
-		\textbf{\acrshort{ram}} & 8 GB  \\ 
+		\textbf{\acrshort{cpu}} & Intel(R) Core(TM) i7-3770T CPU @ 2.50GHz \\ 
+		\textbf{\acrshort{gpu}} & Radeon HD 7750/8740 / R7 250E  \\ 
+		\textbf{\acrshort{ram}} & 16 GB  \\ 
 		\multicolumn{2}{c}{\textbf{Software}} \\ \hline
-		\textbf{\acrshort{os}} & Ubuntu 18.04.1 LTS \\ 
+		\textbf{\acrshort{os}} & Kubuntu 18.04.1 LTS \\ 
 		\textbf{OpenShift} & 3.9.0  \\ 
 		\textbf{Python} & 3.7.1  \\ 
 	\end{tabular}
 	\label{Tab:eva_hardware}
 \end{table}
 
-\section{Data Identification}\label{Evaluation:dataidentification}
-In Section \ref{Design:Data Identification} it is defined that the back end needs to implement the \acrshort{rda} data identification recommendations. Therefore the following enumeration shows how the recommendations are implemented in the solution. 
-\begin{itemize}
-	\item \textbf{R1: Data Versioning} \\
-	Persistence of old data versions may not be applied, due to the size of the data, but there are versions applied by EODC for data identification. The path to the files are the version identifier, since modified files will have a different file name.
-	\item \textbf{R2: Timestamping} \\
-	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name if they are updated, the creation time-stamp of the updated file is the update time-stamp of the original file. 
-	\item \textbf{R3: Query Store Facilities} \\
-	The query store is implemented by an additional table in the EODC meta-database used for OpenEO. The Query Table stores the following data about each query:
-	\begin{itemize}
-		\item The original executed \acrshort{csw} query in XML format
-		\item The unique query is generated out of the JSON object created by the EODC back end after parsing the filter arguments of the process graph. To assure uniqueness the JSON is sorted alphabetically.
-		\item Hash of the unique query after removing all characters with no semantic meaning from it.
-		\item Hash of the alphabetically sorted resulting file list after removing all characters with no semantic meaning from it. 
-		\item Time-stamp of the original query execution.
-		\item Dataset identifier is set to the used collection identifier of the query.
-		\item Generated persistent identifier of the query using the uuid library of python.
-		\item JSON object with the number of result files.
-	\end{itemize}
-	\item \textbf{R4: Query Uniqueness} \\
-	The alphabetically sorted filter arguments JSON object provided by the EODC back end.
-	\item \textbf{R5: Stable Sorting} \\
-	Stable sorting is assured by the original \acrshort{csw} query, where the resulting file list is sorted in ascending order (alphabetically).
-	\item \textbf{R6: Result Set Verification} \\
-	The resulting file list is given as a list object sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
-	\item \textbf{R7: Query Timestamping} \\
-	The time-stamp of the original query execution is stored. 
-	\item \textbf{R8: Query PID}\\
-	The Query PID is getting created (using Python UUID), if the same unique query and resulting hash combination is not in the database yet.
-	\item \textbf{R9: Store the Query} \\
-	The Query Store is implemented as an additional table of an already used relational data base (PostgreSQL). 
-	\item \textbf{R10: Automated Citation Texts} \\
-	The citation text for the data-set is already available at EODC, the generated data PID is added to it, as well as an link for re-executing the original query to retrieve the result file list. 
-	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
-	The landing page is at the EODC back end defined as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
-	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
-	These recommendations are not implemented at the moment, since there are no migrations planned at the moment.
-\end{itemize}
 \todo{See E-Mail for further questions e.g. EODC policy}
 \todo{Update the statement about EODC according to the E-Mail of Luca Foresta}
-\todo{Read through RDA mapping --> maybe move to Implementation ?}
 
-\section{Special Test Cases}\label{Evaluation:special}
-\todo{Change to first text then code: Always start a description explaining what’s the goal of this test and why you show it. Readers are not going to guess.}
-This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
+%\section{Special Test Cases}\label{Evaluation:special}
+%This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
 \todo{Look for ?? entries}
-\subsection{Data Identification}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The data of EODC can not be changed, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview on Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. The policy of the EODC back end regarding updates on data sets is to create a new filename for the updated data record, which has then also the creation time-stamp persisted in the meta-database. The filename is the identifier of the data set and will never stay the same, if the content of it gets changed. The new filename is then inside of the query result. Usually if this happens at the EODC back end, the original data record gets deleted, which leads to the new filename replacing the old one. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. For each test case the first step is to run a job on the empty database to create a query Table entry. This is described in the following step: \\
+\section{Data Identification}\label{Evaluation:special_dataid}
+This section describes situations, where data changes on the EODC back end occur. The original data of EODC can not be changed for this evaluation, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview of Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. \\
+
+The policy of the EODC back end regarding updates on data sets is dependent on the type of data:
+
+\begin{enumerate}
+	\item \textbf{Sentinel Data} \\
+The Sentinel data, which is used by EODC for the OpenEO project has never been updated before. The data comes directly from ESA and updated datasets from ESA were not applied to the EODC data yet. But the occurrence of updates are in general not impossible in future of the EODC back end. If a dataset would be updated it would follow the update policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. Other then updating the existing datasets, there are regular updates on the extent of the Sentinel data sets.  
+	\item \textbf{Processed Data} \\
+Data that is processed by partners of EODC is maintained and therefore also updated by the partners. Old versions of this data are deleted or archived by EODC, depending on the decision of the partner. This type of data is not available using OpenEO, since it is property of the partners and not EODC. In addition to be able to use the same processes on different OpenEO back ends, the common data layer needs to be the same. That is why only unprocessed data is used by all back ends contributing to OpenEO. Since the data sets are not available for OpenEO, the data identification of them is not in scope of the thesis.
+\end{enumerate}
+
+The following test cases are focused on the Sentinel Data of EODC, and how possible updated are handled by the solution. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. Before each test case the first step is to run a job on the empty database to create the first query Table entry. This is described in the following step: \\
 
 \begin{figure}[h]
 	\centering
@@ -1633,7 +1645,7 @@ Table \ref{Tab:eva_datachanges1} shows the content of the query table after the 
 	\end{table}
 \end{enumerate}
 
-\subsubsection{Test Case 1: Is it possible to re-execute a query after a data file is updated?}	\label{Tab:eva_datachanges_tc1}
+\subsection*{Test Case 1: Is it possible to re-execute a query after a data file is updated?}	\label{Tab:eva_datachanges_tc1}
 %{ \large \textbf{} } \\
 
 \begin{enumerate}
@@ -1811,7 +1823,7 @@ Table \ref{Tab:eva_datachanges4} presents the mapping between the executed jobs 
 	\label{Tab:eva_datachanges4}
 \end{table}
 
-\subsubsection{Test Case 2: Is it possible to re-execute a query after a data file is updated with the original one deleted?}
+\subsection*{Test Case 2: Is it possible to re-execute a query after a data file is updated with the original one deleted?}
 
 \begin{enumerate}
 	\setcounter{enumi}{+1}
@@ -1926,13 +1938,13 @@ pidD = jobD.get_data_pid() # pidD != pidA
 
 The result of the second Test Case shows how the back end behaves on data updated that replace the original data. If the file is deleted, the researcher gets a warning message and a list of files that are replacing the original files. Since the path of the file identifies the date and tile that was used, the researcher ask EODC about the concrete changed file. On creation of the new jobD that uses the input data identifier pidA, the user gets notified that the result files changed, before the execution happens. Then the user can decide to start the job anyway or contact EODC about the modified files.
 
-\subsubsection{Test Case 3: Is it possible to re-execute a query after a data file is deleted}
+\subsection*{Test Case 3: Is it possible to re-execute a query after a data file is deleted}
 The deletion of a file without a new file replacing it, is not within the policies of EODC, since they would delete their range on available data. If this happens nevertheless, there is in the current solution no possibility to get the exact files that were removed. The number of result files in the meta\_data column show how many files changed. To achieve the knowledge of missing files, the whole result files need to be added to the query table, so that it can be compared with the result of the re-execution. In the current solution EODC needs to be notified about the missing files and they have to look up what files were deleted to identify the original files and copy them from ESA again. 
 %The researcher can query the data at ESA directly with the same filter arguments and can compare the resulting file list with the ones from the re-execution of EODC, but the solution is not doing it automatically.  
 
 %The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
 
-\subsection{Job Capturing}\label{Evaluation:special_jobcap}
+\section{Job Capturing}\label{Evaluation:special_jobcap}
 
 This section reviews the outcome of the job capturing. The focus is on the created context model of the job executions. The following two question are used to discuss the impact of the captured data regarding the job execution.  \\
 
@@ -2016,7 +2028,7 @@ versionA = jobA.get_backend_version()
 This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 9 publications that used data provided by EODC from the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, Table \ref{Tab:appendix} shows the used papers used for the test cases. The used values of the spatial and temporal extent are stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end, without the extensions of this thesis (hereinafter referred to as "reference back end"). Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at each back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format. The reference back end, the solution back end as well as the code for the impact evaluation are available at the GitHub repository mentioned at Section \ref{Evaluation:special}.      
 
 \begin{table}[]
-	\caption{List of geoscientific papers used for the input data of the impact evaluation in Section \ref{Evaluation:impact}}
+	\caption{List of geoscientific papers used for the input data of the impact evaluation in Section \ref{Evaluation:Setup}}
 	\centering
 	\begin{tabular}{c|c|c}
 		\textbf{Test Cases} & \textbf{DOI} & \textbf{Citation}  \\ \hline
@@ -2042,7 +2054,7 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 	\centering
 	\begin{tabular}{r|r|r|r|r|r}
 		
-		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c|}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Difference} \\ \hline
+		\textbf{Test} & \textbf{Ref. Back end} & \multicolumn{3}{c|}{\textbf{Solution Back end}} &  \\ \textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Query Handler} & \textbf{Context Model} & \textbf{Comparison} \\ \hline
 		1 & 800.136 ms & 831.136 ms & 14.318 ms & 16.682 ms & 31.000 ms \\ 
 		2 & 284.361 ms & 335.556 ms & 24.167 ms & 27.028 ms & 50.195 ms \\ 
 		3 & 307.439 ms & 359.268 ms & 22.951 ms & 28.878 ms & 51.829 ms \\ 
@@ -2065,48 +2077,45 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
-
-Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the number of resulting files of the executed query. The last row of the table shows the mean duration over all test cases.
-The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation.  \\
+\todo{difference not correct ...}
+Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the additional time that the solution systems needs in comparison to the reference system. The last row of the table shows the mean duration over all test cases.
+The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation, explained in more detail in the following sections.  \\
 
 \subsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
 
 \begin{itemize}
-	\item \textbf{query\_pid} \\
-	The query\_pid is generated by the python uuid module, hence has a constant duration time.
 	\item \textbf{dataset\_pid} \\
-	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has a constant duration time.
+	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has a constant duration time. In the test cases the duration of the dataset\_pid is between 4 ms and 8 ms with a median of 8 ms. 
 	\item \textbf{original} \\
-	The original query is passed by the Query Execution component of EODC, unmodified and therefore takes constant execution time.
+	The original query is passed by the Query Execution component of EODC. The Query Handler transforms the query into a string, which takes constant execution time between 24 ms and 98 ms with a median of 39 ms during the test cases.
 	\item \textbf{normalized} \\
-	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. Depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations and computation time. In this evaluation all possible filter arguments were used for each test case, therefore it has a constant duration time.  
+	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. Depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations and computation time. In this evaluation all possible filter arguments were used for each test case, therefore it has a constant duration time. In the test cases it takes between 38 ms and 132 ms with a median of 61 ms.  
 	\item \textbf{norm\_hash} \\
-	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant and the upper limit of the possible duration time. 
+	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant, since in every test case, there are all filter arguments used. Hence, the evaluation needs the upper limit of the possible duration time. In the test cases the the duration is between 15 ms and 49 ms with a median of 21 ms.  
 	\item \textbf{result\_hash} \\
-	The duration of the result hash creation is dependent on the resulting file list. It takes the most time in the query record generation and.
-	\todo{additional analysis}
+	The duration of the result hash creation is dependent on the length of the resulting file list. In the test cases the duration time of the result hash calculation is between 18 ms and 232 ms with a median of 39 ms. 
+	\todo{make analysis on result files}  
 	\item \textbf{meta\_data} \\
-	The meta data consists only on the number of result files. This is measured by the build in len() operator in python, which has a static performance independent on the length of a list according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}.
-	\item \textbf{created\_at and updated\_at} \\
-	Automatically generated by the PostgreSQL database, independent on the query and therefore constant in duration time. 
+	The meta data consists only on the number of result files. This is measured by the build in len() operator in python, which has a static performance independent on the length of a list according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 ms and 38 ms with a median of 12 ms.
+	\item \textbf{Check on existing query record} \\
+	To ensure that there are no duplicate query entries in the database, the Query Handler checks if there is already an entry with the same normalized query hash and the same result hash. It depends on the amount of query entries in the database. The database query in the test cases takes between 1488 ms and 3078 ms with a median of 2205 ms. 
+	\todo{get reference on how fast a select statement is in PostGreSQL}  
+	\item \textbf{Persisting new query record} \\
+	The query\_pid is generated by the python uuid module, automatically by inserting the query entry into the database. Since the query entries are almost constant in size (see Section \ref{Evaluation:impact_stor}), the duration is constant. The duration of storing the query entry in the test cases is between 3013 ms and 16.756 ms with a median of 4102.5 ms.  
 \end{itemize}
-\todo{Performance der statischen Sachen messen}
 \todo{Graphik der dynamischen Sache erstellen / messen}
 \subsection{Performance of Context Model Creation}\label{Evaluation:impact_perf_context}
 
-\begin{enumerate}[(a)]
-	\item \textbf{Input data persistent identifier} \\
+\begin{enumerate}
+	\item \textbf{Static Context Model Elements} \\
+	programming language / input data / code identifier / start and end time
 	The Query Handler adds the mapping of the job to the data pid, by adding a record to the QueryJob table. The duration is independent on the job complexity and has a constant performance.
-	\item \textbf{Back end provenance / code identifier} \\
-	The time-stamp of the execution identifies the back end, therefore constant in terms of performance.
-	\item \textbf{Programming language} \\
-	Independent on the complexity of the job, hence constant duration time.
 	\item \textbf{Dependencies of the programming language} \\
 	Independent on the complexity of the job, hence constant duration time.
-	\item \textbf{Start and end time of process execution} \\
-	Automatically generated by the PostgreSQL database, independent on the job and therefore constant in duration time. 
 	\item \textbf{Result hash} \\
 	Dependent on the output of the job.
+	\item \textbf{Query and persisting job entry} \\
+	
 	\todo{additional analysis}
 \end{enumerate}
 \todo{Performance der statischen Sachen messen}
@@ -2117,7 +2126,6 @@ The execution time of the reference back end is directly depending on the spatia
 
  The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.
    
-\todo{Show the whole context model and what time is needed to capture the single parts}
 \todo{Draw some plots and do basic statistics to answer (see enumeration):  Edzer wants to know how good your solution is – how would you prove that to him?}
 \todo{Go into more detail at the query hash of the file list and the context result hash}
 \begin{enumerate}
@@ -2181,7 +2189,7 @@ FROM queryjob as t WHERE job_id = '{}';
 %\end{table}
 
 The resulting storage need of the evaluation is quite static. The mean storage of the 50 runs per test case and the average storage size of all test cases are calculated. Three parts of the implementation are storing additional information. First the context model is stored in an additional column named "context\_model" in the Job table. There is no element in the context model that can vary in size, except for the list of packages of python, which has not changed during the evaluation. This results in an additional size of 1.043 kByte for each job entry. The same occurs at the QueryJob table, which just maps the Query table and the Job table and therefore contains the needed identifiers and timestamps for creation and modification. Every record of the QueryJob table needs 0.113 kBytes of storage space. The Query data records have a varying size, because of the string length of the parameters in the original query. The remaining parts of the Query table are static in storage usage. Each Query record of the test cases needs between 1.520 kByte and 1.533 kByte storage. The original query makes up the most size needed in the Query table (e.g. 959 Bytes of 1521.432 Bytes in Testcase 18), because of the XML annotations. In summary the average additional storage needed by the reference back end per Job with a new Query entry is 2.677 kBytes. If the used query is already in the Query table, only an additional 1.043 kBytes of storage is needed by the solution. 
-\todo{Show the whole context model and what storage is needed to capture the single parts}
+
 \section{Summary}
 This chapter presented the evaluation of the implementation of Chapter \ref{Implementation} at a local machine. It includes the evaluation of the system behavior on data changes at the back end. Therefore, implementing test cases to determine, if the back end has a consistent data identification behavior. The code of the test cases are presented in this chapter and also available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/}. The usage of the query PID as input data for a different job can lead to misleading results for the user, if the original data has changed and the back end uses new data to replace the missing files. 
 In the next section of this chapter, the captured data of the job execution is discussed, by executing a test case on how an job can be executed in the same way as the original execution. The data to re-execute the job is captured, but the reproduction of the old back end is not done in an automatic manner and is up to the EODC back end provider. In the last section of this chapter, the impact of the solution on the EODC back end is evaluated. Due to the local environment of the evaluation setup, the outcome is limited to relative changes on performance, by comparing the solution with an reference back end. The solution back end has a lower impact on complex test cases, due to the high impact of the execution duration of the processing. Other test cases need up to a fifth more time for the execution. The additional storage needed by the solution per execution is almost static and can be estimated good by the back end provider. The results of this chapter lead to further discussion in the next chapter, which is the conclusion and future work of the thesis.
