@@ -2082,216 +2082,36 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
-\todo{difference not correct ...}
 Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the test case execution. The second column presents the duration of the reference back end, the other columns are measurements of the solution system. Including the total execution duration of the solution, the duration of the Query Handler and the duration of the Context Model creation. The last column consists of the additional time that the solution systems needs in comparison to the reference system. The last row of the table shows the mean duration over all test cases.
 The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation, explained in more detail in the following sections.  \\ 
-There are 3 test cases with a higher complexity then the other ones, therefore the 
+
 
 \subsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
 
-\begin{tikzpicture}
-\begin{axis}
-[
-ytick={1,2},
-yticklabels={checkexisting small, querypersist},
-]
-
-\addplot+[
-boxplot prepared={
-	lower whisker=11.418,
-	lower quartile=22.359,
-	median=132.682,
-	upper quartile=141.607,
-	upper whisker=169.772,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=37.711,
-	lower quartile=48.413,
-	median=52.794,
-	upper quartile=57.040,
-	upper whisker=85.255,
-},
-] coordinates {};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}
-[
-ytick={1,2},
-yticklabels={checkexisting, querypersist},
-]
-\addplot+[
-boxplot prepared={
-	lower whisker=1.488,
-	lower quartile=1.747,
-	median=2.093,
-	upper quartile=2.438,
-	upper whisker=3.082,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=3.013,
-	lower quartile=3.690,
-	median=4.284,
-	upper quartile=9.242,
-	upper whisker=16.911,
-},
-] coordinates {};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}
-[
-ytick={1,2,3,4,5,6},
-yticklabels={normalized, normhash, resulthash, datasetpid, origquery, filenumber},
-]
-\addplot+[
-boxplot prepared={
-	lower whisker=62,
-	lower quartile=374.5,
-	median=625,
-	upper quartile=852,
-	upper whisker=2781,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=4413,
-	lower quartile=5330.5,
-	median=5578,
-	upper quartile=6113,
-	upper whisker=12061,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=2852,
-	lower quartile=4809.5,
-	median=5665,
-	upper quartile=7034,
-	upper whisker=10692,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=5,
-	lower quartile=10,
-	median=13,
-	upper quartile=15,
-	upper whisker=32,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=27,
-	lower quartile=32,
-	median=47,
-	upper quartile=57,
-	upper whisker=435,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=541,
-	lower quartile=1757,
-	median=2147,
-	upper quartile=2605,
-	upper whisker=3583,
-},
-] coordinates {};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}
-[
-ytick={1,2,3,4,5,6},
-yticklabels={normalized, normhash, resulthash, datasetpid, origquery, filenumber},
-]
-\addplot+[
-boxplot prepared={
-	lower whisker=38,
-	lower quartile=47,
-	median=59,
-	upper quartile=75,
-	upper whisker=132,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=15,
-	lower quartile=17,
-	median=20,
-	upper quartile=25,
-	upper whisker=54,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=18,
-	lower quartile=34,
-	median=46,
-	upper quartile=76,
-	upper whisker=520,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=4,
-	lower quartile=6,
-	median=8,
-	upper quartile=9,
-	upper whisker=26,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=24,
-	lower quartile=29,
-	median=37,
-	upper quartile=45,
-	upper whisker=98,
-},
-] coordinates {};
-\addplot+[
-boxplot prepared={
-	lower whisker=6,
-	lower quartile=10,
-	median=12,
-	upper quartile=17,
-	upper whisker=359,
-},
-] coordinates {};
-\end{axis}
-\end{tikzpicture}
-
 \begin{itemize}
 	\item \textbf{dataset\_pid} \\
-	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has a constant duration time. In the test cases the duration of the dataset\_pid is between 4 µs and 32 µs with a median of 8 µs. 
-
+	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has therefore a complexity of $O(1)$. In the test cases the duration of the dataset\_pid is between 4 µs and 32 µs with a median of 8 µs. 
 	\item \textbf{original} \\
-	The original query is passed by the Query Execution component of EODC. The Query Handler transforms the query into a string, which takes constant execution time between 24 µs and 435 µs with a median of 38 µs during the test cases.
+	The original query is passed by the Query Execution component of EODC. The Query Handler transforms the query into a string. The Query string has the same size for each query, just the argument values are exchanged, therefore it has a complexity of $O(1)$. The execution time of the test cases is between 24 µs and 435 µs with a median of 38 µs during the test cases.
 	\item \textbf{normalized} \\
-	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. Depending on the amount of used filter arguments, the sorting algorithm need a different amount of iterations and computation time. In this evaluation all possible filter arguments were used for each test case, therefore it has a constant duration time. In the test cases it takes between 38 µs and 2781 µs with a median of 64 µs.  
+	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. The sorting algorithm has a complexity of $O(n\log{}n)$, where n is the amount of key elements in the dictionary. In this evaluation four filter arguments were used for each test case, therefore it has a constant complexity for each test case. In the test cases it takes between 38 µs and 2781 µs with a median of 64 µs of duration time.  
 	\item \textbf{norm\_hash} \\
-	The performance of the normalized query hash is dependent on the number of filter arguments of the normalized query. In this evaluation it is constant, since in every test case, there are all filter arguments used. Hence, the evaluation needs the upper limit of the possible duration time. In the test cases the the duration is between 15 µs and 12061 µs with a median of 22 µs.  
+	The performance of the normalized query hash is dependent on the size of the the normalized query ($O(n)$, where n is the size of the normalized query string). In this evaluation it is constant, since in every test case, there are four filter arguments used, which makes the normalized query have a constant length. In the test cases the duration is between 15 µs and 12061 µs with a median of 22 µs.  
 	\item \textbf{result\_hash} \\
-	The duration of the result hash creation is dependent on the length of the resulting file list. In the test cases the duration time of the result hash calculation is between 18 µs and 10692 µs with a median of 52 µs. 
-	\todo{make analysis on result files}  
+	The duration of the result hash creation is dependent on the length of the resulting file list. The sha-256 operation has a complexity of $O(n)$, where n is the length of the resulting file list string. In the test cases the duration time of the result hash calculation is between 18 µs and 10692 µs with a median of 52 µs. Figure \ref{fig:evaluation_impact_data_resulthash} shows the linear relation between the length of the file list and the duration time of the hash calculation.
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{evaluation_impact_data_resulthash}
+	\caption{Execution time of the sha-256 over different sizes of result file list.}
+	\label{fig:evaluation_impact_data_resulthash} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 	\item \textbf{meta\_data} \\
-	The meta data consists only on the number of result files. This is measured by the built-in len() operator in python, which has a static performance independent on the length of a list according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 3583 µs with a median of 13 µs.
-	\item \textbf{Check on existing query record} \\
-	To ensure that there are no duplicate query entries in the database, the Query Handler checks if there is already an entry with the same normalized query hash and the same result hash. It depends on the amount of query entries in the database. The database query in the test cases takes between 1.488 ms and 169.772 ms with a median of 2.203 ms. 
-	\todo{get reference on how fast a select statement is in PostGreSQL}  
-	\item \textbf{Persisting new query record} \\
-	The query\_pid is generated by the python uuid module, automatically by inserting the query entry into the database. Since the query entries are almost constant in size (see Section \ref{Evaluation:impact_stor}), the duration is constant. The duration of storing the query entry in the test cases is between 3.013 ms and 85.255 ms with a median of 5.183 ms.  
+	The meta data consists only on the number of result files. This is measured by the built-in len() operator in python, which has a complexity of $O(1)$ according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 3583 µs with a median of 13 µs.
+	\item \textbf{Database operations} \\
+	To ensure that there are no duplicate query entries in the database, the Query Handler checks if there is already an entry with the same normalized query hash and the same result hash.The query\_pid is generated by the python uuid module, automatically by inserting the query entry into the database. The database operations in the test cases takes between 4.501 ms and 255.027 ms with a median of 7.386 ms. 
+	\todo{get reference on how fast a select statement is in PostGreSQL}   
 \end{itemize}
-\todo{Graphik der dynamischen Sache erstellen / messen}
+
 \subsection{Performance of Context Model Creation}\label{Evaluation:impact_perf_context}
 
 \begin{enumerate}
