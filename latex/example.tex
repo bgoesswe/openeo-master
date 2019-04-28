@@ -1113,49 +1113,9 @@ The previous sections describe only the technical insight of the back end. This 
 \item \textbf{Re-use of Input Data} \\
 	To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC back end automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the process "get\_collection" as an additional filter argument named "data\_pid". Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
 \end{enumerate}
-\todo{Maybe add summary of changes to the EODC back end with a "killer" diagram}
+%\todo{Maybe add summary of changes to the EODC back end with a "killer" diagram}
 \section{Use Cases}
 This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before. In the first section there is an overview how the data identification recommendations by \acrshort{rda} are implemented. 
-
-\subsection{Data Identification}\label{Evaluation:dataidentification}
-The Design (Section \ref{Design:Data Identification}) defines that the back end needs to implement the \acrshort{rda} data identification recommendations. Therefore the following enumeration shows how the recommendations are achieved in this implementation. 
-
-\begin{itemize}
-	\item \textbf{R1: Data Versioning} \\
-	Persistence of old data versions may not be applied, due to the size of the data. The versioning of data is implemented by EODC. The path to the files are the version identifier, since modified files must have a different file name.
-	\item \textbf{R2: Timestamping} \\
-	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name after updates, the creation time-stamp of the updated file is the update time-stamp of the original file. 
-	\item \textbf{R3: Query Store Facilities} \\
-	The query store is implemented by an additional table in the EODC meta-database (PostgreSQL) used for OpenEO. The Query Table stores the following data about each query:
-	\begin{itemize}
-		\item The original executed \acrshort{csw} query in XML format
-		\item The unique query is generated out of the JSON object created by the EODC back end after parsing the filter arguments of the process graph. To assure uniqueness the JSON is sorted alphabetically.
-		\item Hash of the unique query after removing all characters with no semantic meaning from it.
-		\item Hash of the alphabetically sorted resulting file list after removing all characters with no semantic meaning from it. 
-		\item Time-stamp of the original query execution.
-		\item Dataset identifier is set to the used collection identifier of the query.
-		\item Generated persistent identifier of the query using the uuid library of python.
-		\item JSON object with the number of result files.
-	\end{itemize}
-	\item \textbf{R4: Query Uniqueness} \\
-	The alphabetically sorted filter JSON object provided by the EODC back end (See Figure \ref{fig:processgraph_example}).
-	\item \textbf{R5: Stable Sorting} \\
-	Stable sorting is assured by the original \acrshort{csw} query, where the resulting file list is sorted in ascending order (alphabetically).
-	\item \textbf{R6: Result Set Verification} \\
-	The resulting file list is given as a list object sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
-	\item \textbf{R7: Query Timestamping} \\
-	The time-stamp of the original query execution is stored. 
-	\item \textbf{R8: Query PID}\\
-	The Query PID is getting created (using Python UUID\footnote{https://docs.python.org/3/library/uuid.html}), if the same unique query and resulting hash combination is not in the database yet.
-	\item \textbf{R9: Store the Query} \\
-	The Query Store is implemented as an additional table of an already existent relational meta-data base of EODC for OpenEO (PostgreSQL). 
-	\item \textbf{R10: Automated Citation Texts} \\
-	The citation text for the data-set is already available at EODC, the generated data PID is added to it. 
-	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
-	The landing page is at the EODC back end defined as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
-	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
-	These recommendations are not implemented in this thesis, since there are no migrations planned at EODC.
-\end{itemize}
 
 \subsection{Use Case 1 – Re-Use of Input Data}\label{Implementation:Use Case1}
 The first scenario describes the process of a researcher using OpenEO as processing environment. In this use case the focus is on the data identification and data citation part of the solution. Researchers that use OpenEO may want to cite the data that is used in the applied process chain. Other scientist then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in the Section \ref{UseCase1}. In this section the steps of the use case are executed at the evaluation environment. The implementation of the use cases is available at GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
@@ -1485,7 +1445,7 @@ INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL',
 
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
-\todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
+%\todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
 \chapter{Evaluation}\label{Evaluation}
 This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. 
 
@@ -1513,24 +1473,65 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 \end{table}
 
 \todo{See E-Mail for further questions e.g. EODC policy}
-\todo{Update the statement about EODC according to the E-Mail of Luca Foresta}
 
 %\section{Special Test Cases}\label{Evaluation:special}
 %This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
 \todo{Look for ?? entries}
 \section{Data Identification}\label{Evaluation:special_dataid}
-This section describes situations, where data changes on the EODC back end occur. The original data of EODC can not be changed for this evaluation, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview of Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. \\
-
+This section describes the evaluation of the data identification of the solution back end. First there is an overview on how the data update policies of EODC are. Section \ref{Evaluation:dataidentification} summarizes how the solution tackles the recommendations defined by the \acrshort{rda}. The next sections are evaluating data update situations of the back end, to see how the solution system behaves. 
 The policy of the EODC back end regarding updates on data sets is dependent on the type of data:
 
 \begin{enumerate}
 	\item \textbf{Sentinel Data} \\
-The Sentinel data, which is used by EODC for the OpenEO project has never been updated before. The data comes directly from ESA and updated datasets from ESA were not applied to the EODC data yet. But the occurrence of updates are in general not impossible in future of the EODC back end. If a dataset would be updated it would follow the update policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. Other then updating the existing datasets, there are regular updates on the extent of the Sentinel data sets.  
+	The Sentinel data, which is used by EODC for the OpenEO project has never been updated before. The data comes directly from ESA and updated datasets from ESA were not applied to the EODC data yet. But the occurrence of updates are in general not impossible in future of the EODC back end. If a dataset would be updated it would follow the update policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. Other then updating the existing datasets, there are regular updates on the extent of the Sentinel data sets.  
 	\item \textbf{Processed Data} \\
-Data that is processed by partners of EODC is maintained and therefore also updated by the partners. Old versions of this data are deleted or archived by EODC, depending on the decision of the partner. This type of data is not available using OpenEO, since it is property of the partners and not EODC. In addition to be able to use the same processes on different OpenEO back ends, the common data layer needs to be the same. That is why only unprocessed data is used by all back ends contributing to OpenEO. Since the data sets are not available for OpenEO, the data identification of them is not in scope of the thesis.
+	Data that is processed by partners of EODC is maintained and therefore also updated by the partners. Old versions of this data are deleted or archived by EODC, depending on the decision of the partner. This type of data is not available using OpenEO, since it is property of the partners and not EODC. In addition to be able to use the same processes on different OpenEO back ends, the common data layer needs to be the same. That is why only unprocessed data is used by all back ends contributing to OpenEO. Since the data sets are not available for OpenEO, the data identification of them is not in scope of the thesis.
 \end{enumerate}
 
-The following test cases are focused on the Sentinel Data of EODC, and how possible updated are handled by the solution. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. Before each test case the first step is to run a job on the empty database to create the first query Table entry. This is described in the following step: \\
+The test cases of the following sections are focused on the Sentinel Data of EODC, and how possible updated are handled by the solution. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. Before each test case the first step is to run a job on the empty database to create the first query Table entry. 
+
+\subsection{RDA Recommendations}\label{Evaluation:dataidentification}
+The Design (Section \ref{Design:Data Identification}) defines that the back end needs to implement the \acrshort{rda} data identification recommendations. Therefore the following enumeration shows how the recommendations are achieved in this implementation. 
+
+\begin{itemize}
+	\item \textbf{R1: Data Versioning} \\
+	Persistence of old data versions may not be applied, due to the size of the data. The versioning of data is implemented by EODC. The path to the files are the version identifier, since modified files must have a different file name.
+	\item \textbf{R2: Timestamping} \\
+	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name after updates, the creation time-stamp of the updated file is the update time-stamp of the original file. 
+	\item \textbf{R3: Query Store Facilities} \\
+	The query store is implemented by an additional table in the EODC meta-database (PostgreSQL) used for OpenEO. The Query Table stores the following data about each query:
+	\begin{itemize}
+		\item The original executed \acrshort{csw} query in XML format
+		\item The unique query is generated out of the JSON object created by the EODC back end after parsing the filter arguments of the process graph. To assure uniqueness the JSON is sorted alphabetically.
+		\item Hash of the unique query after removing all characters with no semantic meaning from it.
+		\item Hash of the alphabetically sorted resulting file list after removing all characters with no semantic meaning from it. 
+		\item Time-stamp of the original query execution.
+		\item Dataset identifier is set to the used collection identifier of the query.
+		\item Generated persistent identifier of the query using the uuid library of python.
+		\item JSON object with the number of result files.
+	\end{itemize}
+	\item \textbf{R4: Query Uniqueness} \\
+	The alphabetically sorted filter JSON object provided by the EODC back end (See Figure \ref{fig:processgraph_example}).
+	\item \textbf{R5: Stable Sorting} \\
+	Stable sorting is assured by the original \acrshort{csw} query, where the resulting file list is sorted in ascending order (alphabetically).
+	\item \textbf{R6: Result Set Verification} \\
+	The resulting file list is given as a list object sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
+	\item \textbf{R7: Query Timestamping} \\
+	The time-stamp of the original query execution is stored. 
+	\item \textbf{R8: Query PID}\\
+	The Query PID is getting created (using Python UUID\footnote{https://docs.python.org/3/library/uuid.html}), if the same unique query and resulting hash combination is not in the database yet.
+	\item \textbf{R9: Store the Query} \\
+	The Query Store is implemented as an additional table of an already existent relational meta-data base of EODC for OpenEO (PostgreSQL). 
+	\item \textbf{R10: Automated Citation Texts} \\
+	The citation text for the data-set is already available at EODC, the generated data PID is added to it. 
+	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
+	The landing page is at the EODC back end defined as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
+	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
+	These recommendations are not implemented in this thesis, since there are no migrations planned at EODC.
+\end{itemize}
+
+\subsection*{Test Case Preparation}
+This section describes the first step of each test case in the following sections. The purpose is to add an initial job execution with an input data pid, which is needed for each test scenario. Before this step is executed, the database of the back end is cleaned up.\\ The original data of EODC can not be changed for this evaluation, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview of Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. \\
 
 \begin{figure}[h]
 	\centering
@@ -1649,7 +1650,7 @@ Table \ref{Tab:eva_datachanges1} shows the content of the query table after the 
 	\end{table}
 \end{enumerate}
 
-\subsection*{Test Case 1: Is it possible to re-execute a query after a data file is updated?}	\label{Tab:eva_datachanges_tc1}
+\subsection*{Test Case 1: Is it possible to re-execute a query after a file is updated?}	\label{Tab:eva_datachanges_tc1}
 %{ \large \textbf{} } \\
 
 \begin{enumerate}
@@ -1827,7 +1828,7 @@ Table \ref{Tab:eva_datachanges4} presents the mapping between the executed jobs 
 	\label{Tab:eva_datachanges4}
 \end{table}
 
-\subsection*{Test Case 2: Is it possible to re-execute a query after a data file is updated with the original one deleted?}
+\subsection*{Test Case 2: Is it possible to re-execute a query after a file is updated with the original one deleted?}
 
 \begin{enumerate}
 	\setcounter{enumi}{+1}
@@ -1943,7 +1944,8 @@ pidD = jobD.get_data_pid() # pidD != pidA
 The result of the second Test Case shows how the back end behaves on data updated that replace the original data. If the file is deleted, the researcher gets a warning message and a list of files that are replacing the original files. Since the path of the file identifies the date and tile that was used, the researcher ask EODC about the concrete changed file. On creation of the new jobD that uses the input data identifier pidA, the user gets notified that the result files changed, before the execution happens. Then the user can decide to start the job anyway or contact EODC about the modified files.
 
 \subsection*{Test Case 3: Is it possible to re-execute a query after a data file is deleted}
-The deletion of a file without a new file replacing it, is not within the policies of EODC, since they would delete their range on available data. If this happens nevertheless, there is in the current solution no possibility to get the exact files that were removed. The number of result files in the meta\_data column show how many files changed. To achieve the knowledge of missing files, the whole result files need to be added to the query table, so that it can be compared with the result of the re-execution. In the current solution EODC needs to be notified about the missing files and they have to look up what files were deleted to identify the original files and copy them from ESA again. 
+The deletion of a file without a new file replacing it, is not within the policies of EODC, since they would restrict their range on available data. If this happens nevertheless, there is in the current solution no possibility to get the exact files that were removed. The number of result files in the meta\_data column show how many files changed. To achieve the knowledge of missing files, the whole result files need to be added to the query table, so that it can be compared with the result of the re-execution. In the current solution EODC needs to be notified about the missing files. EODC has to look up what files were deleted using the filter arguments of the query to identify the original files and copy them from ESA again. 
+
 %The researcher can query the data at ESA directly with the same filter arguments and can compare the resulting file list with the ones from the re-execution of EODC, but the solution is not doing it automatically.  
 
 %The remaining question is how the system behaves if the data is updated during the query processing. Since there is no permission to perform a test on it, it can only be assumed theoretically. Since the query system is file based and an update results in a new file replacing an existing file. There are two possibilities of the outcome of a query be executed at the same time. Either the query results in the old file, which then will result in an error at the execution if the file is replaced already at the time of the job execution, or the query results in the new file. In both cases the query PID will be generated consistent with the job execution, since it takes the original executed query and the actual file list used for the execution.     
@@ -2058,27 +2060,27 @@ In this Section we evaluate the performance impact on the EODC back end by measu
 	\centering
 	\begin{tabular}{r|r|r|r|r|r}
 		
-		\textbf{} & \textbf{Ref. Back end} & \multicolumn{3}{c|}{\textbf{Solution Back end}} &  \\ \hline \textbf{Test} & \textbf{} & \textbf{} & \textbf{Query} & \textbf{Context} & \textbf{Back end} \\ 
-		\textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Handler} & \textbf{Model} & \textbf{Comparison} \\ \hline
-		1 & 322.946 ms & 343.127 ms & 14.187 ms & 5.994 ms & 20.181 ms \\ 
-		2 & 369.066 ms & 391.505 ms & 16.342 ms & 6.097 ms & 22.439 ms \\ 
-		3 & 281.657 ms & 303.406 ms & 15.669 ms & 6.081 ms & 21.749 ms \\ 
-		4 & 276.324 ms & 295.954 ms & 14.015 ms & 5.615 ms & 19.630 ms \\ 
-		5 & 312.150 ms & 331.802 ms & 13.925 ms & 5.727 ms & 19.652 ms \\ 
-		6 & 314.571 ms & 334.290 ms & 13.985 ms & 5.734 ms & 19.720 ms \\ 
-		7 & 320.081 ms & 340.553 ms & 14.555 ms & 5.916 ms & 20.471 ms \\ 
-		8 & 304.998 ms & 325.633 ms & 14.742 ms & 5.893 ms & 20.635 ms \\ 
-		9 & 565.289 ms & 735.751 ms & 148.766 ms & 21.696 ms & 170.462 ms \\ 
-		10 & 401.922 ms & 422.825 ms & 14.874 ms & 6.030 ms & 20.904 ms \\ 
-		11 & 521.022 ms & 780.185 ms & 240.660 ms & 18.503 ms & 259.163 ms \\ 
-		12 & 387.536 ms & 409.079 ms & 15.711 ms & 5.832 ms & 21.543 ms \\ 
-		13 & 510.517 ms & 533.784 ms & 17.070 ms & 6.197 ms & 23.267 ms \\ 
-		14 & 657.989 ms & 684.329 ms & 19.010 ms & 7.330 ms & 26.340 ms  \\ 
-		15 & 345.806 ms & 368.985 ms & 17.027 ms & 6.151 ms & 23.179 ms \\ 
-		16 & 585.730 ms & 828.493 ms & 223.956 ms & 18.807 ms & 242.764 ms \\ 
-		17 & 563.755 ms & 586.776 ms & 16.778 ms & 6.243 ms & 23.021 ms \\ 
-		18 & 836.377 ms & 859.272 ms & 16.801 ms & 6.093 ms & 22.894 ms \\ \hline
-		\textbf{Avg.} & \textbf{437.652 ms} & \textbf{493.097 ms} & \textbf{47.115 ms} & \textbf{8.330 ms} & \textbf{55.445 ms} \\ 
+		\textbf{} & \textbf{Ref. Back end} & \multicolumn{3}{c|}{\textbf{Solution Back end}} &  \\ \hline \textbf{Test} & \textbf{} & \textbf{Comparison} & \textbf{Query} & \textbf{Context} & \textbf{Solution} \\ 
+		\textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Handler} & \textbf{Model} & \textbf{Addition} \\ \hline
+		1 & 322.946 ms & 345.127 ms & 14.187 ms & 7.994 ms & 22.181 ms \\ 
+		2 & 369.066 ms & 393.505 ms & 16.342 ms & 8.097 ms & 24.439 ms \\ 
+		3 & 281.657 ms & 305.407 ms & 15.669 ms & 8.081 ms & 23.750 ms \\ 
+		4 & 276.324 ms & 298.954 ms & 14.015 ms & 8.615 ms & 22.630 ms \\ 
+		5 & 312.150 ms & 334.802 ms & 13.925 ms & 8.727 ms & 22.652 ms \\ 
+		6 & 314.571 ms & 337.290 ms & 13.985 ms & 8.734 ms & 22.719 ms \\ 
+		7 & 320.081 ms & 343.552 ms & 14.555 ms & 8.916 ms & 23.471 ms \\ 
+		8 & 304.998 ms & 328.633 ms & 14.742 ms & 8.893 ms & 23.635 ms \\ 
+		9 & 565.289 ms & 740.751 ms & 48.766 ms & 126.696 ms & 175.462 ms \\ 
+		10 & 401.922 ms & 425.026 ms & 14.874 ms & 8.230 ms & 23.104 ms \\ 
+		11 & 521.022 ms & 605.185 ms & 34.660 ms & 49.503 ms & 84.163 ms \\ 
+		12 & 387.536 ms & 412.079 ms & 15.711 ms & 8.832 ms & 24.543 ms \\ 
+		13 & 510.517 ms & 538.784 ms & 17.070 ms & 11.197 ms & 28.267 ms \\ 
+		14 & 657.989 ms & 706.329 ms & 19.010 ms & 29.330 ms & 48.340 ms  \\ 
+		15 & 345.806 ms & 371.984 ms & 17.027 ms & 9.151 ms & 26.178 ms \\ 
+		16 & 585.730 ms & 658.493 ms & 23.956 ms & 48.807 ms & 72.763 ms \\ 
+		17 & 563.755 ms & 589.776 ms & 16.778 ms & 9.243 ms & 26.021 ms \\ 
+		18 & 836.377 ms & 862.271 ms & 16.801 ms & 9.093 ms & 25.894 ms \\ \hline
+		\textbf{Avg.} & \textbf{437.652 ms} & \textbf{477.664 ms} & \textbf{19.004 ms} & \textbf{21.008 ms} & \textbf{40.012 ms} \\ 
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
@@ -2086,63 +2088,336 @@ Table \ref{Tab:eva_performance} shows the mean duration time of 50 runs of the t
 The execution time of the reference back end is directly depending on the spatial and temporal input of the test case. It represents the complexity of the test case processing, since the back end is only processing the data. The increase in execution duration at the solution back end is due to the additional functionality of the Query Handler and the Context Model creation, explained in more detail in the following sections.  \\ 
 
 
-\subsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
+\subsubsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
 
 \begin{itemize}
 	\item \textbf{dataset\_pid} \\
-	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has therefore a complexity of $O(1)$. In the test cases the duration of the dataset\_pid is between 4 µs and 32 µs with a median of 8 µs. 
+	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has therefore a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance at the performance evaluation, which is between 4 µs and 26 µs with a median of 8 µs. 
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the data pid entry. }
+	\label{fig:evaluation_perf_datapid}
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={dataset\_pid},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=4,
+	lower quartile=6,
+	median=8,
+	upper quartile=9,
+	upper whisker=26,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{original} \\
-	The original query is passed by the Query Execution component of EODC. The Query Handler transforms the query into a string. The Query string has the same size for each query, just the argument values are exchanged, therefore it has a complexity of $O(1)$. The execution time of the test cases is between 24 µs and 435 µs with a median of 38 µs during the test cases.
+	The original query is passed by the Query Execution component of EODC. The Query Handler transforms the query into a string. The Query string has the same size for each query, just the argument values are exchanged, therefore it has a complexity of $O(1)$. The execution time of the test cases is between 24 µs and 98 µs with a median of 37 µs during the test cases. Figure \ref{fig:evaluation_perf_original} shows the box-plot of all test case executions.
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the original query entry.}
+	\label{fig:evaluation_perf_original}
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={original},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=24,
+	lower quartile=29,
+	median=37,
+	upper quartile=45,
+	upper whisker=98,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{normalized} \\
-	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. The sorting algorithm has a complexity of $O(n\log{}n)$, where n is the amount of key elements in the dictionary. In this evaluation four filter arguments were used for each test case, therefore it has a constant complexity for each test case. In the test cases it takes between 38 µs and 2781 µs with a median of 64 µs of duration time.  
+	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of EODC. The sorting takes nearly constant duration time, since there are only 4 filter arguments allowed in the OpenEO API version 0.3.1, but they may not all be used. The sorting algorithm has a complexity of $O(n\log{}n)$, where n is the amount of key elements in the dictionary. In this evaluation four filter arguments were used for each test case, therefore it has a constant complexity for each test case. In the test cases it takes between 38 µs and 132 µs with a median of 59 µs of duration time. Figure \ref{fig:evaluation_perf_normalized} shows the box-plot of all test case executions.  
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the normalized query entry.}
+	\label{fig:evaluation_perf_normalized}
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={normalized},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=38,
+	lower quartile=47,
+	median=59,
+	upper quartile=75,
+	upper whisker=132,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{norm\_hash} \\
-	The performance of the normalized query hash is dependent on the size of the the normalized query ($O(n)$, where n is the size of the normalized query string). In this evaluation it is constant, since in every test case, there are four filter arguments used, which makes the normalized query have a constant length. In the test cases the duration is between 15 µs and 12061 µs with a median of 22 µs.  
+	The performance of the normalized query hash is dependent on the size of the the normalized query ($O(n)$, where n is the size of the normalized query string). In this evaluation it is constant, since in every test case, there are four filter arguments used, which makes the normalized query have a constant length. In the test cases the duration is between 15 µs and 54 µs with a median of 20 µs. Figure \ref{fig:evaluation_perf_norm_hash} shows the box-plot of all test case executions.  
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the normalized query hash entry.}
+	\label{fig:evaluation_perf_norm_hash}
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={norm\_hash},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=15,
+	lower quartile=17,
+	median=20,
+	upper quartile=25,
+	upper whisker=54,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{result\_hash} \\
-	The duration of the result hash creation is dependent on the length of the resulting file list. The sha-256 operation has a complexity of $O(n)$, where n is the length of the resulting file list string. In the test cases the duration time of the result hash calculation is between 18 µs and 10692 µs with a median of 52 µs. Figure \ref{fig:evaluation_impact_data_resulthash} shows the linear relation between the length of the file list and the duration time of the hash calculation.
+	The duration of the result hash creation is dependent on the length of the resulting file list. The sha-256 operation has a complexity of $O(n)$, where n is the length of the resulting file list string. In the test cases the duration time of the result hash calculation is between 83 µs and 161 µs with a median of 136 µs. Figure \ref{fig:evaluation_perf_result_hash} shows the box-plot of the evaluation execution of all test cases. Figure \ref{fig:evaluation_impact_data_resulthash} shows the linear relation between the length of the file list and the duration time of the hash calculation. 
+\todo{maybe better figure or additional table}
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the result file list hash entry.}
+	\label{fig:evaluation_perf_result_hash}
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={result\_hash},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=83,
+	lower quartile=112,
+	median=136,
+	upper quartile=161,
+	upper whisker=1646,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{evaluation_impact_data_resulthash}
-	\caption{Execution time of the sha-256 over different sizes of result file list.}
+	\includegraphics[scale=0.35]{evaluation_impact_data_resulthash}
+	\caption{Execution duration of the sha-256 over the test cases.}
 	\label{fig:evaluation_impact_data_resulthash} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 	\item \textbf{meta\_data} \\
-	The meta data consists only on the number of result files. This is measured by the built-in len() operator in python, which has a complexity of $O(1)$ according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 3583 µs with a median of 13 µs.
+	The meta data consists only on the number of result files. This is measured by the built-in len() operator in python, which has a complexity of $O(1)$ according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 359 µs with a median of 12 µs. Figure \ref{fig:evaluation_perf_meta_data} shows the box-plot of the test case execution.
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the meta\_data entry.}
+	\label{fig:evaluation_perf_meta_data}	
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={meta\_data},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=6,
+	lower quartile=10,
+	median=12,
+	upper quartile=17,
+	upper whisker=359,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{Database operations} \\
-	To ensure that there are no duplicate query entries in the database, the Query Handler checks if there is already an entry with the same normalized query hash and the same result hash.The query\_pid is generated by the python uuid module, automatically by inserting the query entry into the database. The database operations in the test cases takes between 4.501 ms and 255.027 ms with a median of 7.386 ms. 
-	\todo{get reference on how fast a select statement is in PostGreSQL}   
+	To ensure that there are no duplicate query entries in the database, the Query Handler executes a SQL SELECT statement to check if there is already an entry with the same normalized query hash and the same result hash. In the evaluation the query table is empty before the SELECT statement, hence the complexity is $O(1)$. The INSERT statement to store the query has a complexity of $O(1)$. The database operations in the test cases take between 10.501 ms and 49.283 ms with a median of 13.377 ms duration time. Figure \ref{fig:evaluation_perf_data_database} shows the box-plot of the test case executions.  
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to make the needed database operations.}
+	\label{fig:evaluation_perf_data_database}	
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [ms]},
+y=2cm,
+ytick={1},
+yticklabels={database operations},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=10.501,
+	lower quartile=11.837,
+	median=13.377,
+	upper quartile=16.680,
+	upper whisker=49.283,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 \end{itemize}
 
-\subsection{Performance of Context Model Creation}\label{Evaluation:impact_perf_context}
+\subsubsection{Performance of Context Model Creation}\label{Evaluation:impact_perf_context}
 
 \begin{enumerate}
-	\item \textbf{Static Context Model Elements} \\
-	programming language / input data / code identifier / start and end time
-	The Query Handler adds the mapping of the job to the data pid, by adding a record to the QueryJob table. The duration is independent on the job complexity and has a constant performance.
+	\item \textbf{Static context model elements} \\
+	The following elements of the context model are static: the programming language, the input data identifier, the back end version and the start and end timestamp. These are independent of the job configuration and are read operations with a complexity of $O(1)$. The static context model elements in the test cases take a duration time between 26 µs and 122 µs with an median of 41.5 µs. Figure \ref{fig:evaluation_perf_static_cm} shows the box-plot of the test case execution.
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to handle the static context model elements.}
+	\label{fig:evaluation_perf_static_cm}		
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={Static Elements},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=26,
+	lower quartile=34,
+	median=41.5,
+	upper quartile=47,
+	upper whisker=122,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture} 
+\end{figure}
 	\item \textbf{Dependencies of the programming language} \\
-	Independent on the complexity of the job, hence constant duration time.
+	The dependencies of the EODC back end are retrieved by a "pip freeze" execution. It is independent on the complexity of the job, hence has a constant duration time. The duration in the test cases executions is between 92 µs and 289 µs with an median of 133 µs. Figure \ref{fig:evaluation_perf_python} shows the box-plot of the test case execution.
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to retrieve the modules of python.}
+	\label{fig:evaluation_perf_python}		
+\begin{tikzpicture}
+\begin{axis}
+[
+xlabel={duration [µs]},
+y=2cm,
+ytick={1},
+yticklabels={python modules},
+]
+\addplot+[
+boxplot prepared={
+	lower whisker=92,
+	lower quartile=112,
+	median=133,
+	upper quartile=150.5,
+	upper whisker=289,
+	box extend=1,
+	whisker extend=0.5,
+},
+] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 	\item \textbf{Result hash} \\
-	Dependent on the output of the job.
-	\item \textbf{Query and persisting job entry} \\
+	The duration of the result hash is dependent on the length of the resulting image. The sha-256 operation has a complexity of $O(n)$, where n is the size of the output image. In the test cases the duration time of the result hash calculation is between 1.924 ms and 106.270 ms with a median of 2.521 ms. Table \ref{Tab:result_hash} shows the test cases and their result size in relation to the average duration time of the result hash calculation. In the experiment setup every 100 kByte of output data resulted in average in an additional duration of 371 µs. The test cases 9, 11, 14 and 16 had the biggest result file and therefore needed the most time in the result hash calculation.     
 	
-	\todo{additional analysis}
+\begin{table}[]
+	\caption{Result hash performance of the test cases depending on the result size.}
+	\begin{tabular}{c|c|c}
+		\textbf{Test Case} & \textbf{Result size [kByte]} & \textbf{Result hash duration [ms]}  \\ \hline
+		 1 & 587  & 2.184 \\ \hline 
+		 2 & 721 & 2.684 \\ \hline
+		 3 & 600 & 2.233 \\ \hline
+		 4 & 556 & 2.068 \\ \hline
+		 5 & 570 & 2.119 \\ \hline
+		 6 & 553 & 2.058 \\ \hline
+		 7 & 578 & 2.149 \\ \hline
+		 8 & 638 & 2.374 \\ \hline
+		 9 & 27 999 & 104.182 \\ \hline
+		 10 & 621 & 2.313 \\ \hline
+		 11 & 7 969 & 29.654 \\ \hline
+		 12 & 649 & 2.415 \\ \hline
+		 13 & 1 376 & 5.121 \\ \hline
+		 14 & 6 026 & 22.422 \\ \hline
+		 15 & 777 & 2.891 \\ \hline
+		 16 & 7 978 & 29.685 \\ \hline
+		 17 & 733 & 2.727 \\ \hline
+		 18 & 706 & 2.627 \\ 
+	\end{tabular}
+	\label{Tab:result_hash}
+\end{table}
+
+	\item \textbf{Database UPDATE operation} \\
+	To store the context model in the meta-database, the job entry gets updated. The SQL UPDATE statement. It is independent on the job configuration. The duration time at the test case execution is between 3.631 ms and 20.099 ms with a median of 5.493 ms. Figure \ref{fig:evaluation_perf_database} shows the box-plot of the test case execution. 
+
+\begin{figure}[!h]
+	\centering
+	\caption{Box-plot of the duration time of the test cases to retrieve the modules of python.}
+	\label{fig:evaluation_perf_database}		
+	\begin{tikzpicture}
+	\begin{axis}
+	[
+	xlabel={duration [ms]},
+	y=2cm,
+	ytick={1},
+	yticklabels={UPDATE operation},
+	]
+	\addplot+[
+	boxplot prepared={
+		lower whisker=3.631,
+		lower quartile=4.595,
+		median=5.493,
+		upper quartile=7.237,
+		upper whisker=20.099,
+		box extend=1,
+		whisker extend=0.5,
+	},
+	] coordinates {};
+	\end{axis}
+	\end{tikzpicture}
+\end{figure}
+
 \end{enumerate}
-\todo{Performance der statischen Sachen messen}
-\todo{Graphik der dynamischen Sache erstellen / messen}
-
-
-
 
  The Context Model creation performance is not affected much by the complexity of the test cases. The captured data for the context model is not related to the complexity of the execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss, because the Query Handler and the Context Model have elements that need the same duration time independent of the test case configuration. In conclusion it can be seen that the execution of the Query Handler and the Context Model is less affecting complex test cases, since there is a minimum duration time needed for the data creation and just a small additional duration time depending on the size for the resulting files. In addition it should be mentioned that the Query Handler and the Context Model creation happens after the processing. So that the result files of the job execution can be accessed by the user even if both modules have not finished yet.
    
-\todo{Draw some plots and do basic statistics to answer (see enumeration):  Edzer wants to know how good your solution is – how would you prove that to him?}
-\todo{Go into more detail at the query hash of the file list and the context result hash}
-\begin{enumerate}
-	\item How much time creating a context model adds to computation?
-	\item How much time data citation components adds to computation?
-	\item Is it a constant value that is added?
-	\item If not, what does it depend on?
-\end{enumerate} 
-
 % The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range.
 %\todo{ What is the variance across several runs?}
 %\todo{Context Model: mock-up of result hash calculation possible ?}
@@ -2248,25 +2523,20 @@ So far only the capturing of the whole process chain, including input and output
 Therefore, the bench marking context model gets introduced. The idea is that not only the input data of the whole process chain and the output data gets captured, but every data state in between of each process. For every process in the process graph the input data, the output data and the code executing the process get captured. This makes it easier for users to see where in the process chain the execution actually produced different results.\\ The concept leads to higher implementation and execution costs at the back end side. The effect on the performance of the execution is higher than the common context model. Whether the implementation of such a granularity is  doable is highly dependent on the back end implementation. Not every back end might be able to implement this into the back end due to external tools where the execution and results of single processes are not distinguishable. If a back end can support it, the granularity can be finer. In an extreme example, the data and code can be captured for every line in the code. The flexibility of capturing granularity may define the context model design in the future.  
 
 \chapter{Appendix}\label{Appendix}
-\todo{Appendix wieder hinzufügen}
-%\begin{figure}[h]
-%	\centering
-%	\includegraphics[width=\textwidth]{appendix_pidB}
-%	\caption{Original query of jobB from the evaluation in Section \ref{Evaluation:special_dataid}.}
-%	\label{fig:appendix_pidB} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-%\end{figure}
 
-%\begin{figure}[h]
-%	\centering
-%	\includegraphics[width=\textwidth]{appendix_pidD}
-%	\caption{Original query of jobD from the evaluation in Section \ref{Evaluation:special_dataid}.}
-%	\label{fig:appendix_pidD} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
-%\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{appendix_pidB}
+	\caption{Original query of jobB from the evaluation in Section \ref{Evaluation:special_dataid}.}
+	\label{fig:appendix_pidB} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
-%\section{Papers for Evaluation}
-
-
-
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{appendix_pidD}
+	\caption{Original query of jobD from the evaluation in Section \ref{Evaluation:special_dataid}.}
+	\label{fig:appendix_pidD} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
 
 \backmatter
 
