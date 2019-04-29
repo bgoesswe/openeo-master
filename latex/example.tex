@@ -1447,10 +1447,10 @@ INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL',
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC back end. It consists of an implementation of the RDA recommendations for the back end. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the back end provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC back end is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the OpenEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC back end and by testing the implementation against special cases.    
 %\todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
 \chapter{Evaluation}\label{Evaluation}
-This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying the three use cases defined in Section \ref{Use Cases} to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. In addition special cases that can occur on the back end are tested and the impact of the solution on the back end is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special} evaluates how the solution behaves on special circumstances. Section \ref{Evaluation:impact} compares the storage and performance of the solution to the EODC back end using the same environment. 
+This chapter evaluates the prototype implementation described in the previous section. The work-flow of the evaluation is applying test cases to the solution of Section \ref{Implementation:Python Implementation} and evaluate if the outcome reaches the expectations. Additionally the performance and storace impact of the solution compared to the EODC back end implementation is evaluated. First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special_dataid} evaluates how the solution behaves on the data identification aspects of the solution. Section \ref{Evaluation:special_jobcap} evaluates the job capturing part of the solution. The last Section \ref{Evaluation:impact} compares the needed storage and performance of the solution to the EODC back end using the same environment. 
 
 \section{Evaluation Setup}\label{Evaluation:Setup}
-The solution is an extended duplicate of the productive service running at the OpenEO back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end (reference back end). To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database. \\
+The solution is an extended duplicate of the productive service running at the EODC back end. EODC uses an OpenShift\footnote{https://www.openshift.com/} service to provide the back ends functionality. The version provided at GitHub from EODC to build the local instance of the EODC back end is used to host the original EODC back end. The implementation of this thesis is a GitHub fork of the EODC back end to deploy the adapted back end of Section \ref{Implementation}. For this evaluation the back end is installed locally and does not run on the EODC infrastructure. Nevertheless, the data querying of EODC is publicly available and is used, therefore the data identification part of the solution is operating with the actual data that EODC provides for OpenEO users. Changes on the data (like removed files or updated files) are simulated by changing the output of the query directly after execution. The processing service of EODC can not be executed locally, because the data files can only be accessed inside of the EODC environment. Therefore the processing mechanism is mocked up. It creates an array with mock-up values in the size of the query results and applies the defined processes of the process graph on it. To make the solution of this thesis comparable to the original back end version, this processing mock-up is also applied to the local version of the original EODC back end (reference back end). To be able to run the test cases independently a "reset" endpoint is added to the back end. If it is called, all stored job and query records are deleted from the meta-database. \\
 
 Table \ref{Tab:eva_hardware} specifies the system used for the evaluation. In order to minimum the performance bias, not necessary background programs are disabled for the evaluation execution.  
 
@@ -1472,32 +1472,29 @@ The evaluation is done from a user point of view, hence an OpenEO client needs t
 	\label{Tab:eva_hardware}
 \end{table}
 
-\todo{See E-Mail for further questions e.g. EODC policy}
-
 %\section{Special Test Cases}\label{Evaluation:special}
 %This section evaluates special test cases to get an overview on how the solution behaves, if special circumstances on the back end occur. The GitHub repository of the solution has unit tests in the "test" folder of the python client testing the basic functionality. The test cases in this section are created to look into the error proneness of the solution. The code as well as the results of the evaluation in this section are available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples/}.
-\todo{Look for ?? entries}
+
 \section{Data Identification}\label{Evaluation:special_dataid}
-This section describes the evaluation of the data identification of the solution back end. First there is an overview on how the data update policies of EODC are. Section \ref{Evaluation:dataidentification} summarizes how the solution tackles the recommendations defined by the \acrshort{rda}. The next sections are evaluating data update situations of the back end, to see how the solution system behaves. 
+This section describes the evaluation of the data identification mechanism of the solution back end. Section \ref{Evaluation:dataidentification} summarizes how the solution tackles the recommendations defined by the \acrshort{rda}. The next sections are evaluating data update situations of the back end, to see how the solution system behaves. 
 The policy of the EODC back end regarding updates on data sets is dependent on the type of data:
 
 \begin{enumerate}
 	\item \textbf{Sentinel Data} \\
-	The Sentinel data, which is used by EODC for the OpenEO project has never been updated before. The data comes directly from ESA and updated datasets from ESA were not applied to the EODC data yet. But the occurrence of updates are in general not impossible in future of the EODC back end. If a dataset would be updated it would follow the update policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files. In addition the creation time-stamp in the meta-data of the dataset gets modified to the time when the update happens. Other then updating the existing datasets, there are regular updates on the extent of the Sentinel data sets.  
+	The Sentinel data, which is used by EODC for the OpenEO project, has never been updated before. The data comes directly from ESA and updated datasets from ESA were not applied to the EODC data yet. But the occurrence of updates are in general not forbidden in future of the EODC back end. If a dataset would be updated, it would follow the update policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files and the creation time-stamp. Other than updating the existing datasets, there are regular updates on the extent of the Sentinel data sets.  
 	\item \textbf{Processed Data} \\
-	Data that is processed by partners of EODC is maintained and therefore also updated by the partners. Old versions of this data are deleted or archived by EODC, depending on the decision of the partner. This type of data is not available using OpenEO, since it is property of the partners and not EODC. In addition to be able to use the same processes on different OpenEO back ends, the common data layer needs to be the same. That is why only unprocessed data is used by all back ends contributing to OpenEO. Since the data sets are not available for OpenEO, the data identification of them is not in scope of the thesis.
+	Data that is processed by partners of EODC is maintained and therefore also updated by the partners. Old versions of this data are deleted or archived by EODC, depending on the decision of the partner. This type of data is not available using OpenEO, since it is property of the partners and not EODC. In addition to be able to use the same processes on different OpenEO back ends, the common data layer needs to be the same. That is why only unprocessed data is used by all back ends contributing to OpenEO. Since the data sets are not available for OpenEO, the data identification of them is not in scope of the thesis. By now it is planned that EODC uses the OpenEO framework for their whole infrastructure, which will bring the partners to use OpenEO for their processing, therefore they can use the data identification implementation for their tasks.
 \end{enumerate}
 
-The test cases of the following sections are focused on the Sentinel Data of EODC, and how possible updated are handled by the solution. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation section. Before each test case the first step is to run a job on the empty database to create the first query Table entry. 
 
 \subsection{RDA Recommendations}\label{Evaluation:dataidentification}
 The Design (Section \ref{Design:Data Identification}) defines that the back end needs to implement the \acrshort{rda} data identification recommendations. Therefore the following enumeration shows how the recommendations are achieved in this implementation. 
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning} \\
-	Persistence of old data versions may not be applied, due to the size of the data. The versioning of data is implemented by EODC. The path to the files are the version identifier, since modified files must have a different file name.
+	The versioning of data is already implemented at the EODC back end, by following the naming policies of ESA. The path to the files are the version identifier, since modified files must have a different file name.
 	\item \textbf{R2: Timestamping} \\
-	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name after updates, the creation time-stamp of the updated file is the update time-stamp of the original file. 
+	The creation time-stamp of the files are stored by the file system of EODC, since the files have to change the name after an update, the creation time-stamp of the updated file is the update time-stamp of the original file. 
 	\item \textbf{R3: Query Store Facilities} \\
 	The query store is implemented by an additional table in the EODC meta-database (PostgreSQL) used for OpenEO. The Query Table stores the following data about each query:
 	\begin{itemize}
@@ -1515,7 +1512,7 @@ The Design (Section \ref{Design:Data Identification}) defines that the back end 
 	\item \textbf{R5: Stable Sorting} \\
 	Stable sorting is assured by the original \acrshort{csw} query, where the resulting file list is sorted in ascending order (alphabetically).
 	\item \textbf{R6: Result Set Verification} \\
-	The resulting file list is given as a list object sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
+	The resulting file list is given as a list sorted alphabetically in ascending order. This is transferred to a string object that gets cleaned up by characters that are not relevant, before being hashed by the SHA-256 hash function. 
 	\item \textbf{R7: Query Timestamping} \\
 	The time-stamp of the original query execution is stored. 
 	\item \textbf{R8: Query PID}\\
@@ -1525,10 +1522,12 @@ The Design (Section \ref{Design:Data Identification}) defines that the back end 
 	\item \textbf{R10: Automated Citation Texts} \\
 	The citation text for the data-set is already available at EODC, the generated data PID is added to it. 
 	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
-	The landing page is at the EODC back end defined as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
+	The landing page is defined at the EODC back end as an OpenEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page consists of an additional link to re-execute the query and list the result files. Since it is part of the OpenEO API, it can also be accessed from the OpenEO clients and be used in future jobs as used input data.
 	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
 	These recommendations are not implemented in this thesis, since there are no migrations planned at EODC.
 \end{itemize}
+
+The test cases of the following sections are focused on the Sentinel Data of EODC, and how possible updated are handled by the solution. The running job (referenced as jobA) defined in Section \ref{example} is used for this evaluation. In the beginning of each test case the first step is to run a job on the empty database to create the first query Table entry. 
 
 \subsection*{Test Case Preparation}
 This section describes the first step of each test case in the following sections. The purpose is to add an initial job execution with an input data pid, which is needed for each test scenario. Before this step is executed, the database of the back end is cleaned up.\\ The original data of EODC can not be changed for this evaluation, since the evaluation back end is using the actual data endpoint (https://csw.eodc.eu). To simulate changes on the data, the query result received by the back end driver gets modified. Figure \ref{fig:eva_data_simulation} gives an overview on where the data update simulator is located in the data identification implementation overview of Figure \ref{fig:impldataid}. What data will be modified is described by the test cases below. \\
@@ -1542,7 +1541,7 @@ This section describes the first step of each test case in the following section
 
 \begin{enumerate}
 	\item \textbf{Run jobA, which creates query pidA. Get result files of pidA} \\
-	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id and is not modified by the solution. After executing (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry. Table \ref{Tab:eva_datachanges1} shows the state of the query table after the execution of the following python code.
+	Listing \ref{lst:eva_datachange_1} shows the code to run jobA using the python client. The researcher defines the spatial and temporal filter arguments and applies the NDVI and the minimum time process on it, described in Section \ref{example}. The "con.create\_job()" line sends the process graph to the back end and retrieves a job object containing the new generated job id. After executing jobA (calling start\_job()), a job entity and a query entity are created and persisted in the database. The query entity with a generated query PID is created by the Query Handler, since the data base has no query entry. Table \ref{Tab:eva_datachanges1} shows the state of the query table after the execution of the following python code.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 con = openeo.connect("http://openeo.local.127.0.0.1.nip.io")
@@ -1595,7 +1594,7 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\label{lst:eva_datachange_nq1}
 	\end{code}
 	
-	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query in Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. The path of each file is containing meta-data about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at EODC. The next folders define the date of the data record. The filename according to the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}, where the Nxxyy value defines the basline number, Rxxx defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, therefore identifies products that came from the data of the same sensing time. The time-stamp entry shows when the data was first available at EODC. The time of the date is not displayed at the query, since it is always at the beginning of the day, so for the first entry this means available since 8.5. 2017 at 00:00 o'clock.
+	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query in Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) consists of 51 files and the re-execution of the query results in the same 51 files. The path of each file is containing meta-data about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at EODC. The next folders define the date of the data record. The filename follows the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}. The Nxxyy value defines the basline number, Rxxx defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, therefore identifies products that came from the data of the same sensing time. The time-stamp entry shows when the data was first available at EODC.
 	
 	\begin{code}
 		\begin{minted}[fontsize=\footnotesize]{text}
@@ -1656,7 +1655,7 @@ Table \ref{Tab:eva_datachanges1} shows the content of the query table after the 
 \begin{enumerate}
 	\setcounter{enumi}{+1}
 	\item \textbf{Update one of the resulting files of the pidA query} \\
-The "update\_file()" method is added to the python client and EODC back end to let the back end activate the "Data Update Simulator" shown in Figure \ref{fig:eva_data_simulation}. If it is activated it simulates the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The addition happens right after the query execution at the back end. The update does not replace the old file, but adds a new file to the result. 
+The "update\_file()" method is added to the python client and EODC back end to let the back end activate the "Data Update Simulator" shown in Figure \ref{fig:eva_data_simulation}. If it is activated it simulates the update of the first file in the query result. The update sets the creation time-stamp of the file to the execution time of the "update\_file()" method and renames the updated output file with an additional "\_new". The update does not replace the old file, but adds a new file to the result. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Update the first file of the pidA query resulting files.
@@ -1792,7 +1791,7 @@ Table \ref{Tab:eva_datachanges3} shows the Query table of the meta-database afte
 \end{table}
 
 	\item \textbf{Run duplicate of jobA, by using the data PID of jobA named jobC}\\
-To create jobC the persistent input data identifier of job A (pidA) is used as the input data of jobC. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. Therefore, the Query table is still in the state of Table \ref{Tab:eva_datachanges3}. 
+To create jobC, the persistent input data identifier of job A (pidA) is used as the input data. The execution time-stamp is part of the query in pidA and the original query gets executed for jobC. Since jobC uses the same data PID as jobA, the updated file is filtered out of the resulting files and there is no new query PID generated. Therefore, the Query table is still in the state of Table \ref{Tab:eva_datachanges3}. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Take input data of job A by using the input data pid A of job A
@@ -1814,7 +1813,7 @@ file_listC = con.get_filelist(pidC)
 	\end{code}
 \end{enumerate}
 
-Table \ref{Tab:eva_datachanges4} presents the mapping between the executed jobs and the input data query pid of Test Case 1. The result seems consistent if files are updated at the back end. Jobs that used the original query pid as input data, also have used the data defined by the pid, even after the update, since the original file was still available. The current way of reproducing a job in OpenEO, by applying the same process graph (jobB), fails since the resulting files differ from the original execution (jobA). The time-stamp information for the filtering is missing. Hence,  the input data of jobB result in a different query pid.     
+Table \ref{Tab:eva_datachanges4} presents the mapping between the executed jobs and the input data query pid of Test Case 1. The results are consistent if files are updated at the back end. Jobs that used the original query pid as input data, also have used the data defined by the pid, even after the update, because the original file was still available. The current way of reproducing a job in OpenEO, by applying the same process graph (jobB), fails since the resulting files differ from the original execution (jobA). The time-stamp information for the filtering is missing. Hence,  the input data of jobB result in a different query pid.     
 
 	\begin{table}[]
 	\caption{Resulting mapping of the jobs and the used query pid of Test Case 1.}
@@ -1844,19 +1843,19 @@ con.update_file(deleted=True)
 
 \begin{code}
 	\begin{minted}[fontsize=\small]{text} 
-	{'timestamp': '2019-03-31 17:44:43', 
-	'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
-	S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
-	{'timestamp': '2017-05-08 00:00:00',
-	'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
-	S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
-	{'timestamp': '2017-05-08 00:00:00', 
-	'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
-	S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
-	{'timestamp': '2017-05-08 00:00:00',
-	'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
-	S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
-	...
+{'timestamp': '2019-03-31 17:44:43', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
+{'timestamp': '2017-05-08 00:00:00', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TQR_20170504T101349.zip'}, 
+{'timestamp': '2017-05-08 00:00:00',
+'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
+...
 	\end{minted}
 	\caption{Modified file list output of the "Data Update Simulator" component, by removing the original file from the list.}
 	\label{lst:eva_datachange_fl4}
@@ -2031,7 +2030,7 @@ versionA = jobA.get_backend_version()
 
 \section{Performance and Storage Impact}\label{Evaluation:impact}
 
-This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 9 publications that used data provided by EODC from the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, Table \ref{Tab:appendix} shows the used papers used for the test cases. The used values of the spatial and temporal extent are stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end, without the extensions of this thesis (hereinafter referred to as "reference back end"). Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at each back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format. The reference back end, the solution back end as well as the code for the impact evaluation are available at the GitHub repository mentioned at Section \ref{Evaluation:special}.      
+This section evaluates the impact of the implementation on the EODC back end. To achieve this, 18 input process graphs from 9 publications that used data provided by EODC from the last two years are defined. The process graphs are not representing the same process chain, since the processes implemented for OpenEO at EODC are limited at the time of writing this thesis. The spatial and temporal extent are taken from the data used in the papers. These 18 input process graphs represent the 18 test cases, Table \ref{Tab:appendix} shows the used papers used for the test cases. The values of the spatial and temporal extent are stored in the evaluation code (evaluation\_impact.py). The impact is measured by the impact on the performance and the impact on the storage. The fact that the evaluation setup is using a local OpenEO back end makes the performance measurements of the solution not comparable to the productive system of the EODC back end. Therefore, the performance of the solution is compared to an EODC back end, without the extensions of this thesis (hereinafter referred to as "reference back end"). Note that in the reference back end the processing is mocked up in the same way as the solution system as well as the added timestamps in the logging environment for measuring the duration time. The performance and storage measurements are captured in the same code execution. Every input process graph is executed 50 times at each back end and after each iteration the duration and the used storage size is captured. After that the back end gets cleaned up, so that each iteration happens in the same back end conditions. The clean up process removes all database entries. The results are then stored in one JSON file for the storage and one for the performance. For better readability the results are stored additionally in CSV format.      
 
 \begin{table}[]
 	\caption{List of geoscientific papers used for the input data of the impact evaluation in Section \ref{Evaluation:Setup}}
@@ -2053,7 +2052,7 @@ This section evaluates the impact of the implementation on the EODC back end. To
 
 \subsection{Performance}\label{Evaluation:impact_perf}
 
-In this Section we evaluate the performance impact on the EODC back end by measuring the difference of the job execution duration between the reference EODC back end and the EODC back end with the solution of this thesis. The execution time of the implementation is measured by writing timestamps into a log file and calculating the duration afterwards. The duration of the Query Handler (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}). 
+In this section we evaluate the performance impact on the EODC back end by measuring the difference of the job execution duration between the reference EODC back end and the EODC back end with the solution of this thesis. The execution time of the implementation is measured by writing timestamps into a log file and calculating the duration afterwards. The duration of the Query Handler (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}). 
 
 \begin{table}[]
 	\caption{Mean duration time over 50 runs of the solution and the reference back end by executing the test cases}
@@ -2089,7 +2088,7 @@ The execution time of the reference back end is directly depending on the spatia
 
 
 \subsubsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
-
+This section provides for each element of the Query table a description regarding the performance constrains.
 \begin{itemize}
 	\item \textbf{dataset\_pid} \\
 	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has therefore a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance at the performance evaluation, which is between 4 µs and 26 µs with a median of 8 µs. 
@@ -2204,8 +2203,33 @@ boxplot prepared={
 \end{tikzpicture}
 \end{figure}
 	\item \textbf{result\_hash} \\
-	The duration of the result hash creation is dependent on the length of the resulting file list. The sha-256 operation has a complexity of $O(n)$, where n is the length of the resulting file list string. In the test cases the duration time of the result hash calculation is between 83 µs and 161 µs with a median of 136 µs. Figure \ref{fig:evaluation_perf_result_hash} shows the box-plot of the evaluation execution of all test cases. Figure \ref{fig:evaluation_impact_data_resulthash} shows the linear relation between the length of the file list and the duration time of the hash calculation. 
-\todo{maybe better figure or additional table}
+	The duration of the result hash creation is dependent on the length of the resulting file list. The sha-256 operation has a complexity of $O(n)$, where n is the length of the resulting file list string. In the test cases the duration time of the result hash calculation is between 83 µs and 161 µs with a median of 136 µs. Figure \ref{fig:evaluation_perf_result_hash} shows the box-plot of the evaluation execution of all test cases. Figure \ref{fig:evaluation_impact_data_resulthash} shows the linear relation between the length of the file list and the duration time of the hash calculation. Table \ref{Tab:data_result_hash} shows the relationship between number of files and average duration time of the test cases.  
+	
+\begin{table}[]
+	\caption{Result hash performance of the test cases depending on the number of result files.}
+	\begin{tabular}{c|c|c}
+		\textbf{Test Case} & \textbf{Number of files} & \textbf{Result hash duration [µs]}  \\ \hline
+		1 & 14  & 47.244 \\ \hline 
+		2 & 24 & 78.047 \\ \hline
+		3 & 11 & 37.209 \\ \hline
+		4 & 9 & 32.419 \\ \hline
+		5 & 10 & 35.000 \\ \hline
+		6 & 10 & 35.884 \\ \hline
+		7 & 10 & 33.818 \\ \hline
+		8 & 12 & 36.886 \\ \hline
+		9 & 2255 & 8698.7 \\ \hline
+		10 & 17 & 59.359 \\ \hline
+		11 & 1551 & 5343.588 \\ \hline
+		12 & 12 & 41.548 \\ \hline
+		13 & 28 & 95.182 \\ \hline
+		14 & 420 & 1400.707 \\ \hline
+		15 & 15 & 50.146 \\ \hline
+		16 & 1356 & 4985.047 \\ \hline
+		17 & 15 & 51.565 \\ \hline
+		18 & 54 & 187.186 \\ 
+	\end{tabular}
+	\label{Tab:data_result_hash}
+\end{table}
 \begin{figure}[!h]
 	\centering
 	\caption{Box-plot of the duration time of the test cases to handle the result file list hash entry.}
@@ -2239,7 +2263,7 @@ boxplot prepared={
 	\label{fig:evaluation_impact_data_resulthash} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 	\item \textbf{meta\_data} \\
-	The meta data consists only on the number of result files. This is measured by the built-in len() operator in python, which has a complexity of $O(1)$ according to the official python wiki\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 359 µs with a median of 12 µs. Figure \ref{fig:evaluation_perf_meta_data} shows the box-plot of the test case execution.
+	The meta data in the implementation is the number of result files. This is measured by the built-in len() operator in python, which has a complexity of $O(1)$ according to the official python description\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases the meta data calculation takes a duration between 6 µs and 359 µs with a median of 12 µs. Figure \ref{fig:evaluation_perf_meta_data} shows the box-plot of the test case execution.
 \begin{figure}[!h]
 	\centering
 	\caption{Box-plot of the duration time of the test cases to handle the meta\_data entry.}
