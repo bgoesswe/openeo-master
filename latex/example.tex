@@ -247,8 +247,7 @@ Reproducing geoscientific papers failed by the different individual interpretati
 \section{Problem Description}\label{Problem}
 The vast majority of data used in earth observation sciences are retrieved and provided via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api} for data download and processing data. These services are used to define the experiment workflow, the definition of the used data, the execution and the retrieval of the results. Therefore, researcher are not in full control of the code execution and the environment of their experiments, since the information about the workflow environment of the experiment is not accessible for the scientists. Used external dependencies for processing the earth observation data can not be accessed. The services act as black boxes to the researchers with no possibility to get versions of the used packages to calculate the resulting images. The situation leads to the problem, that researchers are not capable of describing the experiments in a way that they can be reproduced. \\
 Input data of a typical remote sensing workflow is defined by satellite data of a specified satellite type filtered by a temporal and a spatial extent. The raw satellite data is preprocessed by the backend provider, so that there is a global dataset. Geoscientists using the same satellite identifier can have different results after executing the same experiment, if the provider updated the way the data is preprocessed. An examle for this is the format update of \gls{esa} in 2017 of the Sentinel 1 dataset, which affected old data records, see \footnote{https://sentinel.esa.int/web/sentinel/missions/sentinel-1/news/-/article/sentinel-1-update-of-product-format}. When scientists use the dataset of a data provider, there is no possibility to see changes in the preprocessing algorithm. Therefore, data versions are not visible for the researcher. This leads to the problem that scientists are not capable of identifying the used input data, which is a necessity for reproducibility. 
-%\todo{Talk about big data of Geoscience and how big it is...}
-%\todo{maybe find better example of data update than format problems...}
+
 %Due to a different range of functionality and a difference between the endpoints of the providers, it is great afford to create a workflow for more than one provider. The openEO project has the goal to be an abstraction layer above different EO data providers. Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}) and in Section \ref{Related Work}. During the creation time of this thesis there is no consideration of repeatability in the openEO architecture. Verification of workflows for users of openEO is not in the agenda of the openEO project. Generalized layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, as it handles data and processes on the data in a standardized way for different providers. Even though the range of functionality and the API endpoints are well-defined in the openEO core-API, the contributing content providers (openEO backends) will have different underlying software execution environments. The used technology of an openEO backend will evolve in the future, hence it can lead to different results on the same workflow execution. Considering the following: A scientist runs an experiment using openEO as research tool and gets an arbitrary result. The same scientist runs the same experiment with the same input data some months later and gets a slightly different result. The question occurs, why are the results distinct? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the backend provider changed. Adding a possibility for the users of openEO to gain this information is an important feature for the scientific community. The aim of this thesis is to design an extension to openEO, so that users are able to retrieve provenance data about a job re-execution \cite{openeo}. 
 
 \section{Aim of the Work}\label{Aim}\label{Use Cases}
@@ -999,7 +998,7 @@ The context model is stored as a JSON object in the job execution meta-database.
 Table \ref{Tab:contextmodel} provides the mapping between the context model elements from Section \ref{Design} and the keys of the JSON context model object of the prototype. The elements have a one to one mapping of the context model and the JSON key except for the timestamps of the execution. The execution time stamps are part of the Job table in the EODC meta-database. \\
 Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described for the context model in the Design section. Information on the backend environment during the execution of the job is persisted in the context model. In the context model the backend version and the execution time-stamp is persisted and can be used to identify the backend provenance of the execution time. The code environment is a list of all python dependencies with their versions installed during the execution of the jobs. In addition the python interpreter version is added to the JSON object. How the data is captured in detail is described in the sections below.    
 
-%\todo{Make Glossary !}
+
  
 \begin{table}[]
 	\caption{Relation of context model elements and EODC JSON context model.}
@@ -1113,7 +1112,7 @@ The previous sections describe only the technical insight of the backend. This s
 \item \textbf{Re-use of Input Data} \\
 	To re-use the input data in a different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC backend automatically applies the queries in a way of the original execution. To pass the data PID to the process graph, it is inserted in the process "get\_collection" as an additional filter argument named "data\_pid". Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed anyway, but there has to be a warning message to notify the user.  
 \end{enumerate}
-%\todo{Maybe add summary of changes to the EODC backend with a "killer" diagram}
+
 \section{Use Cases}
 This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before. In the first section there is an overview how the data identification recommendations by \acrshort{rda} are implemented. 
 
@@ -1445,7 +1444,7 @@ INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL',
 
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC backend. It consists of an implementation of the RDA recommendations for the backend. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} Query system. The implementation of the backend provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC backend is used to communicate the meta-data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. In addition the endpoints needed to access the provenance information are inserted into the openEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC backend and by testing the implementation against special cases.    
-%\todo{optional: Maybe adding a sequence diagram somewhere in the implementation showing how things work would complement it?}
+
 \chapter{Evaluation}\label{Evaluation}
 In this chapter the concept is evaluated on the prototype implementation described in Chapter \ref{Implementation}. The solution is evaluated by test cases that simulate updates on data as well as on the backend environment. The performance and storage impact of the solution is evaluated by applying 18 test cases derived from 9 publications that used EODC data in the past. The chapter is structured as follows: \\
 First the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special_dataid} evaluates how the solution behaves on data updates at the backend. The following Section \ref{Evaluation:special_jobcap}  evaluates if the recreation of an older back end version is possible using the solution. Section \ref{Evaluation:impact} provides measurements on the performance and storage impact of the solution system. 
@@ -2066,14 +2065,14 @@ This section evaluates the performance and storage impact of the implementation 
 
 \subsection{Performance}\label{Evaluation:impact_perf}
 
-In this section we evaluate the performance impact on the EODC backend by measuring the difference of job execution durations between the reference backend and the solution backend. The execution time of the implementation is measured by writing timestamps into a log file and calculating the duration afterwards. Duration of the \textit{Query Handler} (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}). Every test case is executed 50 times at each backend. Before each test case execution the backend gets cleaned up, so that each iteration happens in the same backend conditions.  
+In this section, we evaluate the performance impact on the EODC backend by measuring the difference of job execution durations between the reference backend and the solution backend. The execution time of the implementation is measured by writing timestamps into a log file and calculating the duration afterward. Duration of the \textit{Query Handler} (see Section \ref{Implementation:Data Identification}) execution is measured, as well as the duration of the context model creation process (described in Section \ref{Implementation:Job dependent provenance}). Every test case is executed 50 times at each backend. Before each test case execution, the backend gets cleaned up, so that each iteration happens in the same backend conditions. 
 
 \subsubsection{Performance of Query Handler}\label{Evaluation:impact_perf_query}
-This section provides for each element of the Query table a description regarding the performance constrains.
-\todo{add the so what stuff...}
+This section provides for each element of the Query table a description regarding the performance constraints.
+
 \begin{itemize}
 	\item \textbf{dataset\_pid} \\
-	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has therefore a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance results, which are between 4 µs and 26 µs with a median of 8 µs. The boxplot shows that the duration time of retrieving the dataset PID is, except for a view aberrations, similar between all test case executions and independent of the job configuration.    
+	The dataset\_pid is taken directly from the parsed filter arguments of EODC and has, therefore, a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance results, which are between 4 µs and 26 µs with a median of 8 µs. The boxplot shows that the duration time of retrieving the dataset PID is, except for a view aberrations, similar between all test case executions and independent of the job configuration.
 	\begin{figure}[!h]
 		\centering
 		\caption{Boxplot of the duration needed in the test cases to handle the data PID entry. }
@@ -2189,6 +2188,8 @@ This section provides for each element of the Query table a description regardin
 	
 	\begin{table}[]
 		\caption{Result hash performance of the test cases depending on the number of result files.}
+		
+		\centering
 		\begin{tabular}{c|c|c}
 			\textbf{Test Case} & \textbf{Number of files} & \textbf{Result hash duration [µs]}  \\ \hline
 			1 & 14  & 47.244 \\ \hline 
@@ -2289,7 +2290,7 @@ Figure \ref{fig:eva_data_static} show the duration of the constant query element
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.55]{eva_data_static}
-	\caption{Constant elements of the query table in relation to the test cases sorted by resulting size.}
+	\caption{Constant elements of the \textit{Query Handler} calculation in relation to the test cases sorted by result size.}
 	\label{fig:eva_data_static} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
@@ -2298,7 +2299,7 @@ Figure \ref{fig:eva_data_static} show the duration of the constant query element
 
 \begin{enumerate}
 	\item \textbf{Constant context model elements} \\
-	The following elements of the context model are constant in duration time: the programming language, the input data identifier, the backend version and the start and end timestamp. These are independent of the job configuration and are read operations with a complexity of $O(1)$. The constant context model elements in the test cases take a duration time between 26 µs and 122 µs with an median of 41.5 µs. Figure \ref{fig:evaluation_perf_static_cm} shows the box-plot of the test case execution.
+	The following elements of the context model are constant in duration time: the programming language, the input data identifier, the backend version, and the start and end timestamp. These are independent of the job configuration and are read operations with a complexity of $O(1)$. The constant context model elements in the test cases take a duration time between 26 µs and 122 µs with a median of 41.5 µs. Figure \ref{fig:evaluation_perf_static_cm} shows the box-plot of the test case execution.
 	\begin{figure}[!h]
 		\centering
 		\caption{Box-plot of the duration time of the test cases to handle the constant context model elements.}
@@ -2357,6 +2358,7 @@ Figure \ref{fig:eva_data_static} show the duration of the constant query element
 	The duration of the result hash is dependent on the length of the resulting image. The sha-256 operation has a complexity of $O(n)$, where n is the size of the output image. In the test cases the duration time of the result hash calculation is between 1.924 ms and 106.270 ms with a median of 2.521 ms. Table \ref{Tab:result_hash} shows the test cases and their result size in relation to the average duration time of the result hash calculation. In the experiment setup every 100 kByte of output data resulted in average in an additional duration of 371 µs. The test cases 9, 11, 14 and 16 had the biggest result file and therefore needed the most time in the result hash calculation.     
 	
 	\begin{table}[]
+		\centering
 		\caption{Result hash performance of the test cases depending on the result size.}
 		\begin{tabular}{c|c|c}
 			\textbf{Test Case} & \textbf{Result size [kByte]} & \textbf{Result hash duration [ms]}  \\ \hline
@@ -2419,7 +2421,6 @@ Table \ref{Tab:eva_performance} summarizes the result of the mean duration time 
 
 \begin{table}[]
 	\caption{Mean duration time over 50 runs of the solution and the reference backend by executing the test cases}
-	\centering
 	\begin{tabular}{r|r|r|r|r|r}
 		
 		\textbf{} & \textbf{Reference Backend} & \multicolumn{3}{c|}{\textbf{Solution Backend}} &  \\ \hline \textbf{Test} & \textbf{} & \textbf{Comparison} & \textbf{Query} & \textbf{Context} & \textbf{Solution} \\ 
@@ -2448,8 +2449,6 @@ Table \ref{Tab:eva_performance} summarizes the result of the mean duration time 
 \end{table}
 
 % The result hash is the only element that is dependent on the complexity of the test case. Most of the complexity comes from the temporal extent of the test cases, which do not affect the size of the resulting file. The reason for this is that the output file is always a composite of the values throughout the time range.
-%\todo{ What is the variance across several runs?}
-%\todo{Context Model: mock-up of result hash calculation possible ?}
 
 \subsection*{Storage}\label{Evaluation:impact_stor}
 This section describes the storage needed for the captured meta-data. Since all the captured data is in the PostgreSQL database, the storage needed by it can be estimated using the PostgreSQL interface. Listing \ref{lst:eva_imact_1} presents the commands used to get the size of the data base entries. The id of the data record is inserted into "''" (e.g. job id in the first one).  
@@ -2506,9 +2505,15 @@ The resulting storage need of the evaluation is quite constant. The mean storage
 The evaluation in this chapter showed how the solution tackles the goals of the research questions. First it summarizes how the RDA recommendations are implemented in the solution, except for the migration recommendations (R14 and R15). The data identification implementation is then tested against special test cases regarding data updates and data deletions at the backend. The evaluation shows that the solution can re-execute queries properly by returning old versions of updated files. The test cases show that the usage of the data PID as input data of a new job is superior to the current way of re-executing a job with the same process graph at EODC. The reason for this is, that the process graph does not have the original execution time-stamp and therefore does not use the same input data after an update occurs. In the evaluation of deleted data at the backend, the solution happens to be not capable of showing the exact missing files, since not the whole file list result of the query is persisted. The test case on job capturing showed that the solution is capable of identifying the backend version and therefore, the environment of the job execution. Still to run a new job on the same environment, EODC has to manually provide it. The evaluation also contains a section about the performance and storage impact on the EODC backend, by running 18 test cases derived from past publications that used data from EODC. The results show that, except for the result hashes, the calculation of the data identification and the context model are independent from the complexity of the job. The time of the result hashing used for the data identification is dependent on the size of the query result and the result hash of the context model is dependent on the size of the output file of the job execution. The storage impact evaluation results in the conclusion that the additional needed space per job is constant. It depends on if there is a new query entry added to the database or not.
    
 \chapter{Conclusion and future Work}\label{Conclusion}
+In this paper we dealt with the problem of lack of reproducibility of many earth observation experiments executed using specialised computing backends. Considered scenarios and problems can be observed in other e-Science disciplines.
 
+We presented how infrastructure of existing backends can be modified to support precise data identification by following the Research Data Alliance recommendations. We described how jobs can be captured and compared using the VFramework to identify whether any differences in computational environments exist. The proposed solution was implemented at Earth Observation Data Centre in Vienna which is a member of the openEO consortium that develops a common interface for interoperability of earth observation backends. The implementation involved extending the backend to add reproducibility supporting functionality, as well as, extending client side interfaces to provide additional functionality. Thus, we did not change the way researchers work, but introduced changes to existing environments to improve reproducibility of experiments executed using them.
+
+To evaluate our solution, we simulated use cases representing updates of data and changes in the backend environment. We also measured the performance and storage impact on the backend. We conclude that the solution is capable of making the input data, code and the environment identifiable and reproducible. Impact on backend's performance is minimal. 
+
+Future work will focus on implementing the solution on further backend types e.g. backends with non-file-based result sets. The openEO project is an ongoing project, hence the common API may evolve and our work will have to be adapted to new releases of the API.
 \section{Conclusion}
-In this thesis, the challenges of providing reproducibility in earth observation science have been explored. The solution consists of data identification and code identification for workflows in the context of geosciences. The implementation within the openEO project proves the concept defined in Section \ref{Design}. It makes it clear that reproducibility can be achieved in earth observation workflows by providing data identification and process identification. One reason why earth observation researchers lack on reproducibility is the additional time needed to achieve it. With the provided solution researchers can run experiments on EODC and automatically generate a data identifier that other scientists can use directly in their research. In addition the scientists can cite the version of the backend and describe the execution environment. On the other hand, reproducible processing is not a prior feature of the backend providers at the moment, therefore the solution had to be simple to apply to existing systems. The suggested solution consists of light-weight recommendations to the backend design. The provided meta-data in the presented prototype is capable of reproducing experiments theoretically, but are not supported by the EODC backend in an automated fashion. The design introduces a feature to compare different job executions to bring more transparency to the users. Applying the suggested additions is an advantage for backend providers, since they can provide execution information to scientists. Furthermore, the concept of easy to apply data citation and re-use may attract more users to use the backends that provide the features of the concept. In case of the openEO project, the development of it will lead to adoptions in the future. Therefore, the prototype of this thesis can be seen as a starting point of reproducibility in the openEO project rather than a final solution.  
+In this thesis, the challenges of providing reproducibility in earth observation science have been explored. The solution consists of data identification and code identification for workflows in the context of geosciences. The implementation within the openEO project proves the concept defined in Section \ref{Design}. It makes it clear that reproducibility can be achieved in earth observation workflows by providing data identification and process identification. One reason why earth observation researchers lack on reproducibility is the additional time needed to achieve it. With the provided solution researchers can run experiments on EODC and automatically generate a data identifier that other scientists can use directly in their research. In addition the scientists can cite the version of the backend and describe the execution environment. The captured data in the context model is capable of reproducing experiments. Nevertheless it is not supported by the EODC backend in an automated fashion. The design introduces a feature to compare different job executions to gain transparency to the users. Applying the suggested additions is an advantage for backend providers, since they can provide execution information to scientists. Furthermore, the concept of easy to apply data citation and re-use may attract more users to use the backends that provide the features of the concept. In case of the openEO project, the development of it will lead to adoptions in the future. Therefore, the prototype of this thesis can be seen as a starting point of reproducibility in the openEO project rather than a final solution.  
 
 \subsection{Research questions revisited}\label{research question revisited}
 
