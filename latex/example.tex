@@ -202,15 +202,32 @@ To my girlfriend Viola: Thank you very much for helping me through the stressful
 To my family: Thank you for supporting me through my whole studying time and for motivating me to go on with the thesis. \\ \\
 To my colleagues of the Remote sensing research group: Thank you for patiently waiting for me to finish my studies and letting me work on a thesis within the openEO project. \\ \\
 To my colleagues at EODC: Thank you for providing me all resources I requested and letting me implement the solution on your system. \\ \\
-Last but not least to my supervisors Andreas Rauber and Tomas Miksa for always quickly replying on questions and providing me with constructive feedback. 
+Last but not least to my supervisors Andreas Rauber and Tomasz Miksa for always quickly replying on questions and providing me with constructive feedback. 
 \end{acknowledgements*}
 
 \begin{kurzfassung}
+\todo{Neu übersetzen wenn Abstract fertig ist}
 Publikationen in den Bereichen der Geodäsie und Geoinformation sind oft, aus diversen Gründen, nicht reproduzierbar. Daher fand in den letzten Jahren ein Umdenken in Bezug auf reproduzierbare Publikationen in den computergestützten Geowissenschaften statt. Die Problematik für Wissenschaftler dieser Forschungsbereiche ist die große Anzahl an unterschiedlichen Anbietern, fehlende Datenversionierung und intransparente Anbieter Services. Existierende Literatur beschränkt sich auf konkrete Anbieter und Forschungsbereiche. Dabei wird der Fokus mehr auf die Ausführung des selben Auftrages als auf Reproduzierbarkeit gelegt. Um diese zu ermöglichen ist es notwendig die Daten und die Bearbeitung dieser zu identifizieren. Dabei fehlt es der Geodäsie und Geoinformation an einem allgemeinen Konzept dies sowohl für Wissenschaftler als auch für Anbieter zu ermöglichen. Das Ziel dieser Arbeit ist es eine allgemeine Lösung zur Reproduzierbarkeit in den Geowissenschaften zu erstellen, indem die Daten und deren Bearbeitung automatisch identifizierbar gemacht werden. Dafür wird eine vollständige Lösung innerhalb des Horizon 2020 Projektes openEO konzipiert, welche im Earth Observation Data Centre for Water Resources Monitoring (EODC) Anbieter implementiert wird. Die Research Data Allience (RDA) Empfehlungen bezüglich Datenzitierbarkeit werden in diesem Kontext angewendet. Um die Bearbeitung der Daten einzufangen wird das VFramework Konzept angewandt. Die Implementierung in EODC wird über vordefinierter Szenarien für Geowissenschaftler evaluiert.    
 \end{kurzfassung}
 
 
 \begin{abstract}
+\todo{See paper, but adapt it, since this thesis is more complex}
+\todo{1. Context, 2. Problem, 3. Mentioning Related work a bit, 4. My Contribution}
+\todo{Zuerst Sachen definieren bevor sie verwendet werden.}
+\todo{"great concept of reproducibility" --> zu grob, grobe Begriffe vermeiden}
+\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
+\todo{Gesamte Thesis: Restructure passive sentences}
+\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
+\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
+\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
+\todo{Gesamte Thesis: Kurze einfache Sätze}
+\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
+\todo{EODC + openEO should be in the solution not in the context}
+\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
+\todo{Wichtige Kapitel: Abstract, Introduction, Conclusion, evtl. Evaluation Summary}
+\todo{Let Viola read through it !!}
+
 Studies show that many areas of earth observation sciences lack in creating reproducible research. In the last years, there was a great movement towards policies defining reproducibility for geoscientists. The diverse set of data providers, the lack of data versions and processing systems without transparency of environment data are responsible for scientists not being able to reproduce experiments. Existing solutions focus on re-execution and are specific for individual workflows and backends. To reproduce an experiment, the input data and the workflow have to be identifiable. The earth observation community has no general solution that can be easily applied by the providers and is simple to use for scientists. The aim of this thesis is a general concept of reproducibility in the context of the earth observation community by applying automatic data identification and workflow capturing methods. Therefore, the Horizon 2020 openEO project implements a complete system, which is a unified abstraction layer standard for earth observation data providers. In doing so, the Earth Observation Data Centre for Water Resources Monitoring (EODC) backend is extended applying the Research Data Alliance (RDA) data identification recommendations. To capture the processing workflow, we implement the VFramework into the solution. We evaluate the prototype by predefined scenarios of scientists using EODC to examine the viability of the prototype.       
 \end{abstract}
 
@@ -224,6 +241,10 @@ Studies show that many areas of earth observation sciences lack in creating repr
 \mainmatter
 
 \chapter{Introduction}\label{Introduction}
+\todo{Merge Motivation and Problem Description to one section}
+\todo{Structure as following: Many different backends, lack of reproducibility...}
+\todo{Paper mit falsche Reproducibility definition streichen bzw. nicht als "Definition" verwenden, die Definition hier passt aber, nur zum Checken}
+\todo{Move Use Cases to Problem Description, used to specify more strict the "aim" of the work or what will be done...}
 \section{Motivation}\label{Motivation}
 Over the last decades, remote sensing agencies have increased the variations of data processing and therefore, the amount of resulting data. The complexity of the experiments leads researchers to use external services for the workflow. These circumstances make it hard for scientists to provide the necessary information to enable reproducibility. Scientists create a description of the workflow and the used satellite identifier to describe experiments. It is necessary to have citable data and processes on the data to ensure long-term reproducibility to preserve the data for further usage in the future,  \cite{6352411}. Many scientific areas, such as computer science, biology, and computational geoscience discuss reproducibility. The study on reproducibility in geoscience \cite{reprovsrepli} defines the term "reproducing" by running a second different experiment, which results in the same conclusion as the first experiment. The more the second experiment differs from the first, the more information is gained by it. It is needed to provide additional evidence about the outcome of an experiment. Replicability is the re-run of the same methods of the first experiment to check if the described methods lead to the claimed results\cite{reprovsrepli}. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open, reproducible research is different among the participating scientists in a way that the interpretation is more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are:
 
@@ -251,7 +272,7 @@ Input data of a typical remote sensing workflow is satellite data of a specified
 %Due to a different range of functionality and a difference between the endpoints of the providers, it is great afford to create a workflow for more than one provider. The openEO project has the goal to be an abstraction layer above different EO data providers. Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}) and in Section \ref{Related Work}. During the creation time of this thesis there is no consideration of repeatability in the openEO architecture. Verification of workflows for users of openEO is not in the agenda of the openEO project. Generalized layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, as it handles data and processes on the data in a standardized way for different providers. Even though the range of functionality and the API endpoints are well-defined in the openEO core-API, the contributing content providers (openEO backends) will have different underlying software execution environments. The used technology of an openEO backend will evolve in the future, hence it can lead to different results on the same workflow execution. Considering the following: A scientist runs an experiment using openEO as research tool and gets an arbitrary result. The same scientist runs the same experiment with the same input data some months later and gets a slightly different result. The question occurs, why are the results distinct? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the backend provider changed. Adding a possibility for the users of openEO to gain this information is an important feature for the scientific community. The aim of this thesis is to design an extension to openEO, so that users are able to retrieve provenance data about a job re-execution \cite{openeo}. 
 
 \section{Aim of the Work}\label{Aim}\label{Use Cases}
-
+\todo{Standalone Section with only the Research Questions}
 The following sections define the use cases to validate the design proposed in this thesis. They describe scenarios focused on scientific workflows that are currently not achievable, but shall be accomplish-able with the solution of this thesis. This thesis uses the term "job" for the definition of workflow since it is common in earth observation science.
 
 \subsection{Example Experiment}\label{example}
@@ -345,8 +366,19 @@ The following steps summarize the scenario sequence of actions: \\
 \end{enumerate}
 
 \subsection{Research Questions}\label{research question}
-
-The expected outcome of this thesis is to discover and develop a framework for making repeatability conceivable in the earth observation community. The solution enables users to re-execute workflows and validates the result, so that differences in the processing or the data are accessible for the users. To achieve this goal, a model for capturing the environment of the backends has to be discovered and implemented. Since the solution is implemented within the \gls{openeo} (details see Section \ref{openEO}), it shall conclude in recommendations for the openEO project on how to improve re-execution validation for the users and how it is achievable. Considering the problem description and the scenarios above, the following research questions can be formulated:
+\todo{Use propose in the first sentence --> Done}
+\todo{Use Accessible instead of available}
+\todo{Two objectives: Capturing, Make Accessible}
+\todo{Do not use implement that often here, it is not so important --> the Model is the important thing in the thesis}
+\todo{contribute to openEO project to provide information on reproducibility}
+\todo{openEO just sets the context}
+\todo{At least big questions: How --> What}
+\todo{RQ1 --> Mention Repeated, What Information...about environment...}
+\todo{Generell: Software --> Environment}
+\todo{RQ1.2 --> not software}
+\todo{RQ1.3 --> maybe remove or rename --> Where to put the stuff to capture --> See Conclusion}
+\todo{Reminder: PROV-O ? Andi didn't notice ...}
+The expected outcome of this thesis is to propose a framework for making repeatability conceivable in the earth observation community. The solution enables users to re-execute workflows and validates the result, so that differences in the processing or the data are accessible for the users. To achieve this goal, a model for capturing the environment of the backends has to be discovered and implemented. Since the solution is implemented within the \gls{openeo} (details see Section \ref{openEO}), it shall conclude in recommendations for the openEO project on how to improve re-execution validation for the users and how it is achievable. Considering the problem description and the scenarios above, the following research questions can be formulated:
 
 \begin{itemize}
 	\item \textbf{How can an earth observation job re-execution be applied like the initial execution?}
@@ -366,8 +398,8 @@ The expected outcome of this thesis is to discover and develop a framework for m
 \end{itemize}
 
 \section{Methodological Approach}\label{Method}
-The use cases defined in the previous section require specific changes to the components of an earth observation backend. The following list describes the parts of the suggested solution briefly: 
-
+The use cases defined in the previous section require specific changes to the components of an earth observation backend. The following list describes the parts of the suggested solution: 
+\todo{Revisit and rewrite it...}
 
 \begin{enumerate}
 	\item \textbf{Data Identification}
@@ -377,6 +409,7 @@ The use cases defined in the previous section require specific changes to the co
 	The process has to be identifiable, to accomplish the verification of different process executions. Therefore, the versioning of the process code can be used to persist states of the code. The thesis is for an open source project, and the code of the backends are published at Github, so we use Git as the tool to capture the code state. 
 		
 	\item \textbf{User Endpoints}
+\todo{Change text to openEO contibution}
 	The interface for users has to be implemented so that the use cases can be executed. Therefore, client applications have to be modified. The used programming language in this thesis is Python\footnote{https://www.python.org}.
 \end{enumerate}
 
@@ -851,6 +884,7 @@ This section describes a possible capturing method of User Defined Functions (UD
 This chapter presented the concept of the proposed solution system. The data elements needed to be able to reproduce a job execution are presented and described. The data identification has to be implemented according to the RDA recommendations, to achieve it. The backend provenance got defined by the identification of the software and the version of the backend. The job dependent environment describes the environment of the job execution information and the resulting hash. The data of the job execution got summarized in the context model. It consists of the data needed to answer the research questions of Chapter \ref{Introduction}. In addition to the data description, the needed user services to provide the functionality for the users got described in the last chapter. The next chapter presents the implementation of the design of this chapter at the EODC backend.    
 
 \chapter{Implementation}\label{Implementation}
+\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 This chapter presents the EODC prototype of the concept described in Chapter \ref{Design}. The implementation consists of all suggested changes that have to be made to the openEO workflow, including parts of the backend, core API, and the client. Thus, all three parts of the openEO project architecture get modified in the presented solution. In the openEO project, there is a vast amount of backends and clients implemented in parallel, which are all compatible with each other. One of each of the clients and the backends are used for the proof of concept of this thesis. The python client\footnote{https://github.com/Open-EO/openeo-python-client} is modified for this thesis. The EODC backend\footnote{https://github.com/Open-EO/openeo-openshift-driver} gets used for the backend part. The motivation for choosing this options is that python is the most common programming language at the contributing backends of the openEO project. Both of the chosen implementations are using python as their primary programming language. The adaptations described in Chapter \ref{Design} are implemented for the usage of the python client accessing the EODC backend driver. The resulting prototype is open source and can, therefore, be used by other backend providers with a similar setup.  
 
 The implementation is structured in four parts. The following four sections describe these parts in detail. The first section describes the data identification implementation, e.g. the implementation of the RDA recommendations at the EODC backend. Section \ref{Implementation:Backend provenance} is about the implementation of the automated backend provenance tracking tool that captures data defined in Section \ref{Design:Job Capturing}. After that Section \ref{Implementation:Job dependent provenance} is about the implementation of the job execution provenance. The last section is about the implementation of user interface additions defined in Section \ref{Design:User Interface}.     
@@ -1444,6 +1478,7 @@ INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL',
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC backend. It consists of an implementation of the RDA recommendations for the backend. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} query system. The implementation of the backend provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC backend is used to communicate the data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. Besides, the endpoints needed to access the provenance information are inserted into the openEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC backend and by testing the implementation against exceptional cases.   
 
 \chapter{Evaluation}\label{Evaluation}
+\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 This chapter evaluates the concept of the prototype implementation described in Chapter \ref{Implementation}. The solution is evaluated by test cases that simulate updates on data as well as on the backend environment. The performance and storage impact of the solution is evaluated by applying 18 test cases derived from 9 publications that used EODC data in the past. The chapter is structured as follows: \\
 First, the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special_dataid} evaluates how the solution behaves on data updates at the backend. The following Section \ref{Evaluation:special_jobcap}  evaluates if the recreation of an older back end version is possible using the solution. Section \ref{Evaluation:impact} provides measurements on the performance and storage impact of the solution system. 
 
@@ -2508,10 +2543,17 @@ The reason for this is that the process graph does not have the original executi
 \chapter{Conclusion and future Work}\label{Conclusion}
 
 \section{Conclusion}
+\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
+\todo{Remove automated fashion or add a Why? --> Because EODC does not provide a possibility or it has to be done manually by EODC}
 In this thesis, the challenges of providing reproducibility in earth observation science have been explored. The solution consists of data identification and code identification for workflows in the context of geosciences. The implementation within the openEO project proves the concept defined in Section \ref{Design}. It makes it clear that reproducibility can be achieved in earth observation workflows by providing data identification and process identification to existing backends. One reason why earth observation researchers lack reproducibility is the additional time needed to achieve it. With the provided solution, researchers can run experiments on their backend of choice and automatically generate a data identifier that other scientists can use in their research. Besides, scientists can cite the version of the backend and describe the execution environment. The captured data in the context model is capable of reproducing experiments. Nevertheless, it is not supported by the EODC backend in an automated fashion. In the case of the openEO project, the solution concludes in suggestions to openEO for all components of the project.  
 
 \subsection{Research questions revisited}\label{research question revisited}
-
+\todo{Update changed RQs !}
+\todo{Programming language --> programming language version}
+\todo{Redundante Sätze wegstreichen}
+\todo{first execution --> original execution}
+\todo{Remove "can assumed"}
+\todo{data compared --> Data ID or it changes to Context model somehow}
 This section revisits the research questions defined in Section \ref{research question} to discuss how the concept design suits the questions.
 
 \begin{itemize}
@@ -2520,7 +2562,7 @@ This section revisits the research questions defined in Section \ref{research qu
 		\item \textbf{How can the used data be identified after the initial execution?} \\
 		The input data is defined by the satellite data identifier and the filter operations used in the workflow. This information with the hash of the resulting file list defines a single query identified by a PID. The query data record consists of the original execution timestamp to enable the retrieval of the same data versions. By assigning persistent identifiers to every unique input data, the data can be accessed after the first execution.   
 		\item \textbf{How can the used software of the initial execution be reproduced?} \\
-		The original software is defined by the used code, the programming language, and the installed libraries. A version control system is needed to identify the code. In the implementation, Git and GitHub are used to identify and persist the used code version. The version of the programming language and the installed packages are stored in the job dependent context model. The backend has to recreate the captured versions of code and state of the programming language to reproduce the first execution.       
+		The original software is defined by the used code, the programming language, and the installed libraries. In the implementation, Git and GitHub are used to identify and persist the used code version. The version of the programming language and the installed packages are stored in the context model. The backend has to recreate the captured versions of code and state of the programming language to reproduce the first execution.       
 		\item \textbf{What data has to be captured when?} \\
 		The input data has to be captured at the query execution of the backend to ensure the equality of the persisted query and the first execution. The capturing of the code version has to be executed at the time of the execution, as well as the environment information of the execution. The hash of the resulting output file is calculated right after the creation of it.   
 		\item \textbf{How can the result of a re-execution in future software versions be verified?} \\
@@ -2529,7 +2571,7 @@ This section revisits the research questions defined in Section \ref{research qu
 	\item \textbf{How can the equality of an earth observation job re-execution results be validated?}
 	\begin{itemize}
 		\item \textbf{What are the validation requirements?} \\
-		The validation requirements are the equality of the captured data. Three parts have to be considered by the validation. First, the persistent input data identifier has to be the same between the two executions. Second the code version. Third the hash value of the output file.
+		The validation requirements are the equality of the captured data. Three parts have to be considered by the validation. First, the persistent input data identifier has to be the same between the two executions. Second, the code version. Third, the hash value of the output file.
 		\item \textbf{How can the data be compared?} \\
 		The data is compared to the equality of all components of the context model. Every item of the context model is compared with the same item of the re-execution context model. There are only three states at the comparison defined: "EQUAL" or the difference of the context model element.
 		\item \textbf{How can changes of the earth observation backend environment be recognized?} \\
@@ -2540,6 +2582,8 @@ This section revisits the research questions defined in Section \ref{research qu
 \end{itemize}
 
 \section{Future Work}\label{FutureWork}
+\todo{improved --> customized}
+\todo{be positive about it, so show what can be improved rather than show that is not working yet...}
 This thesis proposed a prototype for applying reproducibility in the openEO project. Still, there are significant issues to be addressed in the development of the openEO project. 
 openEO is still evolving until the official end of the project in 2021 and will be continued afterward. Many features have to be defined and may interfere with the concept proposed in this thesis. User defined functions (UDF) are part of the project, but not well defined yet. Reproducing executed UDFs may lead to adaptations of the concept. Another main issue of the openEO project is the billing concept that has to be apply-able to a diverse set of backends. Since the capturing process and the generation of the context model needs resources, it has to be considered in the billing plan of the backends. The growing diversity of the backends applying the openEO standard is a huge challenge to remain the design of the context model suitable in the future. The concept needs to be improved by implementing it on other backend types. \\
 In the solution of this work, the data is captured to identify how jobs are executed and to be able to identify the provenance. A step further is a way to apply the reproduction of an already executed job automatically. A finer granularity of the process capturing is a possible addition to the concept, leading to a definition of scalability of the processing capturing. A concept to achieve this is presented in Section \ref{Job:Benchmarking} below.
