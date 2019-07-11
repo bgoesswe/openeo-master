@@ -182,6 +182,18 @@
 	description={openEO definition of a job in a JSON format.}
 }
 
+\newglossaryentry{experiment}
+{
+	name={experiment},
+	description={Practical scientific earth observation research using at least one backend with at least one job.}
+}
+
+\newglossaryentry{workflow}
+{
+	name={workflow},
+	description={Step by step description of an experiment.}
+}
+
 \begin{document}
 
 \frontmatter % Switches to roman numbering.
@@ -213,7 +225,7 @@ Publikationen in den Bereichen der Geodäsie und Geoinformation sind oft, aus di
 
 \begin{abstract}
 \todo{Wichtige Kapitel: Abstract, Introduction, Conclusion, evtl. Evaluation Summary}
-\todo{Let Viola read through it !!}
+\todo{Let Viola/Sophie read through it !!}
 % Abstract from paper
 %Earth observation researchers use specialised computing services for satellite image processing offered by various data backends. The source of data is often the same, for example Sentinel-2 satellites operated by the European Space Agency, but the way how data is pre-processed, corrected, updated, and later analysed may differ among the backends.
 %Backends often lack mechanisms for data versioning, for example, data corrections are not tracked. Furthermore, an evolving software stack used for data processing remains a black box to researchers. Researchers have no means to identify why executions of the same code deliver different results. This hinders reproducibility of  earth observation experiments.
@@ -234,8 +246,8 @@ In this paper, we present how infrastructure of existing earth observation data 
 \mainmatter
 
 \chapter{Introduction}\label{Introduction}
-\todo{Merge Motivation and Problem Description to one section}
-\todo{Structure as following: Many different backends, lack of reproducibility...}
+%\todo{Merge Motivation and Problem Description to one section}
+%\todo{Structure as following: Many different backends, lack of reproducibility...}
 \todo{Move Use Cases to Problem Description, used to specify more strict the "aim" of the work or what will be done...}
 
 \todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
@@ -265,25 +277,16 @@ By bringing these three elements together a scientific infrastructure is created
 In this paper, we present this solution improving reproducibility of earth observation experiments executed at the openEO compliant backends. We follow the RDA recommendations for data identification and present how data provided by backends is made identifiable by assigning identifiers to subset queries made by researchers. We discuss which specific information must be captured, which interfaces must be modified, and which software components must be implemented. We also show how jobs executed at backends can be captured and compared using the VFramework to identify whether any differences in software dependencies among two executions exist. We implemented our solution for the Earth Observation Data Centre for Water Resources Monitoring (EODC), a 20 Petabyte storage infrastructure connected to the Vienna Scientific Cluster\footnote{http://vsc.ac.at/systems/vsc-3/} HPC system. In evaluation we simulated typical use cases representing updates of data and changes in the backend environment. We also measured the performance and storage impact on the backend, which turned out to be minimal. 
 
 % PAPER ENDE
-\todo{Introduction Status}
+
 % Background
-Earth observation (EO) data consists mostly of satellite images. The data is too big to be downloaded for local analysis. The solution is to store it in high-performance computational backends, process it there, and browse the results or download resulting figures or numbers. Scientists create a local description of the workflow and satellite data to describe experiments. They send the description to the backend and are notified when the processing finishes \cite{geocloud}.  
+\gls{eo} sciences gathers images of the Earth's surface and atmosphere using instruments and cameras on aircrafts or satellites. Advancing technologies in space agencies lead to the usage of mostly satellite images. The data is too big to be downloaded for local analysis. The solution is to store it in high-performance computational backends, process it there, and browse the results or download resulting figures or numbers. The vast majority of backends are available via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api}.Scientists create a local description of the workflow and satellite data to describe experiments. They send the description to the backend and are notified when the processing finishes \cite{geocloud}. 
 
 % Problem
-Such an approach addresses the performance issues, but does not allow researchers to take full control of the environment in which their experiments are executed. The backends act as black boxes to the researchers with no possibility of getting information on environment configuration, e.g. software libraries used in processing and their versions. Studies in different domains show that the computational environment can have impact on reproducibility of scientific experiments and must be documented in order to ensure reproducibility \cite{Freesurfer} \cite{Thestateofreproducibility}  \cite{MiksaBiomedical}. Still the vast majority of backend providers do not share such environment information. 
+Such an approach addresses the performance issues, but does not allow researchers to take full control of the environment in which their experiments are executed. The backends act as black boxes to the researchers with no possibility of getting information on environment configuration, e.g. software libraries used in processing and their versions. Studies in different domains show that the computational environment can have impact on reproducibility of scientific experiments and must be documented in order to ensure reproducibility \cite{Freesurfer} \cite{Thestateofreproducibility}  \cite{MiksaBiomedical}. Still the vast majority of backend providers do not share such environment information. Another problem deals with a precise identification of data used for processing. EO backends in Europe usually obtain data from the same source, for example from the Sentinel-2 satellites operated by the European Space Agency (ESA). The data provider releases updates and corrections to the data in cases when one of the instruments used for observation was wrongly calibrated or broken and raw data had to be processed again. An example for this is the format update of \gls{esa} in 2017 of the Sentinel 1 dataset, which affected data records of the backends, see \footnote{https://sentinel.esa.int/web/sentinel/missions/sentinel-1/news/-/article/sentinel-1-update-of-product-format}. Updated data is released to backend operators. Usually there is no versioning mechanism for data. Researchers do not know which version of data was used in their study, i.e. whether they were using a version before or after some specific modification was made. This leads to the problem that scientists are not able to precisely identify and cite the input data of their experiments, which hinders reproducibility and in turn undermines trust in the results. For a better understanding of the problem we present the conclusion of two studies regarding reproducibility in EO science after defining used terms of them. \\
+We define the term "reproducibility" by running a second different experiment, which results in the same conclusion as the original experiment. The more an additional experiment differs from an original one, the more information is gained. It is necessary to produce evidence for the outcome of an experiment. We define the term "replicability" as the re-run of the same methods of an original experiment to show that the described methods lead to the claimed results \cite{reprovsrepli}. \\
 
-Another problem deals with a precise identification of data used for processing. EO backends in Europe usually obtain data from the same source, for example from the Sentinel-2 satellites operated by the European Space Agency (ESA). The ESA releases updates and corrections to data in cases when one of the instruments used for observation was wrongly calibrated or broken and raw data had to be processed again. Updated data is released to backend operators. Usually there is no versioning mechanism for data. Researchers do not know which version of data was used in their study, i.e. whether they were using a version before or after some specific modification was made. This leads to the problem that scientists are not able to precisely identify and cite the input data of their experiments, which hinders reproducibility and in turn undermines trust in the  results. 
-
-
-% Old Problem Description
-
-The vast majority of data used in earth observation sciences are retrieved and provided via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api} for data download and processing data. These services are used to define the experiment workflow, the definition of the input data, the execution, and the retrieval of the results. Therefore, the researcher is not in full control of the code execution and the environment of their experiments, since the information about the workflow environment of the experiment is not accessible for the scientists. Used external dependencies for processing the earth observation data cannot be accessed. The services act as black boxes to the researchers with no possibility to get versions of the used packages to calculate the resulting images. The situation leads to the problem that researchers are not capable of describing the experiments in a way that they are reproducible. \\
-Input data of a typical remote sensing workflow is satellite data of a specified satellite type filtered by a temporal and a spatial extent. The raw satellite data is preprocessed by the backend provider so that there is a global dataset. Geoscientists using the same satellite identifier could have different results after executing the same experiment if the provider updated the way the data is preprocessed. An example for this is the format update of \gls{esa} in 2017 of the Sentinel 1 dataset, which affected old data records, see \footnote{https://sentinel.esa.int/web/sentinel/missions/sentinel-1/news/-/article/sentinel-1-update-of-product-format}. When scientists use the dataset of a data provider, there is no possibility to see changes in the preprocessing algorithm. Therefore, data versions are not visible to the researcher. The situation leads to the problem that scientists are not capable of identifying the input data, which is a necessity for reproducibility.
-
-% Old Motivation
-
-%Over the last decades, remote sensing agencies have increased the variations of data processing and therefore, the amount of resulting data. The complexity of the experiments leads researchers to use external services for the workflow. These circumstances make it hard for scientists to provide the necessary information to enable reproducibility. Scientists create a description of the workflow and the used satellite identifier to describe experiments. It is necessary to have citable data and processes on the data to ensure long-term reproducibility to preserve the data for further usage in the future,  \cite{6352411}. 
-Many scientific areas, such as computer science, biology, and computational geoscience discuss reproducibility. The study on reproducibility in geoscience \cite{reprovsrepli} defines the term "reproducing" by running a second different experiment, which results in the same conclusion as the first experiment. The more the second experiment differs from the first, the more information is gained by it. It is needed to provide additional evidence about the outcome of an experiment. Replicability is the re-run of the same methods of the first experiment to check if the described methods lead to the claimed results\cite{reprovsrepli}. According to \cite{Ostermann2017AdvancingSW} where the reproducibility and replicability of scientific papers in geoscience got tested, only half of the publications were replicable and none of them reproducible. In \cite{Thestateofreproducibility} a survey of geoscientific readers and authors of papers got executed, with the goal of finding reasons for the lack of reproducibility in earth observation sciences. One of the results is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. The understanding of open, reproducible research is different among the participating scientists in a way that the interpretation is more related to repeatability and replicability. The main reasons for the lack of reproducibility in computational geoscience are:
+The first study examines existing publications in the scientific EO community. It does not actively try to reproduce the experiments, but looks at the description of the methods. The outcome of the paper is to give an overview of the theoretical reproducibility and replicability of the publications. The conclusion shows that only half of the publications were replicable and none of them reproducible \cite{Ostermann2017AdvancingSW}. \\
+The second study tries to replicate the work of EO scientists and executes a survey of geoscientific readers and authors. It has the aim of finding reasons for the lack of reproducibility in earth observation sciences. A result is that even though 49\% of the participants responded that their publications are reproducible, only 12\% of them have linked the used code. It leads to the conclusion that the understanding of open, reproducible research is different among the participating scientists. The interpretations are more in favor of own publications regarding replicability. The main findings for the lack of reproducibility in computational geoscience are listed below \cite{Thestateofreproducibility}:  
 
 \begin{enumerate}
 	\item Insufficiently described methods 
@@ -293,14 +296,31 @@ Many scientific areas, such as computer science, biology, and computational geos
 	\item Too Time consuming
 \end{enumerate} 
 
-The reproduction of geoscientific papers fails by the different individual interpretation of the described approach in the publication. If the code is published with the publication, alternative software environments produced unequal results in example different versions of the CRAN library in R resulted in a different result. The vast majority of issues on reproducing results are required changes of code and a deeper understanding of the procedures in example if functions are deprecated and the code needs modifications for using new functions. In some cases system dependent issues occur, which are related to the usage of random access memory and installation libraries of the operating system \cite{Thestateofreproducibility}. The study reproduces a resulting image of a publication and compares it with the result of the first execution. Figure \ref{fig:motivation} shows an example of a result confrontation of the original experiment and the replicated experiment. The map showed spatially gridded biomass burning and was published initially in \cite{bg-13-3225-2016}. Even though the resulting numbers of the reproduction remains the same as the original one, the different aspect ratio changes the appearance of the resulting image and therefore might lead to a different interpretation.
+The reproduction of geoscientific papers fails by the different individual interpretation of the described approach. If the code is published with the publication, alternative software environments produced unequal results, for example different versions of the CRAN library in R. The majority of the replication required changes of code and a deeper understanding of the procedures, for example caused by deprecated functions. System dependent issues occurred, which are related to the usage of random access memory and installation libraries of the operating system . 
+The study shows an example of a problematic replication using a resulting image of a publication.
+It re-executes the experiment to get this image and compares it with the original one. Figure \ref{fig:motivation} shows a comparison of the recreated image and the original image. The map showed spatially gridded biomass burning and was published initially in \cite{bg-13-3225-2016}. Even though the resulting numbers of the reproduction remains the same, the different aspect ratio changes the appearance of the resulting image and might lead to different interpretations \cite{Thestateofreproducibility}.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{motivation_example}
-	\caption{Example of a comparison of the original result (a) and the replicated result (b). The boxes are highlighting the differences of the map. The blue box shows the misplacement of the legend, the purple box shows different colour of results, the red box shows a different data type of the legend numbers, the grey box shows a different labeling, the orange box highlights differences in the background map, the yellow box shows a different number of classes and the green box shows results that were not in the original figure \cite{Thestateofreproducibility}.}
+	\caption{Example of a comparison of the original result (a) and a replicated result (b). The boxes are highlighting the differences of the map. The blue box shows the misplacement of the legend, the purple box shows different colour of results, the red box shows a different data type of the legend numbers, the grey box shows a different labeling, the orange box highlights differences in the background map, the yellow box shows a different number of classes and the green box shows results that were not in the original figure \cite{Thestateofreproducibility}.}
 	\label{fig:motivation} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure} 
+\todo{Introduction Status}
+% Paper Problem continue
+
+
+
+
+
+% Old Problem Description
+
+
+
+% Old Motivation
+
+%Over the last decades, remote sensing agencies have increased the variations of data processing and therefore, the amount of resulting data. The complexity of the experiments leads researchers to use external services for the workflow. These circumstances make it hard for scientists to provide the necessary information to enable reproducibility. Scientists create a description of the workflow and the used satellite identifier to describe experiments. It is necessary to have citable data and processes on the data to ensure long-term reproducibility to preserve the data for further usage in the future,  \cite{6352411}. 
+
 
 %\section{Problem Description}\label{Problem}
 %The vast majority of data used in earth observation sciences are retrieved and provided via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api} for data download and processing data. These services are used to define the experiment workflow, the definition of the input data, the execution, and the retrieval of the results. Therefore, the researcher is not in full control of the code execution and the environment of their experiments, since the information about the workflow environment of the experiment is not accessible for the scientists. Used external dependencies for processing the earth observation data cannot be accessed. The services act as black boxes to the researchers with no possibility to get versions of the used packages to calculate the resulting images. The situation leads to the problem that researchers are not capable of describing the experiments in a way that they are reproducible. \\
