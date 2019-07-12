@@ -569,31 +569,31 @@ Geoscience Papers of the Future (GPF) \cite{Gil2016TowardTG}  is an initiative t
 
 Figure \ref{fig:gpf} visualizes the differences with a reproducible paper. In addition to the characteristics of the reproducible paper, the GPF focuses on publishing the data publicly with open licenses with citable persistent identifiers.
 The GPF proposes a set of 20 recommendations for geoscientists regarding data accessibility, software accessibility, and provenance information. GPF authors may have reasons to be not able to follow all rules and therefore, have to find workarounds and propose areas for future improvements. The strategy of the GPF community is to educate the scientist to make reproducible publications, by making training sessions\footnote{http://scientificpaperofthefuture.org/gpf/events.html}, instead than providing tools. The solution of this thesis aids in providing information requested above by precisely identifying datasets and software (including version and libraries) used by backends to compute results. This information is collected automatically and can be accessed by users any time using the same API as they use for implementation of their experiments.  
-\todo{Related Work Status}
+
 \subsection{Climate Change Centre Austria (CCCA)}
 
-The \gls{ccca} is a research network for Austrian climate research online available since 2016 and has 28 members. The main tasks are the provision of climate-relevant information, the inter-operable interfaces, and long term archiving of scientific data. In 2017 the \gls{netcdf} data citation was added to the project. The set up of the data service and the technology used in the background is similar to the set up of the EODC backend. Therefore, the process of enabling data identification was similar to this thesis. CCCA is Open-source and available at GitHub, see the GitHub repository\footnote{https://github.com/ccca-dc}. The concept used for gaining data citation was the RDA recommendations defined in \cite{rauber2016identification}. Figure \ref{fig:ccca} shows an overview of the CCCA implementation. It uses a ckan\footnote{https://ckan.org} web server to handle the request and responses of the user, which are then passed to a python application. The python part is responsible for the query store functionality. The core element is the \gls{tds}\footnote{https://www.unidata.ucar.edu/software/thredds/current/tds/}, which is responsible for the actual data archive.   
-The python application part of the CCCA overview is similar to the implementation of this thesis. The main difference is the objectives of the CCCA service compared to the EODC backend. On the CCCA platform, any climate-relevant information (e.g. air temperature or frost days) can be uploaded and persisted. On the EODC backend, preprocessed global earth observation data is persisted, which is used as input data for processing chains. Therefore, the data on EODC is more homogeneous than the data on the CCCA platform.
-Nevertheless, the concept of enabling data identification is similar in both projects. The CCCA implementation inspired the query store implementation of this thesis. The query result differs, because EODC uses \gls{geotiff} instead of NetCDF at their backend. Another difference is that CCCA uses HTTP GET requests as query, whereas the EODC backend uses \gls{xml} based queries, which are also limited by the openEO API specification  \cite{ccca}.  
+The \gls{ccca} is a research network for Austrian climate research available since 2016. Its aim is the provision of climate-relevant information, the inter-operable interfaces, and long term archiving of scientific data. In 2017, data citation for the \gls{netcdf} format was added to the project. The architecture of the implementation and the technology used in the background is similar to the set up of the EODC backend. Therefore, the approach of enabling data identification was similar to this thesis. CCCA is open source and available at GitHub\footnote{https://github.com/ccca-dc}. Similar to the approach of this thesis, the concept for data identification are the RDA recommendations. Figure \ref{fig:ccca} shows a technical overview of the CCCA implementation. It uses a ckan\footnote{https://ckan.org} web server to handle the request and responses of the user, which are then passed to a python application. The python application is responsible for the query store functionality. The core element is the \gls{tds}\footnote{https://www.unidata.ucar.edu/software/thredds/current/tds/}, which is responsible for the data archiving.   
+The python application of the CCCA overview is similar to the implementation of this thesis. The main difference is the objectives of the CCCA service compared to the EODC backend. On the CCCA platform, any climate-relevant information (e.g. air temperature or frost days) can be uploaded and persisted. On the EODC backend, preprocessed global earth observation data is persisted, which is used as input data for processing chains. Therefore, the data on EODC is more homogeneous than the data on the CCCA platform.
+Nevertheless, the concept of enabling data identification is similar in both projects. The CCCA implementation inspired the query store implementation of this thesis. The query result differs, because EODC uses a different file format (\gls{geotiff} instead of NetCDF). Another difference is that CCCA uses HTTP GET requests as query, whereas the EODC backend uses \gls{xml} based queries, which are restricted by the openEO API specification \cite{ccca}.  
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.25]{ccca}
-	\caption{Concept of the CCCA NetCDF Cata Citation}
+	\caption{Technical overview of the CCCA NetCDF data citation implementation}
 	\label{fig:ccca} % \label has to be placed AFTER \caption (or \subcaption) to produce %correct cross-references.
 \end{figure}
 
 \section{Data Identification}\label{Data Identification}
 
-Data identification and citation is the main concern in many computers relying on sciences. For the aim of this work, the input data is a key element of the capturing. If the input data can not be identified correctly, the capturing of the processing on it does not gain useful information. Therefore the identity of the data has to be guaranteed. The Research Data Alliance (RDA) presents general solutions to achieve data identifications. There are 14 recommendations defined to achieve the identification of an exact version and subset of input data. The recommendations are independent of the type of data and database system. In the following the recommendations are summarized \cite{rauber2016identification}.
+For the aim of this work, the input data is a key element of the captured data. If the input data can not be identified correctly, the capturing of the processing on it does not gain useful information. Therefore the identity of the data has to be guaranteed. The Research Data Alliance (RDA)\footnote{https://rd-alliance.org} is an international body issuing recommendations helping to remove barriers in data sharing. Recommendations are based on a community consensus worked out within working groups. The Data Citation working group\footnote{https://rd-alliance.org/groups/data-citation-wg.html} has identified 14 rules for identification of data used in computation. It allows to  identify and cite arbitrary views of data, from a single record to an entire data set in a precise, machine-actionable manner. Further it enables to cite and retrieve that data as it existed at a certain point in time, whether the database is static or dynamic. In the following the recommendations are summarized \cite{rauber2016identification}:
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning} \\
 	Changes on a data record must result in a new version of the data record and the persistence of the deprecated data records. All data record versions have to be identifiable and accessible. 
 	\item \textbf{R2: Timestamping} \\
-	All changes to the database have to be comprehensible via timestamps. Every time changes are applied to the data, there has to be a time stamp persisted to describe when it happened. 
+	All changes to the database have to be comprehensible via timestamps. Every time changes are applied to the data, there has to be a timestamp persisted to describe when it happened. 
 	\item \textbf{R3: Query Store Facilities} \\
-	There has to be a query store implemented at the data provider to store queries including their data, to be able to re-execute them in the future. The database has to store, according to \cite{rauber2016identification}, the following things: 
+	There has to be a query store implemented at the data provider. The applications uses it to store queries and additional information. The database has to store, according to \cite{rauber2016identification}, the following things: 
 	\begin{itemize}
 		\item The original query as applied to the database
 		\item A potentially re-written unique query created by the system (R4, R5)
@@ -602,36 +602,37 @@ Data identification and citation is the main concern in many computers relying o
 		\item Query execution time stamp (R7)
 		\item Persistent identifier of the data source
 		\item Persistent identifier for the query (R8)
-		\item Other data (e.g. author or creator information) required by the landing page (R11)
+		\item Additional information (e.g. author or creator information) required by the landing page (R11)
 	\end{itemize}
 	\item \textbf{R4: Query Uniqueness} \\
-	Since it is not desirable to have equal queries with the same result stored at the query store, there needs to be a normalized query that can be directly compared to other queries. Hence, there needs to be an algorithm to normalize the queries and to guarantee their uniqueness.
+	Since it is not desirable to have equal queries with the same result stored at the query store, there needs to be a unique query that can be directly compared to other queries. Hence, there needs to be an algorithm to normalize the queries and to guarantee their uniqueness.
 	\item \textbf{R5: Stable Sorting} \\
-	The sorting of the resulting data has to be unambiguous if the sequence of data item presentation is essential for the reproduction.
+	The sorting of the resulting data has to be unambiguous, if the sequence of data item presentation is essential for the reproduction.
 	\item \textbf{R6: Result Set Verification} \\
 	To ensure that the resulting data of the query is comparable there have to be a checksum or hash key of it. 
 	\item \textbf{R7: Query Timestamping} \\
-	There has to be a time stamp assigned to every query in the query store, which can be set to the latest update of the entire database, or the query dependent data of the database, or simply the time of query execution.
+	There has to be a timestamp assigned to every query in the query store, which can be set to the latest update of the entire database, or the query dependent data of the database, or simply the time of query execution.
 	\item \textbf{R8: Query PID}\\
-	Every query record in the query store must have a Persistent Identifier (PID). There should not be a query with the same normalized query and the same query result checksum. 
+	Every query record in the query store must have a Persistent Identifier (PID). There must not be a query with the same normalized query and query result checksum tuple. 
 	\item \textbf{R9: Store the Query} \\
 	The data described in previous recommendations have to be persisted in the query store.
 	\item \textbf{R10: Automated Citation Texts} \\
-	To make the citation of the data more convenient for researchers, there shall be a automatic generation for the citation text snipped containing the data PID.
+	To make the citation of the data more convenient for researchers, there shall be a automatic generation of the citation text snipped containing the data PID.
 	\item \textbf{R11: Landing Page} \\
 	The PID shall be resolvable in a human readable landing page, where data mentioned in the previous recommendations is provided to the scientist.
 	\item \textbf{R12: Machine Actionability} \\
 	Providing an API landing page so that not only humans, but machines can access the data by resolving the PID.
 	\item \textbf{R13: Technology Migration} \\
-	If the database where the query store is implemented needs to be migrated to a new system, the queries need to be transferred too. In addition the queries have to be updated according to the new setup, so that they still work exactly like in the old system.
+	If the query store needs to be migrated to a new system, the queries have to be transferred too. In addition the queries have to be updated according to the new setup, so that they still work exactly like in the old system.
 	\item \textbf{R14: Migration Verification} \\
 	There shall be a service to verify a data and query migration (see R13) automatically, to prove that the queries in the query store are still correct. 
 \end{itemize}
-The implementation of the recommendations for the purpose of this thesis is described in Section \ref{Implementation:Data Identification}. Section \ref{Evaluation:dataidentification} shows the evaluation of the data identification implementation. 
+
+The recommendations provide a generic set of rules independent of an application domain. So far they have been implemented in settings ranging from atomic and molecular data \cite{data_atomic}, climate change \cite{Schubert} to health policy planning \cite{data_health}. We use them also in our solution to make data provided by backends identifiable, by assigning PIDs to queries identifying the subsest of data selected by researchers for their analyses.
 
 \section{Tools for Reproducibility}\label{Existing Tools}
-The section describes tools that are designed to solve similar problems or subproblems that are addressed by this thesis. There is an explanation of why the specific tool was not used for the prototype of this thesis or how it was used in parts of the solution. 
-
+The section describes tools that are designed to solve similar problems or subproblems addressed by this thesis. There is an explanation of why the specific tool was not used for the prototype of this thesis or how it was used in parts of the solution. 
+\todo{Related Work Status}
 \subsection{noWorkflow}\label{Noworkflow}
 noWorkflow is introduced in \cite{c9e0604becba42af96a9cb0a6f60018b} as a script provenance capturing tool with the aim to not influence the way researchers implement experiments. As proof of concept, the noWorkflow command line tool got implemented for python. The provenance is captured in an SQLite database by different trials. A trial represents the environment information of one execution. The main benefit of noWorkflow is that it does not instrument the code, and it automatically captures the definition, deployment, and execution environment in a local SQLite database.  The command line interface of noWorkflow is capable of providing access to the stored data. In addition to just retrieving the information about the execution environment, analyses features are added \cite{c9e0604becba42af96a9cb0a6f60018b}.
 
