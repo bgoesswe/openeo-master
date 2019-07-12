@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.3.0">
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
     <id>UMLGeneric</id>
@@ -9,7 +8,7 @@
       <w>320</w>
       <h>340</h>
     </coordinates>
-    <panel_attributes>Back end 
+    <panel_attributes>Backend 
 halign=left</panel_attributes>
     <additional_attributes/>
   </element>
@@ -21,7 +20,7 @@ halign=left</panel_attributes>
       <w>120</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>submit Job</panel_attributes>
+    <panel_attributes>submit job</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -33,7 +32,7 @@ halign=left</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>retrieve 
-PID Info</panel_attributes>
+PID info</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -41,7 +40,7 @@ PID Info</panel_attributes>
     <coordinates>
       <x>720</x>
       <y>450</y>
-      <w>120</w>
+      <w>130</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>persist input data
@@ -51,22 +50,22 @@ PID</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>710</x>
+      <x>760</x>
       <y>390</y>
-      <w>200</w>
+      <w>90</w>
       <h>80</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
                             &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>120.0;10.0;70.0;60.0</additional_attributes>
+    <additional_attributes>70.0;10.0;20.0;60.0</additional_attributes>
   </element>
   <element>
     <id>UMLActor</id>
     <coordinates>
-      <x>1130</x>
+      <x>1120</x>
       <y>360</y>
-      <w>100</w>
-      <h>110</h>
+      <w>120</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Researcher B</panel_attributes>
     <additional_attributes/>
@@ -74,10 +73,10 @@ PID</panel_attributes>
   <element>
     <id>UMLActor</id>
     <coordinates>
-      <x>430</x>
+      <x>420</x>
       <y>350</y>
-      <w>100</w>
-      <h>110</h>
+      <w>120</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Researcher A</panel_attributes>
     <additional_attributes/>
@@ -113,7 +112,7 @@ PID</panel_attributes>
       <h>70</h>
     </coordinates>
     <panel_attributes>job A with 
-Input Data A
+input data A
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -159,8 +158,8 @@ Input Data A
       <w>120</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>query Input 
-Data</panel_attributes>
+    <panel_attributes>query input 
+data</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -183,7 +182,7 @@ Data</panel_attributes>
       <w>120</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>execute Workflow
+    <panel_attributes>execute job
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -192,7 +191,7 @@ Data</panel_attributes>
     <coordinates>
       <x>870</x>
       <y>390</y>
-      <w>110</w>
+      <w>120</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
@@ -237,12 +236,12 @@ input data PID A
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>510</x>
+      <x>500</x>
       <y>470</y>
-      <w>130</w>
+      <w>140</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>Resulting in PID A
+    <panel_attributes>resulting in PID A
 </panel_attributes>
     <additional_attributes/>
   </element>

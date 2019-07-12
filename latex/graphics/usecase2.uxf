@@ -8,7 +8,7 @@
       <w>320</w>
       <h>400</h>
     </coordinates>
-    <panel_attributes>Back end 
+    <panel_attributes>Backend 
 halign=left</panel_attributes>
     <additional_attributes/>
   </element>
@@ -20,7 +20,7 @@ halign=left</panel_attributes>
       <w>120</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>submit Job</panel_attributes>
+    <panel_attributes>submit job</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -32,7 +32,7 @@ halign=left</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>retrieve 
-Job info</panel_attributes>
+job info</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -44,7 +44,7 @@ Job info</panel_attributes>
       <h>60</h>
     </coordinates>
     <panel_attributes>persist 
-Back end version</panel_attributes>
+backend version</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -89,7 +89,7 @@ Back end version</panel_attributes>
       <w>130</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>Job A 
+    <panel_attributes>job A 
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -112,7 +112,7 @@ Back end version</panel_attributes>
       <w>130</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>execute Workflow</panel_attributes>
+    <panel_attributes>execute job</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -135,9 +135,9 @@ Back end version</panel_attributes>
       <w>140</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>Persist 
-Back end version 
-during execution of Job
+    <panel_attributes>persist 
+backend version 
+during execution of job
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -160,7 +160,7 @@ during execution of Job
       <w>120</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>persist Job
+    <panel_attributes>persist job
 environment</panel_attributes>
     <additional_attributes/>
   </element>
@@ -206,9 +206,9 @@ environment</panel_attributes>
       <w>190</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>Job A Info:
-Used Back end version
-Used job a environment
+    <panel_attributes>job A info:
+Used backend version
+Used job A environment
 </panel_attributes>
     <additional_attributes/>
   </element>

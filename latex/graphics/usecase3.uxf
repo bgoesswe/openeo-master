@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.3.0">
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
     <id>UMLGeneric</id>
@@ -9,7 +8,7 @@
       <w>360</w>
       <h>400</h>
     </coordinates>
-    <panel_attributes>Back end 
+    <panel_attributes>Backend 
 halign=left</panel_attributes>
     <additional_attributes/>
   </element>
@@ -21,7 +20,7 @@ halign=left</panel_attributes>
       <w>120</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>submit Job</panel_attributes>
+    <panel_attributes>submit job</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -29,11 +28,11 @@ halign=left</panel_attributes>
     <coordinates>
       <x>750</x>
       <y>800</y>
-      <w>120</w>
+      <w>140</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>retrieve 
-Job Differences</panel_attributes>
+job differences</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -42,7 +41,7 @@ Job Differences</panel_attributes>
       <x>430</x>
       <y>600</y>
       <w>100</w>
-      <h>110</h>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Researcher</panel_attributes>
     <additional_attributes/>
@@ -91,7 +90,7 @@ job C
       <w>120</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>execute Workflow</panel_attributes>
+    <panel_attributes>execute job</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -110,12 +109,12 @@ job C
     <id>UMLUseCase</id>
     <coordinates>
       <x>760</x>
-      <y>700</y>
+      <y>710</y>
       <w>120</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>persist Job
-Environment</panel_attributes>
+    <panel_attributes>persist job
+environment</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -123,23 +122,23 @@ Environment</panel_attributes>
     <coordinates>
       <x>800</x>
       <y>640</y>
-      <w>110</w>
-      <h>80</h>
+      <w>120</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>50.0;10.0;10.0;60.0</additional_attributes>
+    <additional_attributes>50.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>510</x>
       <y>660</y>
-      <w>270</w>
+      <w>260</w>
       <h>180</h>
     </coordinates>
     <panel_attributes/>
-    <additional_attributes>10.0;10.0;250.0;152.0</additional_attributes>
+    <additional_attributes>10.0;10.0;240.0;152.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -157,24 +156,24 @@ Environment</panel_attributes>
     <coordinates>
       <x>490</x>
       <y>800</y>
-      <w>150</w>
-      <h>60</h>
+      <w>170</w>
+      <h>50</h>
     </coordinates>
-    <panel_attributes>Differences between
-Job A, job B and job C
+    <panel_attributes>differences between
+job A, job B and job C
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>920</x>
-      <y>700</y>
-      <w>120</w>
+      <x>900</x>
+      <y>710</y>
+      <w>140</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>persist 
-output Checksum</panel_attributes>
+output checksum</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -182,11 +181,11 @@ output Checksum</panel_attributes>
     <coordinates>
       <x>880</x>
       <y>640</y>
-      <w>110</w>
+      <w>130</w>
       <h>90</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
-&lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;50.0;70.0</additional_attributes>
+ &lt;&lt;extends&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;65.0;70.0</additional_attributes>
   </element>
 </diagram>
