@@ -218,23 +218,25 @@ Last but not least to my supervisors Andreas Rauber and Tomasz Miksa for always 
 \end{acknowledgements*}
 
 \begin{kurzfassung}
-\todo{Neu übersetzen wenn Abstract fertig ist}
-Publikationen in den Bereichen der Geodäsie und Geoinformation sind oft, aus diversen Gründen, nicht reproduzierbar. Daher fand in den letzten Jahren ein Umdenken in Bezug auf reproduzierbare Publikationen in den computergestützten Geowissenschaften statt. Die Problematik für Wissenschaftler dieser Forschungsbereiche ist die große Anzahl an unterschiedlichen Anbietern, fehlende Datenversionierung und intransparente Anbieter Services. Existierende Literatur beschränkt sich auf konkrete Anbieter und Forschungsbereiche. Dabei wird der Fokus mehr auf die Ausführung des selben Auftrages als auf Reproduzierbarkeit gelegt. Um diese zu ermöglichen ist es notwendig die Daten und die Bearbeitung dieser zu identifizieren. Dabei fehlt es der Geodäsie und Geoinformation an einem allgemeinen Konzept dies sowohl für Wissenschaftler als auch für Anbieter zu ermöglichen. Das Ziel dieser Arbeit ist es eine allgemeine Lösung zur Reproduzierbarkeit in den Geowissenschaften zu erstellen, indem die Daten und deren Bearbeitung automatisch identifizierbar gemacht werden. Dafür wird eine vollständige Lösung innerhalb des Horizon 2020 Projektes openEO konzipiert, welche im Earth Observation Data Centre for Water Resources Monitoring (EODC) Anbieter implementiert wird. Die Research Data Allience (RDA) Empfehlungen bezüglich Datenzitierbarkeit werden in diesem Kontext angewendet. Um die Bearbeitung der Daten einzufangen wird das VFramework Konzept angewandt. Die Implementierung in EODC wird über vordefinierter Szenarien für Geowissenschaftler evaluiert.    
+%\todo{Neu übersetzen wenn Abstract fertig ist}
+Wissenschaftler im Bereich der Erdbeobachtung verwenden spezielle rechnergestützte Services um Satellitenbilder bei externen Datenanbietern zu verarbeiten. Die zugrundeliegende Quelle der Daten ist meist ähnlich, beispielsweise werden Sentinel Satellitendaten ausschließlich von Copernicus in Zusammenarbeit der European Space Agency betrieben. Die Art der Aufbereitung, Aktualisierung, Korrektur und anschließenden Analyse kann von Anbieter zu Anbieter unterschiedlich sein. 
+Die Anbieter unterstützen meist keine Datenversionierung, beispielsweise wenn Daten korrigiert werden wird dies nicht dokumentiert. Außerdem werden Änderungen in der verwendeten Software nicht kommuniziert und stellt daher eine Black Box für die Wissenschaftler dar. Daher haben Wissenschaftler die diese Systeme nutzen keine Möglichkeit herauszufinden warum die Durchführung des gleichen Programmcodes unterschiedliche Ergebnisse liefert. Dieser Umstand behindert die Reproduzierbarkeit der Experimente im Bereich der Erdbeobachtung. 
+In dieser Arbeit wird gezeigt, wie existierende Datenanbieter modifiziert werden können um Reproduzierbarkeit zu ermöglichen. Die präsentierten Erweiterungen basieren auf den Empfehlungen der Reseach Data Alliance bezüglich Datenidentifizierung und auf das VFramework bezüglich automatisierte Dokumentation und Identifikation der durchgeführten Prozesse. Zusätzlich werden Vorschläge dafür präsentiert wie Anbieter die gesammelten Informationen für die Wissenschaftler zur Verfügung stellt. Die Implementierung der vorgestellten Erweiterungen werden am Earth Observation Data Centre, einem Partner des openEO Projektes durchgeführt. Die Evaluierung des fertigen Systems erfolgt durch die Durchführung von typischen Szenarien der Erdwissenschaften und durch zusätzliche Tests bezüglich der Effekte der Performance- und Speicherbedarfs für das System des Anbieters. Das Ergebnis der Evaluation lässt darauf schließen, dass Reproduzierbarkeit mit nur minimalen zusätzlichen Performance- und Speicherplatzbedarf möglich ist.          
 \end{kurzfassung}
 
 
 \begin{abstract}
-\todo{Wichtige Kapitel: Abstract, Introduction, Conclusion, evtl. Evaluation Summary}
-\todo{Let Viola/Sophie read through it !!}
-\todo{Read through it again}
+%\todo{Wichtige Kapitel: Abstract, Introduction, Conclusion, evtl. Evaluation Summary}
+%\todo{Let Viola/Sophie read through it !!}
+%\todo{Read through it again}
 % Abstract from paper
 %Earth observation researchers use specialised computing services for satellite image processing offered by various data backends. The source of data is often the same, for example Sentinel-2 satellites operated by the European Space Agency, but the way how data is pre-processed, corrected, updated, and later analysed may differ among the backends.
 %Backends often lack mechanisms for data versioning, for example, data corrections are not tracked. Furthermore, an evolving software stack used for data processing remains a black box to researchers. Researchers have no means to identify why executions of the same code deliver different results. This hinders reproducibility of  earth observation experiments.
 %In this paper, we present how infrastructure of existing earth observation data backends can be modified to support reproducibility. The proposed extensions are based on recommendations of the Research Data Alliance regarding data identification and the VFramework for automated process provenance documentation. We implemented these extensions at the Earth Observation Data Centre, a partner in the openEO consortium. We evaluated the solution on a variety of usage scenarios, providing also performance and storage measures to evaluate the impact of the modifications. The results indicate reproducibility can be supported with minimal performance and storage overhead.
 
-Earth observation researchers use specialised computing services for satellite image processing offered by various data backends. The source of data is often the same, for example Sentinel-2 satellites operated by Copernicus and the European Space Agency, but the way how data is pre-processed, corrected, updated, and later analysed may differ among the backends.
+Earth observation researchers use specialised computing services for satellite image processing offered by various data backends. The source of data is similar, for example Sentinel satellites operated by Copernicus and the European Space Agency. The way it is pre-processed, updated, corrected and later analysed may differ among the backends.
 Backends often lack mechanisms for data versioning, for example, data corrections are not tracked. Furthermore, an evolving software stack used for data processing remains a black box to researchers. Researchers have no means to identify why executions of the same code deliver different results. This hinders reproducibility of earth observation experiments.
-In this paper, we present how infrastructure of existing earth observation data backends can be modified to support reproducibility. The proposed extensions are based on recommendations of the Research Data Alliance regarding data identification and the VFramework for automated process provenance documentation. We implemented these extensions at the Earth Observation Data Centre, a partner in the openEO consortium. We evaluated the solution on a variety of usage scenarios, providing also performance and storage measures to evaluate the impact of the modifications. The results indicate reproducibility can be supported with minimal performance and storage overhead.     
+In this thesis, we present how existing earth observation backends can be modified to support reproducibility. The proposed extensions are based on recommendations of the Research Data Alliance regarding data identification and the VFramework for automated process provenance documentation. Additionally, we provide suggestions on how backends make the captured information accessable for scientists. We implemented these extensions at the Earth Observation Data Centre, a partner in the openEO consortium. We evaluated the solution on a variety of usage scenarios, providing also performance and storage measures to evaluate the impact of the modifications. The results indicate reproducibility can be supported with minimal performance and storage overhead.     
 \end{abstract}
 
 % Select the language of the thesis, e.g., english or naustrian.
@@ -250,16 +252,17 @@ In this paper, we present how infrastructure of existing earth observation data 
 %\todo{Merge Motivation and Problem Description to one section}
 %\todo{Structure as following: Many different backends, lack of reproducibility...}
 %\todo{Move Use Cases to Problem Description, used to specify more strict the "aim" of the work or what will be done...}
-\todo{Read through it again}
 
-\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-\todo{Gesamte Thesis: Restructure passive sentences}
-\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-\todo{Gesamte Thesis: Kurze einfache Sätze}
-\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
+%\todo{Read through it again}
+
+%\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
+%\todo{Gesamte Thesis: Restructure passive sentences}
+%\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
+%\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
+%\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
+%\todo{Gesamte Thesis: Kurze einfache Sätze}
+%\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
+%\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 \section{Motivation}\label{Motivation}\label{Use Cases}
 % Background
 \gls{eo} sciences gathers images of the Earth's surface and atmosphere using instruments and cameras on aircrafts or satellites. Advancing technologies in space agencies lead to the usage of mostly satellite images. The data is too big to be downloaded for local analysis. The solution is to store it in high-performance computational backends, process it there, and browse the results or download resulting figures or numbers. The vast majority of backends are available via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api}.Scientists create a local description of the workflow and satellite data to describe experiments. They send the description to the backend and are notified when the processing finishes \cite{geocloud}. 
@@ -422,7 +425,7 @@ The following steps summarize the scenario sequence of actions: \\
 %\todo{RQ1.2 --> not software}
 %\todo{RQ1.3 --> maybe remove or rename --> Where to put the stuff to capture --> See Conclusion}
 %\todo{Reminder: PROV-O ? Andi didn't notice ...}
-\todo{revisit after Conclusion}
+%\todo{revisit after Conclusion}
 The expected outcome of this thesis is to propose a framework for making repeatability conceivable in the earth observation community. The solution enables users to re-execute jobs and validate the results. It provides the scientists accessible differences in the execution of the job and the data, without changing their approach of doing research. To achieve this, a model for capturing the environment of the backends has to be discovered. Considering the problem description and the scenarios of the previous sections, the following research questions can be formulated:
 
 \begin{itemize}
@@ -467,14 +470,6 @@ Chapter 6 summarizes the outcome of the implementation and evaluation. It contai
 
 \chapter{Related Work}\label{Related Work}
 
-\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-\todo{Gesamte Thesis: Restructure passive sentences}
-\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-\todo{Gesamte Thesis: Kurze einfache Sätze}
-\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 
 This chapter describes the related work that influenced this thesis. It informs the reader about concepts related to the proposed solution. The information is structured in subsections, each representing important technologies or concepts in the context of this thesis. \\The first section presents the concepts behind reproducibility in computer science. \\
 The second section describes the state of reproducibility in earth observation science. \\
@@ -694,10 +689,10 @@ In the following, the relevant RESTful request types in openEO and the policy of
 	\item \textbf{DELETE Request} \\ 
 	DELETE requests are used to remove existing records at the backend. \\(e.g. /DELETE /job/{job\_id} removes an existing job from the backend.)
 \end{itemize}
-
+%\todo{change back to sequence_diagramm2}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.5]{sequence_diagramm2}
+	\includegraphics[width=\textwidth]{api2}
 	\caption{Overview of the openEO procedure to execute a job and retrieve the results}
 	\label{fig:api2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -765,14 +760,6 @@ The research areas related to the solution of this thesis has a vast amount of a
  
 \chapter{Design}\label{Design}
 
-\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-\todo{Gesamte Thesis: Restructure passive sentences}
-\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-\todo{Gesamte Thesis: Kurze einfache Sätze}
-\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 
 The core of this thesis is an extension design for EO backends providing users reproducibility. This chapter describes the proposed generic design that can also be applied to other similar domains. This chapter aims to present the design and is structured in six parts. The first part presents an overview of the design. The next three sections describe the main components in more detail. First,  the data identification component, then the component of capturing the provenance of the job execution. Third, the component for capturing and validation the result. The next section defines the resulting context model and its elements. The last two sections define the user services, suggestions on backend API extensions and \gls{udf}. The next Chapter \ref{Implementation}, shows an implementation of the outcome of this chapter at the EODC backend. 
 
@@ -938,7 +925,7 @@ UDFs are customized code written by the user that gets executed in a virtualized
 This chapter presented the design of the proposed solution. It shows how a backend can be extended to enable reproducible job executions. The data needed to be able to reproduce a job execution are presented and described. Data identification must be implemented according to the RDA recommendations. The elements of the backend environment are defined and are identifiable by the backend version. We defined the job dependent context by the job execution environment and the result hash. The data needed for a reproduction of a job execution is stored in the context model and it is the data needed to answer the research questions of Chapter \ref{Introduction}. In addition to the data description, recommendations on user services are listed. They provide the functionality for the users. The next chapter presents the implementation of the proposed design at the openEO compliant EODC backend.    
 
 \chapter{Implementation}\label{Implementation}
-\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
+%\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 
 \todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
 \todo{Gesamte Thesis: Restructure passive sentences}
@@ -956,37 +943,36 @@ Similar to the design of this thesis, we structure the implementation in four pa
 \section{Data Identification}\label{Implementation:Data Identification}
 
 In Section \ref{Design:Data Identification} we suggested that every backend provider has to implement data identification following the RDA recommendations. This section presents the data identification solution for the EODC backend. Other openEO backend providers can use the presented approach as well. This section focuses on the implementation of the core components on the backend. The mechanics of users getting and using the data identifier including the landing page is part of Section \ref{Implementation:User Interface}. \\
-\todo{Implementation status}
+
 \subsection{Query Store}
-The centerpiece of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identifiable, and persisted. At the EODC backend, the Query Store is realized with two new tables in the existing PostgreSQL database. In Figure \ref{fig:eer_rda} the EODC database structure from Figure \ref{fig:eodceer} is visualized with the proposed additional tables. The new \textit{Query} table consists of the query dataset specified by the RDA recommendations. The \textit{QueryJob} table defines the relation between Job and Query. In the current version of the openEO core API, it is only possible to have one input data query used by a job. In the future, there may be the possibility to have more than one input data query related to one job. Hence the \textit{QueryJob} table gets introduced. 
+The centerpiece of the RDA recommendations is the implementation of a Query Store. Queries in the Query Store must be comparable, identifiable, and persistent. The query data has to be stored at the backend infrastructure. The backend has a PostgreSQL database to store the executed jobs (see Figure \ref{fig:eodceer} in Section \ref{EODC Back End}). We realized the Query Store at the backend with two additional tables to this database. Figure \ref{fig:eer_rda} visualizes the proposed additional tables. The new \textit{Query} table consists of the query datarecord specified by the RDA recommendations. The \textit{QueryJob} table maps the relation between Job and Query. In the current version of the openEO core API, it is only possible to have one input data query used by a job. In the future, there may be the possibility to have more than one input data query related to one job execution. Hence we introduce the \textit{QueryJob} table. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{eodc_eer_rda}
-	\caption{Overview of the database of EODC with the proposed additional tables (green).}
+	\caption{Overview of the database of the backend with the proposed additional tables (green).}
 	\label{fig:eer_rda} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-\subsection{Query Handler Workflow}
-Figure \ref{fig:impldataid} shows an overview of the data identification solution of the EODC backend. The green parts of the diagram are representing the additions proposed in the thesis. The \textit{Query Handler} itself is an additional python module in the EODC backend that gets called after the job execution. 
+\subsection{Query Handler}
+Figure \ref{fig:impldataid} shows an overview of the data identification solution at the backend. The green parts of the diagram represent proposed extensions. We implemented the \textit{Query Handler} component as an additional python module in the backend called after the job execution. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{implementation_dataidentification}
-	\caption{Overview of the proposed data identification workflow at the EODC backend}
+	\caption{Overview of the proposed data identification component at the backend}
 	\label{fig:impldataid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-The \textit{Query Generation} and \textit{Query Execution} components of the EODC backend provide the input data of the \textit{Query Handler}. The process graph is the raw input process graph received by the backend driver from the client application. The list of result files is the result of the query execution process and therefore, the input data of the workflow. The \textit{Query Execution} component provides the execution timestamp additionally. The \textit{Query Handler} consists of the following components:
+The \textit{Query Generation} and \textit{Query Execution} components provide the input data of the \textit{Query Handler}. The process graph is the raw input process graph received by the backend driver from the client application. The list of result files is the result of the query execution and therefore, the input data of the job. The \textit{Query Execution} component provides the execution timestamp. The \textit{Query Handler} contains the following components:
 
  \begin{itemize}
 	\item \textbf{Query Processor} \\
-	The Query Processor takes the query as input and generates the necessary query data out of it. Since the process graph at this point also includes the processes and not only the filter operations, this step is necessary. The output consists of the original query, the unique/normalized query, the hash of the normalized query, and the persisted data identifier of the query. This information is forwarded to the Query Record Handler. The mentioned resulting items are described more in detail in the section below.   
+	The \textit{Query Processor} takes the executed query, parses and generates the necessary query data and forwards the information to the \textit{Query Record Handler}. This step is necessary, since the process graph at this point also includes the execution processes and not only the filter processes. The output is composed of the original query, the unique query, the hash of the unique query and the persistent data identifier (PID) of the query. This information is forwarded to the \textit{Query Record Handler}. The mentioned resulting items are described in more detail in the next section.   
 	\item \textbf{Data Handler} \\ 
-	The Data Handler is responsible for creating the result data dependent query information. The output is the hash over the file list result, the execution timestamp and additional data. In this case, the Data Handler only calculates the number of files as data output. Since EODC uses the OGC standard CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} to query the data, the sorting of the resulting files is predefined. The order of the files has no impact on the processing, and openEO users are not able to choose a specific sorting. Therefore the predefined CSW sorting is used for the hash production. The results of the component are forwarded to the Query Record Handler.    
+	The \textit{Data Handler} is responsible for creating the elements of a query record related to the query result. The output contains the hash over the file list, the execution timestamp and the number of resulting files. Since the backend uses the OGC standard CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} to query the data, the sorting of the resulting files is predefined. The order of the files has no impact on the processing, and openEO users are not able to choose a sorting type. Therefore, the predefined CSW sorting is used for the hash production. The results of the \textit{Data Handler} component are forwarded to the \textit{Query Record Handler}.    
 	\item \textbf{Query Record Handler} \\
-	The Query Record Handler communicates with the meta database from EODC to see if an identical Query already exists. The Workflow of the Query Record Handler can be viewed in Figure \ref{fig:queryhandler_activity}. If the Query Record already exists the Query Record Handler forwards the existing Query PID to the context model, otherwise a new Query PID gets created and persisted in the Query Table. The combination of the result-file hash and the normalized query hash must not have duplicates in the \textit{Query} table. On saving the Query PID in the job context model, a \textit{QueryJob} table entry gets created to store the relation between the job id and the Query PID. 
-	
+	The \textit{Query Record Handler} communicates with the database of the backend to find existing identical query records. Figure \ref{fig:queryhandler_activity} gives an overview of the activities of the \textit{Query Record Handler}. If the query record already exists, the \textit{Query Record Handler} returns the existing PID, otherwise a new PID is created and the query is stored in a new query record. The combination of the result-file hash and the unique query hash must not have duplicates in the query table. On saving the query PID in the job context model, a queryjob record gets created. It sets the relation between the job execution and the input data query PID. 
 \end{itemize}
 
 \begin{figure}[h]
@@ -998,12 +984,12 @@ The \textit{Query Generation} and \textit{Query Execution} components of the EOD
 
 \subsection{Query Table Structure}
 
-The Query Table stores the data related to the query instance, additional result, and data information. Table \ref{Tab:querytable} visualizes the Query Table structure. Example input values are used to explain how the single data entries are generated, to illustrate the Query data record. Therefore, in Figure \ref{fig:processgraph_example} there is an example input process graph.   
+The query table stores the query data with additional result and data information. Table \ref{Tab:querytable} visualizes the structure of the query table. We added example values to explain how the parts of the query record are generated. Figure \ref{fig:processgraph_example} shows the example input process graph.   
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{original_query}
-	\caption{Example original query and unique query.}
+	\caption{Example for the original query and the unique query of the example process graph.}
 	\label{fig:processgraph_example} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure} 
 
@@ -1025,32 +1011,32 @@ The following list describes how the elements of the query data set record are c
 
 \begin{enumerate}
 	\item \textbf{Query PID} \\
-	The Query PID gets generated by the python library uuid\footnote{https://docs.python.org/3/library/uuid.html}. The library is used to generate unique identifiers and used in the EODC backend for generating the job ids. In the EODC backend ids have in the beginning code for the specific entity (e.g. "jb-UUID" for Job entities). That is why the id for a Query Table entry is structured like "qu-UUID". \\
+	We generate the query PID with the python library uuid\footnote{https://docs.python.org/3/library/uuid.html}. The library generates unique identifiers and the backend uses it for creating the job identifier. The identifier of the backend have codes related to the database table in the beginning (e.g. "jb-UUID" for job entities). That is why the id for the newly introduced query table is structured like "qu-UUID". \\
 	\textit{Example: "qu-16fd2706-8baf-433b-82eb-8c7fada847da"}
-	\item \textbf{Dataset PID} \\
-	The dataset PID is the identifier of the satellite in the process graph (e.g. the "product\_id" element). \\
+	\item \textbf{Dataset PID} \\ 
+	The dataset PID is the identifier of the satellite in the process graph (e.g. the identifier in the "load\_collection" process). \\
 	\textit{Example: "s1a\_csar\_grdh\_iw"}	    	
 	\item\textbf{Original Query} \\
-	The original query is the input query of from the query execution component, which got executed by it.  \\ 
-	\textit{Example: See the Original Query in Figure \ref{fig:processgraph_example}}	 
+	The initially executed CSW query of the query execution component.  \\ 
+	\textit{Example: See the original query in Figure \ref{fig:processgraph_example}}	 
 	\item \textbf{Unique Query} \\
-	The unique query is the restructured query that is comparable to other unique queries. Since the order of the filters makes no difference in the outcome of the query execution, the elements of the original query are alphabetically sorted by the JSON keys to get the unique query. \\
-	\textit{Example: See the Unique Query in Figure \ref{fig:processgraph_example}}	  	 	
+	The unique query is the restructured query that is comparable to other unique queries. The order of the filters make no difference in the outcome of the query execution. Therefore, the filter arguments of the original query are alphabetically sorted by the JSON keys to generate the unique query. \\
+	\textit{Example: See the unique query in Figure \ref{fig:processgraph_example}}	  	 	
 	\item \textbf{Unique Query Hash} \\ 
-	Newline and space characters are removed from the unique query string. The unique query hash is the output of the SHA-256 hash function (using the python module "hashlib") with the unique query as input.  \\
+	We remove newline and space characters from the unique query string. After that, we create the unique query hash by running the SHA-256 over the resulting unique query using the "hashlib" python module.  \\
 	\textit{Example: "AE7EF888CDEDF8A9A371\dots"} 
 	\item \textbf{Result Hash} \\
-	The result hash is the output of the SHA-256 hash function (using the python module "hashlib") with the result file list as input. Before the list is applied to the hash function it is transformed to a string and the newline and white space characters are removed. \\
+	The result hash is the output of the SHA-256 hash function using the python module "hashlib" over the result file list. We clean up the string of the file list by removing the newline and white space characters, before it is applied to the hash function. \\
 	\textit{Example: "565D229FCE4772869343\dots"} 
 	\item \textbf{Execution Timestamp} \\
-	The execution time stamp is the input parameter of the \textit{Query Handler} and is transformed to the data type needed by the data base. The timestamp is taken by the query execution handler and is part of the query execution result. To forward it to the \textit{Query Handler} it has to be read from the result object. \\
+	The execution time stamp is the input parameter of the \textit{Query Handler} transformed to the data type needed by the database. We take the timestamp from the \textit{Query Execution Handler} and is part of the result. \\
 	\textit{Example: "2018-10-17 18:03:20,609"}  
 	\item \textbf{Additional Data} \\
-	The additional data column of the \textit{Query} table can be used by the EODC backend to store additional information about the query execution. In the implementation of this thesis, only the number of output files are persisted in the database. The column is defined as a JSON object and can be extended with additional data easily. \\
+	The additional data column of the query table can be used by the backend to store additional information about the query execution. In the implementation of this thesis, we only store the number of output files. The column is defined as a JSON object and can be extended with additional data without changing the structure of the table. \\
 	\textit{Example: "\{ "number\_of\_files": 10\}"}    	 
 \end{enumerate}
 
-
+\todo{Implementation status}
 \section{Backend provenance}\label{Implementation:Backend provenance}
 
 The backend provenance aims to persist the versions of the backend and therefore the version of the software used to execute the jobs. The following subsections explain how the, in Section \ref{Design:Backend provenance} defined, provenance data elements are read from the GitHub repository.   
@@ -2616,23 +2602,15 @@ The reason for this is that the process graph does not have the original executi
 \chapter{Conclusion and future Work}\label{Conclusion}
 
 \section{Conclusion}
-\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
+%\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 %\todo{Remove automated fashion or add a Why? --> Because EODC does not provide a possibility or it has to be done manually by EODC}
 
-\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-\todo{Gesamte Thesis: Restructure passive sentences}
-\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-\todo{Gesamte Thesis: Kurze einfache Sätze}
-\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 In this thesis, the challenges of providing reproducibility in earth observation science have been explored. We deal with the problematic state of reproducibility in EO experiments, which use extern computational backends. We suggested how existing infrastructure of EO backends can be adapted to enable data identification using the Research Data Alliance recommendations. We presented how job environments can be captured and compared, by applying the VFramework to make differences in the computational environment measurable. The presented solution was implemented at the backend of the Earth Observation Data Centre which is compliant with the openEO specification that provides a common interface for earth observation backends. The implementation involved extending the backend to add reproducibility supporting functionality, as well as, extending client applications to provide additional functionality. This allows scientists not to change the way of work but, due to the introduced changes into the existing environment, they can improve the reproducibility of experiments. The evaluation of our solution consists of simulated use cases representing updates of data and changes in the backend environment. We also measured the performance and storage impact on the backend, which concluded that the solution is capable of making the input data, code and the environment identifiable and reproducible with minimal impact on the backend's performance.       
 
 \subsection{Research questions revisited}\label{research question revisited}
 %\todo{Update changed RQs !}
 %\todo{Programming language --> programming language version}
-\todo{Redundante Sätze wegstreichen}
+%\todo{Redundante Sätze wegstreichen}
 %\todo{first execution --> original execution}
 %\todo{Remove "can assumed"}
 %\todo{data compared --> Data ID or it changes to Context model somehow} --> REMOVED
