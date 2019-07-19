@@ -692,7 +692,7 @@ In the following, the relevant RESTful request types in openEO and the policy of
 %\todo{change back to sequence_diagramm2}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{api2}
+	\includegraphics[width=\textwidth]{sequence_diagramm2}
 	\caption{Overview of the openEO procedure to execute a job and retrieve the results}
 	\label{fig:api2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
@@ -1036,14 +1036,14 @@ The following list describes how the elements of the query data set record are c
 	\textit{Example: "\{ "number\_of\_files": 10\}"}    	 
 \end{enumerate}
 
-\todo{Implementation status}
+
 \section{Backend provenance}\label{Implementation:Backend provenance}
 
-The backend provenance aims to persist the versions of the backend and therefore the version of the software used to execute the jobs. The following subsections explain how the, in Section \ref{Design:Backend provenance} defined, provenance data elements are read from the GitHub repository.   
+The backend provenance is idenfifyable by the backend version and contains the job independent provenance information. The following subsections explain how the (in Section \ref{Design:Backend provenance} defined) provenance data elements are implemented.  
+
 \begin{enumerate}[(A)]
 \item \textbf{GitHub Repository} \\
-	The GitHub repository is directly used to create the services of the EODC backend. Therefore, the currently used GitHub repository information can be read via the \gls{cli} of Git. The used commit and branch are accessed directly via the Git CLI. Listing \ref{lst:impl_backendprov} shows the Git CLI calls used to get the GitHub repository information.       
-
+	The backend services deploy automatically from the GitHub repository. Therefore, we read the used GitHub repository information via the \gls{cli} of Git. We access the checked out commit and branch of the backend directly via the Git CLI, initiated with python. Listing \ref{lst:impl_backendprov} shows the Git CLI calls used to retrieve the GitHub repository information needed by the backend provenance.      
 \begin{code}
 	\begin{minted}{bash}
 	# Receiving the Git Repository URL
@@ -1053,37 +1053,33 @@ The backend provenance aims to persist the versions of the backend and therefore
 	# Receiving the commit messages with the timestamps
 	git log 
 	\end{minted}
-	\caption{Git commands used to get access the backend identification.}
+	\caption{Git CLI calls to get access the backend provenance.}
 	\label{lst:impl_backendprov}
 \end{code}
 
 \item \textbf{Core API Version} \\
-	Backend developers manually update the openEO core API version of the EODC backend. It is in the GitHub repository of the EODC backend. 
+	The backend provider update the openEO core API version of the backend manually. The currently used API is in the GitHub repository of the backend. 
 
 \item \textbf{Back End Version} \\
-	Since EODC takes the code for the services directly from GitHub, the Git commit identifier is used as the version of the backend.
+	The backend fetches the code for the services directly from GitHub and the Git commit identifies a certain state of the code. Therefore, we use the commit identifier as the version of the backend.
 
 \item \textbf{Publication Timestamp} \\
-	The publication timestamp of the EODC backend is defined by the timestamp when the Git commit happened. It is persisted by GitHub and can be retrieved via the Git CLI. 
+	The publication timestamp of the version of the backend is defined by the timestamp when the Git commit happened. GitHub stores it and it can be retrieved via the Git CLI. 
 \end{enumerate}
 
 \section{Job dependent provenance}\label{Implementation:Job dependent provenance}
-The EODC backend of the release version "0.3.1" transforms the process graph into separate docker containers. For every process in the process graph, there is a Docker container running the related python code. The input of the current process is the output of the previous process. The first process docker container has the input data defined in the process graph as an input value, which is the result of the query execution. Every process saves the results in a temporary folder dedicated to the specific process execution. Every process has its temporary output directory until the whole process chain is finished. After that, the backend deletes the temporary folders, and only the result is persisted in the job directory.
-The processes must provide data about the input data, the output data, and the processing itself, to achieve the job environment data capturing described in Chapter \ref{Design:Job dependent provenance}. \\ 
-The implementation adds specific information of interest to the logging of the processing and reads the logging files to generate the context model. This solution modifies and extends the existing python code and is used for the evaluation of this thesis. In Figure \ref{fig:impljobcapture}, an overview of the job capturing workflow is presented. Section \ref{Implementation:Python Implementation} describes the single parts of the overview in more detail.
-
+The backend transforms the process graph into separate docker containers. For every process in the process graph, there is a docker container running the python implementation of the process. The input of the current process is the output of the previous process. The first process docker container has the input data defined in the process graph as input data, which is the result of the query execution. Every process saves the results in a temporary folder dedicated to the specific process execution. Every process has its temporary output directory until the whole process chain is finished. After that, the backend deletes the temporary folders, and it only keeps the result in the job directory.
+The job must identify the input data, the output data and the execution environment to achieve the job environment data capturing described in Chapter \ref{Design:Job dependent provenance}. \\ 
+The implementation adds the captured information to the logging of the job execution. After the job execution it reads the logging files to generate the context model. This solution extends the code of the backend with minor logging calls. Figure \ref{fig:impljobcapture} gives an overview of the implemented job capturing procedure. Section \ref{Implementation:Python Implementation} describes every part of the overview in more detail.
 
 \subsection{Context Model Repository}\label{Implementation:Provenance Repository}
-Each executed job creates a context model. If the job gets re-executed, the context model gets replaced by the new context model. Job re-execution is internally handled as a new job with the same process graph. The functionality of letting the same job be re-executed without creating a new job id is dropped from the agenda of the openEO project in version 0.3.1 (see the GitHub repository\footnote{https://open-eo.github.io/openeo-api/v/0.3.1/apireference/}). 
-The context model is stored as a JSON object in the job execution database. After the job is carried out in the EODC backend the results are saved in a folder named after the unique job identifier and the data information is stored in a PostgreSQL database (see Section \ref{EODC Back End}). Jobs are saved in the \textit{Job} table of the database, and in this solution, the context model is an additional column of it. The context model JSON object gets created by the implementations described below. \\
+Each executed job generates a context model related to the job execution. If the job gets re-executed, the context model gets replaced by a new context model related to the later execution. The backend handles job re-executions as new jobs with the same process graph and assigns a new job identifier. Letting the same job be re-executed without creating a new job id is dropped from the agenda of the openEO project since version 0.3.1 (see the GitHub repository\footnote{https://open-eo.github.io/openeo-api/v/0.3.1/apireference/}). 
+We store the context model formatted as a JSON object in the job execution database. After the job is carried out in the backend, the results are saved in a folder named after the job identifier and the meta data information is stored in the PostgreSQL database (see Section \ref{EODC Back End}). Jobs are stored in the \textit{Job} table of the database. We added an additional column to this table to store the context model in this solution. The creation of the context model is described with the implementation below. \\
 Table \ref{Tab:contextmodel} provides the mapping between the context model elements from Section \ref{Design} and the keys of the JSON context model object of the prototype. The elements have a one to one mapping of the context model and the JSON key except for the timestamps of the execution. The execution timestamps are part of the \textit{Job} table in the EODC database. \\
-Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described for the context model in the Design section. Information on the backend environment during the execution of the job is persisted in the context model. In the context model, the backend version and the execution timestamp is persisted and can be used to identify the backend provenance of the execution time. The code environment is a list of all python dependencies with their versions installed during the execution of the jobs. Besides, the python interpreter version is added to the JSON object. How the data is captured in detail is described in the sections below.    
+Figure \ref{fig:job_context_model} shows an example context model. It consists of all elements described by the context model in the Design chapter. Information on the backend environment during the execution of the job is stored in the context model. We store the backend version and the execution timestamp in the context model to be able to identify backend provenance of the execution The code environment is a list of python dependencies of the job execution with their versions. Besides, the python interpreter version is added to the context model. How the data is captured in detail is described in the sections below.    
   
-
-
- 
 \begin{table}[]
-	\caption{Relation of context model elements and EODC JSON context model.}
+	\caption{Relation of context model elements and the implementation JSON context model.}
 	\begin{tabular}{l|l}
 		\textbf{Context Model Definition} & \textbf{JSON Key} \\ \hline
 		\textbf{(a): Input data persistent identifier} & input\_data \\ \hline
@@ -1100,10 +1096,10 @@ Figure \ref{fig:job_context_model} shows an example context model. It consists o
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{job_context_model}
-	\caption{Example context model of a job execution at the EODC backend.}
+	\caption{Example context model of a job execution at the backend implementation.}
 	\label{fig:job_context_model} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
+\todo{Implementation status} 
 \subsection{Python Implementation}\label{Implementation:Python Implementation}
 The EODC implementation proposed by this thesis is an example for other backends, hence needs to be easy to implement and maintain. Therefore, the implementation is done in the python version of the EODC backend without any additional requirements. The python solution uses logging messages to transfer the needed data from the process execution program to the capturing tool. The cleanup service of the EODC backend driver triggers the execution of it. It is an additional python module and parses the log files after the job is finished. This solution generates, except for the additional logging calls, little impact on the existing backend implementation. The EODC backend driver has already a logging system installed. Hence the modifications are added in the existing logging policy. \\
 Figure \ref{fig:impljobcapture} visualizes the additional python module \textit{Job Capturing} and \textit{Result Handler} in the context of the backend environment. The following list describes the workflow of the solution at the EODC backend driver. 
@@ -1145,6 +1141,7 @@ The following sections describe the capturing of each data element of the job de
 \item[(f)] \textbf{Result Identifier} \\
 	The result identifier consists of the resulting data of the whole process graph execution. It is an SHA-256 hash (using the \textit{hashlib} python library) of the resulting alphabetical sorted output files, which are placed in the resulting folder of the job execution directory. In the current version of the backend, there is only one result file created, due to the limitations of the available processes.   
 \end{enumerate}
+
 \section{User Services}\label{Implementation:User Interface}
 The previous sections describe only the technical insight of the backend. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing openEO core API version 0.3.1. Besides, the proposed endpoints are applied to the python client and the EODC backend. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
 \begin{enumerate}[I.]
