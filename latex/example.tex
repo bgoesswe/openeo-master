@@ -1099,54 +1099,57 @@ Figure \ref{fig:job_context_model} shows an example context model. It consists o
 	\caption{Example context model of a job execution at the backend implementation.}
 	\label{fig:job_context_model} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-\todo{Implementation status} 
+
 \subsection{Python Implementation}\label{Implementation:Python Implementation}
-The EODC implementation proposed by this thesis is an example for other backends, hence needs to be easy to implement and maintain. Therefore, the implementation is done in the python version of the EODC backend without any additional requirements. The python solution uses logging messages to transfer the needed data from the process execution program to the capturing tool. The cleanup service of the EODC backend driver triggers the execution of it. It is an additional python module and parses the log files after the job is finished. This solution generates, except for the additional logging calls, little impact on the existing backend implementation. The EODC backend driver has already a logging system installed. Hence the modifications are added in the existing logging policy. \\
-Figure \ref{fig:impljobcapture} visualizes the additional python module \textit{Job Capturing} and \textit{Result Handler} in the context of the backend environment. The following list describes the workflow of the solution at the EODC backend driver. 
+The implementation of this thesis is an example for other backends with similar setups. Therefore, we implemented it in the python version of the backend without any additional requirements. The python solution uses logging messages to transfer the needed data from the process execution to the capturing modules. The cleanup service of the EODC backend driver triggers the modules of the solution. It is an additional python module and parses the log files after the job is finished. This solution generates, except for the additional logging calls, little impact on the existing backend implementation. The EODC backend driver has already a logging system installed. Hence the modifications are added to the existing logging policy. \\
+Figure \ref{fig:impljobcapture} visualizes the additional python modules \textit{Job Capturing} and \textit{Result Handler} in the context of the backend environment. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{job_capturing_overview}
-	\caption{Overview of the Job capturing architecture at the EODC backend}
+	\caption{Overview of the Job capturing architecture at the backend. Green blocks are additional modules}
 	\label{fig:impljobcapture} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
+The following list describes the modules of the backend and the additional modules of the solution. The order of the list shows the order of the module execution. 
+
 \begin{enumerate}
 	\item \textbf{Process Execution} \\
-	The \textit{Process Execution} module at the EODC backend is responsible for the actual execution of the job. It creates the additional logging information ((a), (c), (d) and (e) of the context model) and persists it in the logging file of the job execution. 
+	The \textit{Process Execution} module at the backend is responsible for the execution of the job. It creates the additional logging information (see (a), (c), (d) and (e) of the context model) and stores it in a logging file. 
 	\item \textbf{Processing Cleanup} \\
-	After the job execution is finished, the temporary folders are deleted from the file system and the result is copied to the persisted job folder. Then the additional \textit{Job Capturing} module starts with the path to the logging file.  
+	After finishing the job execution, the backend deletes all temporary folders from the file system and copies the results to the newly created job folder. Then the solution module \textit{Job Capturing} starts given the path of the logging file.  
 	\item \textbf{Result Provider} \\
-	The \textit{Result Provider} is responsible of making the result available for the user and providing the user with the feedback of the finished job. Additionally it invokes the \textit{Result Handler} module with the path of the resulting file.
+	The \textit{Result Provider} is responsible of making the result available for the user. It provides the user with information and feedback about the job execution. Additionally it invokes the \textit{Result Handler} module with the path of the resulting file.
 	\item \textbf{Result Handler} \\
-	The \textit{Result Handler} reads the result file and calculates an SHA-256 hash over it. After completion, it is provided to the \textit{Context Model Creator} module.  
+	The \textit{Result Handler} reads the result file and calculates an SHA-256 hash over it. After completion, it sends it to the \textit{Context Model Creator} module.  
 	\item \textbf{Job Capturing} \\
-	The \textit{Job Capturing} module parses the logging file to extract the information needed for the context model ((a), (c), (d) and (e)) and passes the formatted information to the \textit{Context Model Creator}. The \textit{Context Model Creator} needs the \textit{Result Handler} (f) and \textit{Back End Provenance Handler} (b) for the remaining parts of the context model. After receiving all necessary information the JSON context model is created and stored to the \textit{Job} table in the EODC database.    
+	The \textit{Job Capturing} module parses the logging file to extract the information needed for the context model ((a), (c), (d) and (e)). It passes the rightful formatted information to the \textit{Context Model Creator}. The \textit{Context Model Creator} needs the \textit{Result Handler} (f) and \textit{Back End Provenance Handler} (b) for the remaining parts of the context model. After receiving all necessary information, the \textit{Context Model Creator} creates the JSON context model and saves it into the \textit{Job} table of the database.    
 \end{enumerate}
 
 The following sections describe the capturing of each data element of the job dependent context model in more detail.
 \begin{enumerate}[(a)]
 \item \textbf{Source Input Data Identifier} \\
-	The source input data identifier is the PID of the input data and query provided by the EODC query store described in Section \ref{Implementation:Data Identification}. It is forwarded to the \textit{Job Capturing} module by the \textit{Processing Cleanup} module. 
+	The source input data identifier is the PID of the input data provided by the query store described in Section \ref{Implementation:Data Identification}. It is forwarded to the \textit{Job Capturing} module by the \textit{Processing Cleanup} module. 
 
 \item \textbf{Backend provenance / Code Identifier} \\
-	The \textit{Job Capturing} module reads the backend provenance from the \textit{BackendMonit} output JSON file described in Section \ref{Implementation:Backend provenance}. The latest backend version during the execution is copied to the context model.
+	The \textit{Job Capturing} module reads the backend provenance described in Section \ref{Implementation:Backend provenance}. The backend version active at the beginning of the execution is copied to the context model.
 
-\item[(c)(d)] \textbf{Programming language and  installed packages of programming language} \\
-	The \textit{Process Execution} module uses the installed python module \textit{pip} to list all installed packages including their versions. The module is at the moment used to manage the python packages of the backend. The GitHub repository of the EODC backend driver includes a python environment file to install all needed dependencies of python via \textit{pip} automatically. A feature of that tool is the \textit{pip freeze} call, which returns all installed python packages including their particular versions. It is then transformed into a JSON list object and saved to the context model. In addition to this the \textit{Process Execution} captures the python version by using the \textit{sys.version} call. All of this executions are done in the \textit{Process Execution} module, in the actual processing environment and stored in the output log file of the job execution.    
+\item[(c)(d)] \textbf{Programming language and used libraries} \\
+	The \textit{Process Execution} module uses the installed python module \textit{pip} to list all installed packages with their versions. The module is at the moment used to manage the python packages of the backend. The GitHub repository of the backend includes a python environment file to install all needed dependencies of python via \textit{pip} automatically. A feature of that tool is the \textit{pip freeze} call, which returns all installed python packages with their versions. It is then transformed into a JSON object and saved to the context model. In addition to this the \textit{Process Execution} captures the python version by using the \textit{sys.version} function of the \textit{sys} module. All of this executions are done in the \textit{Process Execution} module in the actual processing environment and stored in the output log file of the job execution.    
 
 \item[(e)] \textbf{Start and end time of process execution} \\
-	The start and end time of the process execution is already done at the EODC backend in the  \textit{Process Execution} module. The resulting time stamps are persisted in the \textit{Job} table of the database. The \textit{Process Execution} module adds the values to the output logging file. This solution does not add these logging entries since the EODC backend provider already implements them.
+	The start and end time of the process execution is already done by the backend in the  \textit{Process Execution} module. The resulting timestamps are persisted in the \textit{Job} table of the database. 
 
 \item[(f)] \textbf{Result Identifier} \\
-	The result identifier consists of the resulting data of the whole process graph execution. It is an SHA-256 hash (using the \textit{hashlib} python library) of the resulting alphabetical sorted output files, which are placed in the resulting folder of the job execution directory. In the current version of the backend, there is only one result file created, due to the limitations of the available processes.   
+	The result identifier consists of the resulting data of the whole job execution. It is an SHA-256 hash (using the \textit{hashlib} python library) of the resulting alphabetical sorted output files, which are placed in the resulting folder of the job execution directory. In the current version of the backend, there is only one result file created, due to the limitations of the available processes.   
 \end{enumerate}
 
 \section{User Services}\label{Implementation:User Interface}
-The previous sections describe only the technical insight of the backend. This section describes the implementation of the interfaces for the users. Therefore, endpoints are added to the current existing openEO core API version 0.3.1. Besides, the proposed endpoints are applied to the python client and the EODC backend. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
+The previous sections describe the technical insight of the backend. This section describes the implementation of the interfaces used by the users. Therefore, endpoints are added to the current existing openEO core API. Besides, the proposed endpoints are applied to the python client and the backend. The implementation of the recommended additions of Section \ref{Design:User Interface} are described in the following:
+
 \begin{enumerate}[I.]
 \item \textbf{Backend version} \\
-	Retrieving additional information about the backend was added into a new endpoint of the API. The new endpoint is a GET request called “/version” and no authentication is needed to access it. The response of the version endpoint is the whole job independent provenance information of the backend ((A)-(D), see Section \ref{Implementation:Backend provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the EODC backend to return the latest backend version including data. The endpoint takes a timestamp as a parameter to get the backend version data of a specific time. Further additions are created to the python client so that the user can call a method in the python client called “version()” to retrieve the information of the backend directly in the python client. A result is a JSON object consisting of the backend provenance data. Listing \ref{lst:implementation_back_end_version} shows a result example.
+	We added a new endpoint for retrieving additional information about the backend. The new endpoint is a GET request with the path “/version” and no authentication is needed to access it. The response of the version endpoint is the job independent provenance information of the backend ((A)-(D), see Section \ref{Implementation:Backend provenance}). In a production version, the data may be filtered for information marked as a security risk. This endpoint is added to the backend to return the latest backend version. The endpoint takes a timestamp as parameter to get the backend version that was active at a specific time. We added a method to the python client, so that the user can retrieve this information by calling “version()”. The result is a JSON object consisting of the backend provenance data. Listing \ref{lst:implementation_back_end_version} shows a result example.
 
 \begin{listing}[ht]
 	\begin{minted}{json}
@@ -1159,10 +1162,10 @@ The previous sections describe only the technical insight of the backend. This s
 \end{listing}
 
 \item \textbf{Detailed Job Information} \\
-	In the openEO coreAPI, there is an endpoint to get detailed information about the job status. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version of 0.3.1 only contains the execution state of the job and the job id. In addition to this, the available information of the whole job dependent provenance gets added to this endpoint in the implementation of this thesis (e.g. see Figure \ref{fig:job_context_model}). Since the python client returns the resulting JSON response from the backend as a python dictionary, there is no modification needed.
+	In the openEO coreAPI, there is an endpoint for getting detailed information about a job execution. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version (0.3.1) only contains the execution state of the job and the job id. In addition to this, we add the job dependent provenance to the endpoint (e.g. see Figure \ref{fig:job_context_model}). Since the python client returns the resulting JSON response from the backend as a python dictionary, there is no modification of the client needed.
 
 \item \textbf{Comparing two Jobs} \\
-	The core API does not define the comparison of two jobs. Hence there does not exist any user interface. The modified core API defines a new endpoint in the manner of existing endpoint definitions. For this thesis, the endpoint  “POST /jobs/<job\_id>/diff” gets introduced to the new core API. In the URL of the request, the user defines the base job id, which context model is compared with other jobs. In the body of the request, the target job ids are defined in a JSON list. After getting the request from the user, the backend compares the context models of the base job with every target job occurring in the request body list. The result from the backend consists of a term for every item in the base job context model. The term “EQUAL”, if the item is the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields of it. The response contains the context model of all jobs with one of the previously described three states inside of the value of every item. In the python client, this feature is added with an additional function of the Job class called "diff(target\_job)". Listing \ref{lst:job_comparison} provides an example of the dictionary output of this function.
+	There does not exist any user interface to compare jobs in the coreAPI. The solution API defines a new endpoint in the manner of existing endpoint definitions. For this thesis, we introduce the endpoint  “POST /jobs/<job\_id>/diff”. In the URL of the request, the user defines the base job id, which context model is compared with other jobs. In the body of the request, the target job ids are defined in a JSON object. After getting the request from the user, the backend compares the context models of the base job with every target job occurring in the request body. The result from the backend consists of a term for every item in the base job context model. The term “EQUAL”, if the items are the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields. The response contains the context model of all jobs with one of the previously described three states inside of the value of every item. In the python client, this feature is added with an additional function of the Job class called "diff(target\_job)". Listing \ref{lst:job_comparison} provides an example of the dictionary output of this function.
 
 \begin{listing}[ht]
 	\begin{minted}{json}
@@ -1180,28 +1183,28 @@ The previous sections describe only the technical insight of the backend. This s
    "end_time":"2019-04-05 12:18:08.286217"}
 }
 	\end{minted}
-	\caption{Example of resulting job comparison.}
+	\caption{Example of a job comparison regarding the context model.}
 	\label{lst:job_comparison}
 \end{listing}	
 
 
 \item \textbf{Data Identifier Landing Page} \\
-	Depending on the backend, the input data may be restricted to the openEO interface. Therefore, the resolver of the input data PID is set within the core-API specification. In the coreAPI release version 0.3.1, there exists an endpoint to retrieve detailed information about a data set. The "GET /data/<data-pid>" endpoint is introduced. If the user calls the endpoint with a data PID, the result is the details of the underlying dataset and besides, the result of the query execution and the original query parameters. The landing page contains a link to another page with the file list after a query re-execution ("GET /data/<data-pid>/result" endpoint). If the result file list differs from the first execution, there is a list of the files that differ. Otherwise, it states that the file list is equal to the first execution. 
+	Depending on the backend, the input data may be restricted to the openEO interface. Therefore, the resolver of the input data PID is set within the coreAPI specification. There exists an endpoint to retrieve detailed information about a data set. We introduce the additional "GET /data/<data-pid>" endpoint. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and besides, the result of the query execution and the original query parameters. The landing page contains a link to another page with the file list after a query re-execution ("GET /data/<data-pid>/result" endpoint). If the result file list differs from the original execution, there is a list of the files that differ. Otherwise, it states that the file list is equal to the first execution. 
 
 \item \textbf{Re-use of Input Data} \\
-	To re-use the input data in different job execution, the data PID can be used in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the EODC backend automatically applies the queries in the way of the first execution. It is inserted in the process "get\_collection" as an additional filter argument named "data\_pid", to pass the data PID to the process graph. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the first execution of the PID, the job shall be processed nonetheless, but there has to be a warning message to notify the user.  
+	To re-use the input data in different job execution, the client user can use the data PID in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the backend automatically applies the queries in the way of the original execution. It is inserted in the process "get\_collection" as an additional filter argument named "data\_pid", to pass the data PID to the process graph. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed nonetheless, but a warning message appears to notify the user.  
 \end{enumerate}
 
 \section{Use Cases}
-This section shows how the use cases of Section \ref{Use Cases} can be addressed using the implementation described in the sections before. In the first section, there is an overview of how the data identification recommendations by \acrshort{rda} are implemented. 
+This section shows how the use cases of Section \ref{Use Cases} are addressed using the implementation described in the sections before.
 
 \subsection{Use Case 1 – Re-Use of Input Data}\label{Implementation:Use Case1}
-The first scenario describes the process of a researcher using openEO as a processing environment. In this use case, the focus is on the data identification and data citation part of the solution. Researchers that use openEO may want to cite the data that is used in the applied process chain. Other scientists then may want to use this data in their related research experiment. The step-by-step description of the scenario can be viewed in Section \ref{UseCase1}. In this section, the steps of the use case are executed in the evaluation environment. The implementation of the use cases is available at GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
+The first use case describes how a researcher uses openEO as a processing environment. In this use case, the focus is on data identification and data citation. Researchers that use openEO may want to cite the data that is used in the applied job. Other scientists then want to use this data in their related research experiment. Section \ref{UseCase1} shows a step-by-step description of the use case. In this section, we execute the steps of the use case with the solution. The implementation of the use cases is available on GitHub\footnote{https://github.com/bgoesswein/dataid\_openeo/tree/master/openeo-python-client/examples}.
 
 \begin{enumerate}
 	\item \textbf{Researcher A runs an experiment (job A) at the EODC backend.} \\
-	This step is basic openEO functionality and is not influenced by the solution from the user point of view. The researcher chooses Sentinel-2 data by loading the Sentinel-2 collection of EODC with the data-set identifier "s2a\_prd\_msil1c". In the next step, the data is filtered temporally (May of 2017) and spatially (bounding box of the South Tyrol area). In the next step the researcher applies the NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php} process on the filtered data as well as the minimum value of each pixel in the time range with the "min\_time" process. The NDVI calculation needs the measurements of the satellite in near-infrared (parameter "nir") and the measurements of red light (parameter "red"). for Sentinel 2 data of the EODC the band identifiers represent the two measurements "B08" for near-infrared and "B04" for the visible red light. The last two lines create a job at the backend with the specified process graph and start the execution of it.
-	At the backend the \textit{Query Handler} is generating a new data PID or returns an already existing one if the same query got executed in the past. The following python client code represents the experiment of Researcher A.
+	This step is basic openEO functionality and is not influenced by the solution from the user point of view. The researcher chooses Sentinel-2 data by loading the Sentinel-2 collection of the backend with the dataset identifier "s2a\_prd\_msil1c". In the next step, the researcher filters the collection data temporally (May of 2017) and spatially (bounding box of the South Tyrol area). In the next step the researcher applies the NDVI\footnote{https://earthobservatory.nasa.gov/features/MeasuringVegetation/measuring\_vegetation\_2.php} on the filtered data as well as the minimum value of each pixel during the time range with the "min\_time" process. The NDVI calculation needs the measurements of the satellite in near-infrared (parameter "nir") and the measurements of red light (parameter "red"). The backend represents the band identifiers of the two measurements by "B08" for near-infrared and "B04" for the visible red light. The last two lines create a job at the backend with the process graph and starts the execution of it at the backend.
+	At the backend the \textit{Query Handler} generates a new data PID or returns an already existing one, if the same query was executed in the past. Listing \ref{lst:impl_usecase1_1} represents the experiment python client code of Researcher A.
 	
 \begin{code}
 	\begin{minted}{python}
@@ -1240,7 +1243,7 @@ jobA.start_job()
 \end{figure}
 
 	\item \textbf{Researcher A retrieves the used input data of job A.} \\
-	If Researcher A wants to receive the input data identifier, the job description endpoint has to be called. The following code snippet shows the call using the python client.
+	Researcher A wants to receive the input data identifier by calling the job description endpoint. Listing \ref{lst:impl_usecase1_2} shows the calls used to do that with the python client.
 
 \begin{code}
 	\begin{minted}{python}
@@ -1270,14 +1273,14 @@ file_list = con.get_filelist(pidA)
 		\label{fig:usecase1-pid} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 	\end{figure}
 	
-	The job\_details variable is an unfiltered python dictionary object that contains the response of the EODC backend. It has a data element at the key of "input\_data" that consists of the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the data PID information. After calling the page, the user is provided by the executed filter parameter, the dataset identifier, a description of the dataset. Besides, the link to get the re-execution results of the query and the resolvable data PID is added to the page (see Figure \ref{fig:usecase1-pid}). \\
+	The job\_details variable is an JSON object that contains the response of the backend. It has a data element at the key of "input\_data" that contains the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the data PID information. After calling the page, the website provides the researcher with the executed filter parameter, the dataset identifier and a description of the dataset. Besides, the link to get the results of the query re-execution and the resolvable data PID are added to the page (see Figure \ref{fig:usecase1-pid}). \\
 	The last three calls of the code block above are used to gather the information about the input data directly in the python client code.  
-	
+
 	\item \textbf{Researcher A cites the input data in a publication.} \\
-	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"EODC\_DRIVER\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
-	
+	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"BACKEND\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
+
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
-	To use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process chain of job B. In the block below, an example of the code needed to use the same input with a different process chain (max\_time instead of min\_time process) is printed.  
+	To use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process graph of job B. Listing \ref{lst:impl_usecase1_3} gives an example of the code needed to use the same input with a different process constellation (max\_time instead of min\_time process).  
 
 \begin{code}
 	\begin{minted}{python}
@@ -1310,13 +1313,13 @@ jobB.start_job()
 	\caption{Resulting image of the last step of Use Case 1.}
 	\label{fig:impl_usecase1_max} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
-
+	
 \subsection{Use Case 2 – Capturing job dependent environments}\label{Implementation:Use Case2}
-This scenario focuses on the execution environment. It handles the need for researchers to describe the execution process. Section \ref{UseCase2} describes the second use case in more detail. The implementation at the EODC backend gives the users the option to gain additional data about the execution. In the following, the steps of the scenario are run with the implemented instance of the EODC backend. 
+This use case focuses on the execution environment. It handles the need of researchers to describe the execution environments of his experiments. Section \ref{UseCase2} describes the second use case in detail. The implementation at the backend gives the users the option to gain additional data about the execution. In the following, we show the implementation steps to realize the use case with our solution. 
 
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a backend.}\\
-	The researcher A runs a job at the EODC backend with the following python client code. It is the default workflow of executing a job using the python client. 
+	The researcher A runs a job at the backend with the python client code of Listing \ref{lst:impl_usecase2_1}.  It is the usual code of executing a job using the python client. 
 
 \begin{code}
 	\begin{minted}{python}
@@ -1342,11 +1345,12 @@ pgA = processes.min_time(pgA)
 jobA = con.create_job(pgA.graph)
 jobA.start_job()
 	\end{minted}
-	\caption{Researcher A runs job A with the python client.}
+	\caption{Researcher A runs job A at the backend using the python client.}
 	\label{lst:impl_usecase2_1}
 \end{code}
+
 	\item \textbf{Researcher wants to describe the experiment environment.}\\
-	The researcher wants to publish the result of the experiment and therefore, needs to describe the environment in detail. The following code-lines provide the user with detailed information about the job execution:
+	The researcher wants to publish the result of the experiment and therefore, needs to describe the environment in detail. Listing \ref{lst:impl_usecase2_2} provides the code to give the user detailed information about the job A execution:
 
 \begin{code}
 	\begin{minted}{python}
@@ -1368,7 +1372,8 @@ logging.info("Back End Version (commit): {}"
 	\caption{Describe jobA execution environment.}
 	\label{lst:impl_usecase2_2}
 \end{code}
-	After the execution of the lines above, the researcher can get the used programming language, including the version and installed packages. Besides, the backend version describes the used processing code. For more transparency, the researcher can link to the used GitHub repository and the commit to identifying the code. Listing \ref{lst:use_case2_logfile} shows the output of the logging calls.  
+
+	After the execution of the lines above, the researcher can retrieve the used programming language and the installed packages with their versions. Besides, the backend version identifies the used code for the job execution. Listing \ref{lst:use_case2_logfile} shows the output of the logging calls.  
 	
 \end{enumerate}
 
@@ -1392,7 +1397,7 @@ INFO:root:Back End Version (commit):
 %	\caption{Screenshot of logging output of the second Use Case.}
 %	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 %\end{figure}
-
+\todo{Implementation status} 
 \subsection{Use Case 3 – Getting differences of job executions}\label{Implementation:Use Case3}
 The last use case is focused on the users of openEO. It describes the need for transparency of job executions for the users. If results differ with the same job later in time, the user can access data to find reasons why it happened. Other users might compare different job execution environments. Section \ref{UseCase3} describes the third use case in more detail.  
 \begin{enumerate}
