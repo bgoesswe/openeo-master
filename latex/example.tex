@@ -927,14 +927,14 @@ This chapter presented the design of the proposed solution. It shows how a backe
 \chapter{Implementation}\label{Implementation}
 %\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 
-\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-\todo{Gesamte Thesis: Restructure passive sentences}
-\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-\todo{Gesamte Thesis: Kurze einfache Sätze}
-\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
+%\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
+%\todo{Gesamte Thesis: Restructure passive sentences}
+%\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
+%\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
+%\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
+%\todo{Gesamte Thesis: Kurze einfache Sätze}
+%\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
+%\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 
 In this chapter we present the prototype of the thesis following the design described in Chapter \ref{Design}. It is implemented at the python based EODC backend, a consortium member of the openEO project. The implementation consists of the suggested extensions to the backend and client application. It contains suggestions to the specification of openEO. Thus, we modify all three parts of the openEO project architecture in the presented solution. We modify the python client\footnote{https://github.com/Open-EO/openeo-python-client} for the purpose of this thesis. The motivation for choosing both of these options is that python is the most common programming language at the contributing backends of the openEO project. The resulting prototype is open source and supports other backend providers with similar setup.  
 
@@ -1397,12 +1397,12 @@ INFO:root:Back End Version (commit):
 %	\caption{Screenshot of logging output of the second Use Case.}
 %	\label{fig:usecase2_2} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 %\end{figure}
-\todo{Implementation status} 
+
 \subsection{Use Case 3 – Getting differences of job executions}\label{Implementation:Use Case3}
-The last use case is focused on the users of openEO. It describes the need for transparency of job executions for the users. If results differ with the same job later in time, the user can access data to find reasons why it happened. Other users might compare different job execution environments. Section \ref{UseCase3} describes the third use case in more detail.  
+The last use case focuses on the users of openEO. It describes the need for transparency of job executions for the users. If results differ with the same job later in time, the user can access data to find reasons why it happened. Therefore, we use the new endpoint to compare job execution environments. Section \ref{UseCase3} describes the third use case in more detail.  
 \begin{enumerate}
 	\item \textbf{Researcher runs an experiment (job A) at a backend.}\\
-	The researcher A runs a job at the EODC backend with the following python client code. 
+	Listing \ref{lst:impl_usecase3_1} shows the python code used by researcher A to run a new job at the backend. 
 
 \begin{code}
 	\begin{minted}{python}
@@ -1429,11 +1429,12 @@ pgA = processes.min_time(pgA)
 jobA = con.create_job(pgA.graph)
 jobA.start_job()
 	\end{minted}
-	\caption{Researcher A runs job A with the python client.}
+	\caption{Researcher A runs job A using the python client.}
 	\label{lst:impl_usecase3_1}
 \end{code}
+
 	\item \textbf{Researcher re-runs the same experiment (job B).}\\
-	Since re-execution of the same job id is handled internally with the re-execution of the same job configuration with a new job id, then the following code is used to create the same job again (job B). It uses the same process graph, and the definition of pgA is the same as in Listing \ref{lst:impl_usecase3_1}:
+	Listing \ref{lst:impl_usecase3_2} shows the re-execution of the same job e.g. by using the same process graph. The new execution gets a new job id and is called "job B" in the following.
 \begin{code}
 	\begin{minted}{python}
 jobA = con.create_job(pgA.graph)
@@ -1442,10 +1443,8 @@ jobA.start_job()
 	\caption{Researcher re-reruns job A resulting in job B.}
 	\label{lst:impl_usecase3_2}
 \end{code}
-	
 	\item \textbf{Researcher runs a different experiment (job C).}\\
-	The third job (job C) is created with a different process configuration and input data query.
-
+	The researcher runs a third job (job C) with a different process graph and input data query. Listing \ref{lst:impl_usecase3_3} shows the code to create job C. 
 \begin{code}
 	%		\inputminted{octave}{BitXorMatrix.m}
 	\begin{minted}{python}
@@ -1473,7 +1472,7 @@ jobC.start_job()
 \end{code}
 
 	\item \textbf{Researcher wants to compare the jobs by their environment and outcome.}\\
-	Now the researcher wants to compare job B and job C with the first job A. Therefore the following code has to be executed:
+	Now the researcher wants to compare job B and job C with the original job A. Therefore he executes the code presented in Listing \ref{lst:impl_usecase3_4}.
 	
 	\begin{code}
 %		\inputminted{octave}{BitXorMatrix.m}
@@ -1487,8 +1486,8 @@ logging.info(diffAC)
 		\label{lst:impl_usecase3_4}
 		
 	\end{code}
-	 
-	With the lines above, the researcher gets two dictionaries of the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model with each other. Listing \ref{lst:use_case3_logfile} shows the logging output of Listing \ref{lst:impl_usecase3_4}.
+
+	The researcher gets two dictionaries for the comparisons between job A with job B (diffAB) and job A with job C (diffAC). The content of the dictionary is a comparison of every key of the jobs context model. Listing \ref{lst:use_case3_logfile} shows the logging output of Listing \ref{lst:impl_usecase3_4} (using logging.info).
 \end{enumerate}
 
 %\begin{figure}[h]
@@ -1527,9 +1526,10 @@ INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL',
 \end{code}
 
 \section{Summary}
-This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC backend. It consists of an implementation of the RDA recommendations for the backend. The additional modules needed to achieve this are presented in Section \ref{Implementation:Data Identification} and are using the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} query system. The implementation of the backend provenance uses the advantages of GitHub on versioning the used software and persisting the software versions of the past. The job dependent environment is captured by retrieving the python environment using pip and capturing the version of the software at the execution time. The logging system of the EODC backend is used to communicate the data needed by the context model without changing the processing code. The data of the query and the context model are persisted in additions to the existing PostgreSQL database. Besides, the endpoints needed to access the provenance information are inserted into the openEO API. In the last section of the chapter, the implementation of the defined Use Cases of Section \ref{Use Cases} are presented. The next chapter evaluates the implementation by the impact on the EODC backend and by testing the implementation against exceptional cases.   
+This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC backend. It contains the implementation of the RDA recommendations. We implemented the query store with two additional tables at the database of the backend. We store the queries of the backend that follow the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} standard formatted in XML. The additional modules needed to achieve data identification are presented in Section \ref{Implementation:Data Identification}. Our implementation of the backend provenance uses GitHub as CVS to make the backend environment as well as the code for the job executions identifiable. We capture the job dependent environment by retrieving the python environment using PIP. Our implementation uses the logging system of the backend to transfer the data to the additional modules. They create the context model by reading the logging files. The data of the query and the context model are stored in additions to the existing PostgreSQL database. Besides, the endpoints needed to access the provenance information lead to extensions of the openEO API. We implemented these extensions into the backend and the python client. In the last section of the chapter, we present the code to run the use cases of Section \ref{Use Cases}. The following chapter evaluates the implementation by the impact on the EODC backend and by testing the implementation against exceptional cases.   
 
 \chapter{Evaluation}\label{Evaluation}
+
 \todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
 
 \todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
@@ -1540,6 +1540,7 @@ This chapter presented an implementation of the design of Chapter \ref{Design} a
 \todo{Gesamte Thesis: Kurze einfache Sätze}
 \todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
 \todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
+\todo{Evaluation status} 
 This chapter evaluates the concept of the prototype implementation described in Chapter \ref{Implementation}. The solution is evaluated by test cases that simulate updates on data as well as on the backend environment. The performance and storage impact of the solution is evaluated by applying 18 test cases derived from 9 publications that used EODC data in the past. The chapter is structured as follows: \\
 First, the set up of the evaluation environment is described in Section \ref{Evaluation:Setup}. Section \ref{Evaluation:special_dataid} evaluates how the solution behaves on data updates at the backend. The following Section \ref{Evaluation:special_jobcap}  evaluates if the recreation of an older back end version is possible using the solution. Section \ref{Evaluation:impact} provides measurements on the performance and storage impact of the solution system. 
 

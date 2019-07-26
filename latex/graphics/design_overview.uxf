@@ -9,7 +9,7 @@
       <h>440</h>
     </coordinates>
     <panel_attributes>symbol=component
-                           Back End</panel_attributes>
+                           Backend</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -83,7 +83,7 @@ Result Handling</panel_attributes>
       <h>100</h>
     </coordinates>
     <panel_attributes>symbol=component
-EO Client</panel_attributes>
+Client</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -111,13 +111,12 @@ EO Client</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>600</x>
+      <x>580</x>
       <y>200</y>
-      <w>110</w>
+      <w>130</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>Process Graph
-User Id</panel_attributes>
+    <panel_attributes>Process Graph</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -334,9 +333,9 @@ lt=[v]-[&lt;]</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1060</x>
+      <x>1050</x>
       <y>650</y>
-      <w>90</w>
+      <w>100</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>bg=#3c7a00
@@ -348,11 +347,11 @@ Result Hash</panel_attributes>
     <coordinates>
       <x>1030</x>
       <y>650</y>
-      <w>50</w>
+      <w>40</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;30.0;20.0</additional_attributes>
+    <additional_attributes>10.0;10.0;20.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
@@ -365,7 +364,7 @@ Result Hash</panel_attributes>
     <panel_attributes>bg=#3c7a00
 Job PID
 Environment
-metadata
+Data
 </panel_attributes>
     <additional_attributes/>
   </element>
