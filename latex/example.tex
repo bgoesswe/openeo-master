@@ -253,20 +253,7 @@ In this thesis, we present how existing earth observation backends can be modifi
 \mainmatter
 
 \chapter{Introduction}\label{Introduction}
-%\todo{Merge Motivation and Problem Description to one section}
-%\todo{Structure as following: Many different backends, lack of reproducibility...}
-%\todo{Move Use Cases to Problem Description, used to specify more strict the "aim" of the work or what will be done...}
 
-%\todo{Read through it again}
-
-%\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-%\todo{Gesamte Thesis: Restructure passive sentences}
-%\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-%\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-%\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-%\todo{Gesamte Thesis: Kurze einfache Sätze}
-%\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-%\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 \section{Motivation}\label{Motivation}\label{Use Cases}
 % Background
 \gls{eo} sciences gathers images of the Earth's surface and atmosphere using instruments and cameras on aircrafts or satellites. Advancing technologies in space agencies lead to the usage of mostly satellite images. The data is too big to be downloaded for local analysis. The solution is to store it in high-performance computational backends, process it there, and browse the results or download resulting figures or numbers. The vast majority of backends are available via \gls{soa} interfaces. Data providers like \gls{gee}\footnote{https://earthengine.google.com} and \gls{eodc}\footnote{https://www.eodc.eu} host a Web \gls{api}.Scientists create a local description of the \gls{workflow} and satellite data to describe experiments. They send the description to the \gls{backend} and are notified when the processing has finished \cite{geocloud}. 
@@ -414,22 +401,9 @@ The following steps summarize the scenario sequence of actions: \\
 %Due to a different range of functionality and a difference between the endpoints of the providers, it is great afford to create a workflow for more than one provider. The openEO project has the goal to be an abstraction layer above different EO data providers. Further information on the software architecture of the project is defined in the project proposal (\cite{openeo}) and in Section \ref{Related Work}. During the creation time of this thesis there is no consideration of repeatability in the openEO architecture. Verification of workflows for users of openEO is not in the agenda of the openEO project. Generalized layers have the opportunity to be implemented in a way that makes processes and data scientifically verifiable and reproducible, as it handles data and processes on the data in a standardized way for different providers. Even though the range of functionality and the API endpoints are well-defined in the openEO core-API, the contributing content providers (openEO backends) will have different underlying software execution environments. The used technology of an openEO backend will evolve in the future, hence it can lead to different results on the same workflow execution. Considering the following: A scientist runs an experiment using openEO as research tool and gets an arbitrary result. The same scientist runs the same experiment with the same input data some months later and gets a slightly different result. The question occurs, why are the results distinct? Has the used data changed, has the user accidentally submitted different code or has some underlying software inside the backend provider changed. Adding a possibility for the users of openEO to gain this information is an important feature for the scientific community. The aim of this thesis is to design an extension to openEO, so that users are able to retrieve provenance data about a job re-execution \cite{openeo}. 
 
 %\section{Aim of the Work}\label{Aim}
-%\todo{Standalone Section with only the Research Questions}
+
 \newpage
 \section{Research Questions}\label{research question}\label{Aim}
-%\todo{Use propose in the first sentence --> Done}
-%\todo{Use Accessible instead of available}
-%\todo{Two objectives: Capturing, Make Accessible}
-%\todo{Do not use implement that often here, it is not so important --> the Model is the important thing in the thesis}
-%\todo{contribute to openEO project to provide information on reproducibility}
-%\todo{openEO just sets the context}
-%\todo{At least big questions: How --> What}
-%\todo{RQ1 --> Mention Repeated, What Information...about environment...}
-%\todo{Generell: Software --> Environment}
-%\todo{RQ1.2 --> not software}
-%\todo{RQ1.3 --> maybe remove or rename --> Where to put the stuff to capture --> See Conclusion}
-%\todo{Reminder: PROV-O ? Andi didn't notice ...}
-%\todo{revisit after Conclusion}
 The aim of the thesis is to propose a framework for making reproducibility conceivable in the earth observation community. The solution enables users to re-execute jobs and validate the results. It provides the scientists accessible differences in the execution of the job and the data, without changing their approach of doing research. To achieve this, a model for capturing the environment of the backends has to be discovered. Considering the problem description and the scenarios of the previous sections, the following research questions can be formulated:
 
 \begin{itemize}
@@ -514,8 +488,9 @@ PROV-O is a standard language using OWL2 Web Ontology. It is a lightweight conce
 	\label{fig:prov} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 \end{figure}
 
-Figure \ref{fig:prov} shows the basic setup of the PROV-O concept. It consists of three main elements. The \textit{Entity} is any physical, digital or conceptual thing. Provenance records describe \textit{Entities} that can consist of references to other \textit{Entities}. Another element is the \textit{Agent}, which is responsible for \textit{Activities} and that they are taking place, e.g. software, persons, or organizations. The association of an \textit{Agent} to an \textit{Activity} defines the responsibility of the \textit{Agent} for the \textit{Activity}. An \textit{Activity} describes what happened that the \textit{Entity} has come to existence and how attributes of an \textit{Entity} changed \cite{733f89c65e4844f9aabcae1c276a5602}. The design chapter \ref{Design} does not specify the representation of the context information. Therefore the PROV ontology can be used to represent the information. This thesis is not implementing the PROV-O standard since the EODC backend providers wanted their representation of it, which is an extension of the existing data representation, but it is a reasonable extension. 
-\todo{Design Decision EODC analysieren --> anderes Chapter aber hier verlinken...}
+Figure \ref{fig:prov} shows the basic setup of the PROV-O concept. It consists of three main elements. The \textit{Entity} is any physical, digital or conceptual thing. Provenance records describe \textit{Entities} that can consist of references to other \textit{Entities}. Another element is the \textit{Agent}, which is responsible for \textit{Activities} and that they are taking place, e.g. software, persons, or organizations. The association of an \textit{Agent} to an \textit{Activity} defines the responsibility of the \textit{Agent} for the \textit{Activity}. An \textit{Activity} describes what happened that the \textit{Entity} has come to existence and how attributes of an \textit{Entity} changed \cite{733f89c65e4844f9aabcae1c276a5602}. The design chapter \ref{Design} does not specify the representation of the context information. Therefore the PROV ontology can be used to represent the information. \bgoesswein{This thesis implements the PROV-O standard as one of the available provenance representations for the user. Section \ref{Implementation:PROV-O} shows how we implemented it.}
+%since the EODC backend providers wanted their representation of it, which is an extension of the existing data representation, but it is a reasonable extension. 
+%\todo{Design Decision EODC analysieren --> anderes Chapter aber hier verlinken...}
 \subsection{VFramework}\label{vframework}
 
 The VFramework defines parallel capturing of provenance data during the workflow execution. During the original execution, evidence gets collected into a repository e.g. logging. The context model of the execution persists the needed data e.g. in a database record. Re-execution is verified and validated using the provided provenance data in the context model of the original execution and the context model of the re-execution. The provenance data divides into static and dynamic data. Static data defines data that is not dependent on the execution of the experiment e.g. the operating system and installed packages. The static environment information is, therefore, independent of the configuration of the workflow. Dynamic data is captured during the execution of the original experiment e.g. Python version of the execution or used input files. It describes data dependent to a workflow execution \cite{Miksa2013FrameworkFV}. 
@@ -693,7 +668,7 @@ In the following, the relevant RESTful request types in openEO and the policy of
 	\item \textbf{DELETE Request} \\ 
 	DELETE requests are used to remove existing records at the backend. \\(e.g. /DELETE /job/{job\_id} removes an existing job from the backend.)
 \end{itemize}
-%\todo{change back to sequence_diagramm2}
+
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{sequence_diagramm2}
@@ -714,8 +689,10 @@ Figure \ref{fig:api2} shows a sequence diagram of a job execution using the clie
 
 
 The backends interpret the process graph from inside out. Figure \ref{fig:process_graph} displays the process graph of the running example of Section \ref{example}. It describes the calculation of the minimum NDVI image of the Sentinel 2 satellite over South Tyrol in May 2017. The element in the center of the process graph defines the input data identifier in the "imagery" block, with the "get\_collection" process id. In this case, "s2a\_prd\_msil1c" is chosen as input data identifier, since it defines Sentinel 2 data at the EODC backend.
-After reading the input data id, the backend iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "west", "east" etc.. It filters the satellite data spatially, by only considering data within the bounding box (e.g. the area over South Tyrol). Next, the "filter\_daterange" process is used to filter the imageries temporally, by only using data from May 2017. Every process beginning with "filter\_" is defined as filter process, so an operation that restricts the input data. The output data of the previous process is the input data of the next process. After the last filtering process, the NDVI gets called by the process "NDVI" with the parameters "red" and "nir". They are setting the identifier of the bands of near-infrared and red light used by the backend. The two bands are used in the formula of the NDVI calculation (see Section \ref{example}). Next, the minimum value is taken from all images using the "min\_time" process. It is a reducer process, which transforms the image stack of May 2017 into a single result image. Figure \ref{fig:process_graph_diagram} shows the same process graph from the backend point of view. It visualizes the order of how the processes are executed. To transmit the process graph of Figure \ref{fig:process_graph} at a backend, the openEO client puts it into the body of the POST /jobs endpoint request.
-\todo{you should add a short description of how this filtering process works in OpenEO / EODC. This will be needed later-on when you discuss the versioning, and when yoh show that, after an update to the DB, the same query produces a different list of filenames, but that you can also re-run an old query, still producing the same list of filenames. This is a key element in the process! You can do this here kr.point to Sec 2.5.3 when yoh dis uss the backend, the Postgres and GIS plugin.}
+After reading the input data id, the backend iterates one step up in the hierarchy of the process graph and calls the process "filter\_bbox" with the parameters "west", "east" etc.. It filters the satellite data spatially, by only considering data within the bounding box (e.g. the area over South Tyrol). Next, the "filter\_daterange" process is used to filter the imageries temporally, by only using data from May 2017. Every process beginning with "filter\_" is defined as filter process, so an operation that restricts the input data. 
+\bgoesswein{How the filter operations are implemented depends on the infrastructure of the backend provider. Section \ref{EODC Back End} shows how EODC implements it.}
+The output data of the previous process is the input data of the next process. After the last filtering process, the NDVI gets called by the process "NDVI" with the parameters "red" and "nir". They are setting the identifier of the bands of near-infrared and red light used by the backend. The two bands are used in the formula of the NDVI calculation (see Section \ref{example}). Next, the minimum value is taken from all images using the "min\_time" process. It is a reducer process, which transforms the image stack of May 2017 into a single result image. Figure \ref{fig:process_graph_diagram} shows the same process graph from the backend point of view. It visualizes the order of how the processes are executed. To transmit the process graph of Figure \ref{fig:process_graph} at a backend, the openEO client puts it into the body of the POST /jobs endpoint request.
+%\todo{you should add a short description of how this filtering process works in OpenEO / EODC. This will be needed later-on when you discuss the versioning, and when yoh show that, after an update to the DB, the same query produces a different list of filenames, but that you can also re-run an old query, still producing the same list of filenames. This is a key element in the process! You can do this here kr.point to Sec 2.5.3 when yoh dis uss the backend, the Postgres and GIS plugin.}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{backend_pg}
@@ -749,7 +726,7 @@ Even though the backends implement the openEO core API standard, they are still 
 \subsection{EODC Backend}\label{EODC Back End}
 
 The EODC backend is one of the contributing backend providers of the openEO project. The backend is implemented in Python and operates job executions with docker. EODC decided to use OpenShift (using Kubernetes) \footnote{https://www.openshift.com/learn/what-is-openshift/} to balance the workload of the docker container. It is capable of scaling docker containers and provides version control on them. The docker container execute the Python code for executing the processes. The docker description files and the Python code are available on GitHub. In this thesis, the latest version of the EODC backend provided in GitHub using openEO coreAPI version 0.3.1 is used. Every process of the openEO process graph is represented by an own Docker container. The Python library flask accomplishes the service layer for the RESTful API of the EODC backend driver. EODC provides only data from Sentinel 2 and Sentinel 1 within the openEO project. They are satellite images from Copernicus in cooperation of the European Space Agency (ESA), which receives the raw data directly from the Sentinel satellites. \\
-The data management of EODC is file-based, so every image data is stored in a different directory and filename combination. The path of the file is the identifier of a data record. Data is provided via PostgreSQL database including the PostGIS\footnote{https://postgis.net} plug-in. The provided query tool for EODC users is the \gls{ogc} standard interface \gls{csw}\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html}. Figure \ref{fig:eodceer} gives an overview of the EODC database structure. It is retrieved from the GitHub repository of the EODC backend\footnote{https://github.com/Open-EO/openeo-openshift-driver}, where every database entity is defined. A process entity can have parameters described by the parameter entity. The process node is representing one node in a process graph and is therefore related to exactly one process graph entity. Every job is related to a process graph. There may be jobs that use the same process graphs, but in the current set up they are persisted both separately in the database.
+The data management of EODC is file-based, so every image data is stored in a different directory and filename combination. The path of the file is the identifier of a data record. Data is provided via PostgreSQL database including the PostGIS\footnote{https://postgis.net} plug-in. \bgoesswein{In addition to the basic PostgreSQL functionality the plugin enables filtering by spatial and temporal extent. The datasets contain the bounding box coordinates and the timestamp of the capturing as well as a creation timestamp. It enables to query all datasets inside of a given area and timerange within SQL syntax. The plugin is capable of returning the most recent datasets in terms of creation timestamps, so that only one version of a dataset is returned. We use an additional "WHERE" clause to filter datasets that have a creation timestamp before a certain time. So that we can get the versions of datasets available at a given time.}The provided query tool for EODC users is the \gls{ogc} standard interface \gls{csw}\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html}.\bgoesswein{It is used for the communication to the web interface of the EODC database.} Figure \ref{fig:eodceer} gives an overview of the EODC database structure. It is retrieved from the GitHub repository of the EODC backend\footnote{https://github.com/Open-EO/openeo-openshift-driver}, where every database entity is defined. A process entity can have parameters described by the parameter entity. The process node is representing one node in a process graph and is therefore related to exactly one process graph entity. Every job is related to a process graph. There may be jobs that use the same process graphs, but in the current set up they are persisted both separately in the database.
 
 \begin{figure}[h]
 	\centering
@@ -910,11 +887,11 @@ Provenance information should be available to users to be useful. Therefore, we 
 	We suggest an endpoint to retrieve the backend specific information, especially the backend version. Additionally there need to be an endpoint to retrieve the backend version of a specific time. The aim of it is to present the users with information about the current state of the backend and to help users decide, which backend they want to use. 
 
 \item \textbf{Detailed Job Information} \\
-	We recommend an endpoint to retrieve detailed information about an already executed job. The endpoint includes the provenance of the job, therefore the resolvable persisted identifier of the input data, the backend version, and the result set hash. Additionally, the whole data of the context model can be made accessible, depending on the security decisions of the backend.  
-\todo{I'd also add in the recommendation that this info should / could ideally be provided in PROV-O to ensure interoperability and standard compliance,butnot in this current imementation due to xxx (as discussed in Sec xxx) und}
+	We recommend an endpoint to retrieve detailed information about an already executed job. The endpoint includes the provenance of the job, therefore the resolvable persisted identifier of the input data, the backend version, and the result set hash. Additionally, the whole data of the context model can be made accessible, depending on the security decisions of the backend. \bgoesswein{We recommend to provide this information in PROV-O. In the current implementation the detailed job information can be accessed in PROV-JSON, PROV-XML or visualized exported as PNG (see Section \ref{Implementation:PROV-O}).}   
+%\todo{I'd also add in the recommendation that this info should / could ideally be provided in PROV-O to ensure interoperability and standard compliance,butnot in this current imementation due to xxx (as discussed in Sec xxx) und}
 \item \textbf{Comparing Two Jobs} \\
-	We suggest an additional endpoint either on the backend or at the client application to compare two jobs. Every item of both of their context models is compared on equality. If they are not equal, the differences should be transparent to the user. The response of the comparison consists of the differences in the context model between two jobs.
-\todo{also.presented in PROV-O (?)}
+	We suggest an additional endpoint either on the backend or at the client application to compare two jobs. Every item of both of their context models is compared on equality. If they are not equal, the differences should be transparent to the user. The response of the comparison consists of the differences in the context model between two jobs. \bgoesswein{In this thesis this is the only comparison representation implemented. Future work will lead to a representation of the comparison according to PROV-O.}
+%\todo{also.presented in PROV-O (?)}
 \item \textbf{Data Identifier Landing Page} \\
 	After the job is executed and the input data got an PID. The PID must be resolved by a \bgoesswein{machine-actionable} landing page. The landing page provides the user with information about the input dataset. We suggest an additional endpoint to re-execute the query showing the input data files if given sufficient permissions.
     
@@ -929,16 +906,6 @@ UDFs are customized code written by the user that gets executed in a virtualized
 This chapter presented the design of the proposed solution. It shows how a backend can be extended to enable reproducible job executions. The data needed to be able to reproduce a job execution are presented and described. Data identification must be implemented according to the RDA recommendations. The elements of the backend environment are defined and are identifiable by the backend version. We defined the job dependent context by the job execution environment and the result hash. The data needed for a reproduction of a job execution is stored in the context model and it is the data needed to answer the research questions of Chapter \ref{Introduction}. In addition to the data description, recommendations on user services are listed. They provide the functionality for the users. The next chapter presents the implementation of the proposed design at the openEO compliant EODC backend.    
 
 \chapter{Implementation}\label{Implementation}
-%\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
-
-%\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-%\todo{Gesamte Thesis: Restructure passive sentences}
-%\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-%\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-%\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-%\todo{Gesamte Thesis: Kurze einfache Sätze}
-%\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-%\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 
 In this chapter we present the \bgoesswein{implementation} of the thesis following the design described in Chapter \ref{Design}. It is implemented at the Python based EODC backend, a consortium member of the openEO project. The implementation consists of the suggested extensions to the backend and client application. It contains suggestions to the specification of openEO. Thus, we modify all three parts of the openEO project architecture in the presented solution. We modify the Python client\footnote{https://github.com/Open-EO/openeo-python-client} for the purpose of this thesis. \bgoessweindel{The motivation for choosing both of these options is that} Python is the most common programming language at the contributing backends of the openEO project. The implementation is open source and other backend providers with similar setup can use it.  
 
@@ -998,19 +965,14 @@ The query table stores the query data with additional result and data informatio
 \end{figure} 
 
 \begin{table}[]
-	\caption{Structure of the Query Table in the EODC meta database.}
-	\begin{tabular}{|l|l|l|l|l|l|l|l|}
-	\hline	\textbf{Query} & \textbf{Dataset} & \textbf{Original} & \textbf{Unique} & \textbf{Hash} & \textbf{Hash} &
-		\textbf{Exec.} & \textbf{Add.}  \\ 
-		\textbf{PID} & \textbf{PID} & \textbf{Query} & \textbf{Query} & \textbf{Query} & \textbf{Result} &
-		\textbf{Timest.} & \textbf{Metad.}  \\ \hline
-		\textbf{String, Primary Key} & \textbf{String} & \textbf{String} & \textbf{String} & \textbf{String} & \textbf{String} &
-		\textbf{Datetime} & \textbf{Datetime} \\ \hline
-%		\textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} & \textbf{...} \\ \hline
+	\caption{Structure of the Query Table in the PostGres database.}
+	\begin{tabular}{|c|c|c|c|}%l|l|l|l|}
+	\hline	\textbf{Query PID} & \textbf{Dataset PID} & \textbf{Original Query} & \textbf{Unique Query} \\ \textbf{} & \textbf{} & \textbf{} & \textbf{} \\ \hline VARCHAR(100) & VARCHAR(100) & TEXT & VARCHAR(300) \\ \hline \hline \textbf{Query Hash} & \textbf{Result Hash} & \textbf{Execution} & \textbf{Metadata}  \\ \textbf{} & \textbf{} & \textbf{Timestamp} & \textbf{}  \\ \hline
+		 VARCHAR(65) & VARCHAR(65) & TIMESTAMP & TEXT \\ \hline
 	\end{tabular}
 	\label{Tab:querytable}
 \end{table}
-\todo{In der Implementierung den Konkreten Typ herausfinden, bzw. überprüfen}
+
 The following list describes how the elements of the query data set record are created in more detail:
 
 \begin{enumerate}
@@ -1167,11 +1129,11 @@ The previous sections describe the technical insight of the backend. This sectio
 \end{listing}
 
 \item \textbf{Detailed Job Information} \\
-	In the openEO coreAPI, there is an endpoint for getting detailed information about a job execution. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version (0.3.1) only contains the execution state of the job and the job id. In addition to this, we add the job dependent provenance to the endpoint (e.g. see Figure \ref{fig:job_context_model}). Since the Python client returns the resulting JSON response from the backend as a Python dictionary, there is no modification of the client needed.
+	In the openEO coreAPI, there is an endpoint for getting detailed information about a job execution. The endpoint path is “GET /jobs/<job\_id>” , which by the current release version (0.3.1) only contains the execution state of the job and the job id. In addition to this, we add the job dependent provenance to the endpoint (e.g. see Figure \ref{fig:job_context_model}). Since the Python client returns the resulting JSON response from the backend as a Python dictionary, there is no modification of the client needed. \bgoesswein{There is an option to retrieve the detailed job information in PROV-JSON format.}
 
 \item \textbf{Comparing two Jobs} \\
-	There does not exist any user interface to compare jobs in the coreAPI. The solution API defines a new endpoint in the manner of existing endpoint definitions. For this thesis, we introduce the endpoint  “POST /jobs/<job\_id>/diff”. In the URL of the request, the user defines the base job id, which context model is compared with other jobs. In the body of the request, the target job ids are defined in a JSON object. After getting the request from the user, the backend compares the context models of the base job with every target job occurring in the request body. The result from the backend consists of a term for every item in the base job context model. The term “EQUAL”, if the items are the same in both context models, the difference if the items are not the same in both context models, or “MISSING” if the item is in the base job context model, but missing in the target job context model or the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields. The response contains the context model of all jobs with one of the previously described three states inside of the value of every item. In the Python client, this feature is added with an additional function of the Job class called "diff(target\_job)". Listing \ref{lst:job_comparison} provides an example of the dictionary output of this function.
-\todo{shouldn't these two cases be indicatex by different key terms? added/removed (in subsequent executions) rather than just stating missing, leaving it to the user to identify where it is missing?}
+	There does not exist any user interface to compare jobs in the coreAPI. The solution API defines a new endpoint in the manner of existing endpoint definitions. For this thesis, we introduce the endpoint  “POST /jobs/<job\_id>/diff”. In the URL of the request, the user defines the base job id, which context model is compared with other jobs. In the body of the request, the target job ids are defined in a JSON object. After getting the request from the user, the backend compares the context models of the base job with every target job occurring in the request body. The result from the backend consists of a term for every item in the base job context model. The term “EQUAL”, if the items are the same in both context models, the difference if the items are not the same in both context models, or \bgoesswein{“REMOVED”} if the item is in the base job context model, but missing in the target job context model, or \bgoesswein{"ADDED" if it is} the other way around. If an element is different, the elements that differ are visible. The latest mentioned outcome can occur if the context model definition is modified in future job executions and there are e.g. additional fields. The response contains the context model of all jobs with one of the previously described three states inside of the value of every item. In the Python client, this feature is added with an additional function of the Job class called "diff(target\_job)". Listing \ref{lst:job_comparison} provides an example of the dictionary output of this function.
+%\todo{shouldn't these two cases be indicatex by different key terms? added/removed (in subsequent executions) rather than just stating missing, leaving it to the user to identify where it is missing?}
 \begin{listing}[ht]
 	\begin{minted}{json}
 {
@@ -1180,12 +1142,14 @@ The previous sections describe the technical insight of the backend. This sectio
 "code_env":"EQUAL",
 "output_data":"EQUAL",
 "openeo_api":"EQUAL",
+"back_end_timestamp": "REMOVED",
+"end_time": "ADDED",
 "different":{
-   "interpreter":"Python 3.5",
-   "job_id":"jb-47e062e4-d39c-4f7f-bc5e-aa877f039a84",
-   "start_time":"2019-04-05 12:16:38.286217",
-   "back_end_timestamp":"20190405121638.286217",
-   "end_time":"2019-04-05 12:18:08.286217"}
+   "interpreter": {"source": "Python 3.4", "target": "Python 3.5"},
+   "job_id": {"source": "jb-47e062e4-d39c-4f7f-bc5e-aa877f039a84", 
+              "target": "jb-b5e000f9-f586-40d1-b0b8-c813e5d93b4b"},
+   "start_time": {"source": "2019-04-05 12:16:38.286217",
+                  "target": "2019-04-05 13:14:22.369015"}}
 }
 	\end{minted}
 	\caption{Example of a job comparison regarding the context model.}
@@ -1199,6 +1163,30 @@ The previous sections describe the technical insight of the backend. This sectio
 \item \textbf{Re-use of Input Data} \\
 	To re-use the input data in different job execution, the client user can use the data PID in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the backend automatically applies the queries in the way of the original execution. It is inserted in the process "get\_collection" as an additional filter argument named "data\_pid", to pass the data PID to the process graph. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed nonetheless, but a warning message appears to notify the user. \bgoesswein{The notification appears in the Python client, when the user fetches the result either automatically with synchronous jobs, or by a separate call in asynchronous jobs.}   
 \end{enumerate}
+
+\bgoesswein{
+\subsection{PROV Modeling}\label{Implementation:PROV-O}
+
+This section describes the mapping of the PROV elements with the provenance information of the job execution in the implementation. As mentioned in Section \ref{PROV} there are three core elements of the PROV-O annotation. The following enumeration shows how they are mapped with the job provenance information:
+
+\begin{enumerate}
+	\item \textbf{Entity element} \\
+	We use entities to represent the data of the job execution. Therefore, we model the input data as well as the result data as entities. The PROV-DM definition specifies that an entity needs an identifier and can have additional attributes. We identify the input data with the query PID from the query store and set the entries of the query table as its attributes. The resulting entity is identified by the result hash and has no additional attributes. We set the type of both elements to "dataset".
+	\item \textbf{Activity element} \\  
+	An activity has an identifier, an optional start time, an optional end time and optional additional attributes. It takes entities and modifies them to generate new entities. We use the activity element to represent jobs. They are identified by the job id and have the additional information captured in the context model. The connection from the job to the entities is "used" for the input data and "wasGeneratedBy" for the result.
+	\item \textbf{Agent element} \\
+	Agents are capable of starting activities. In our solution we have two instances of agents. First, the user that starts the job execution. Second, the backend in which environment the job is executed. The user id identifies the user and the backend version identifies the backend. Since the backend does not start jobs on his own we add an "actedOnBehalfOf" relation between the backend and the user. We assign the type "Person" to the user and "SoftwareAgent" to the backend.    
+\end{enumerate}
+
+We implement the PROV-O representation with the "prov"\footnote{https://github.com/trungdong/prov} module for Python. It is capable of exporting the provenance in XML, JSON and RDF format. We also use the module to visualize the provenance. Figure \ref{fig:impl_provo} shows the PROV-O visualization of the example experiment. 
+}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.4]{provo}
+	\caption{Example PROV-O representation of a job execution.}
+	\label{fig:impl_provo} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
+\end{figure}
+
 
 \section{Use Cases}
 This section shows how the use cases of Section \ref{Use Cases} are addressed using the implementation described in the sections before.
@@ -1281,9 +1269,11 @@ file_list = con.get_filelist(pidA)
 	The job\_details variable is an JSON object that contains the response of the backend. It has a data element at the key of "input\_data" that contains the input data PID as a resolvable web address. Figure \ref{fig:usecase1-pid} shows the response data of the data PID information. After calling the page, the website provides the researcher with the executed filter parameter, the dataset identifier and a description of the dataset. Besides, the link to get the results of the query re-execution and the resolvable data PID are added to the page (see Figure \ref{fig:usecase1-pid}). \\
 	The last three calls of the code block above are used to gather the information about the input data directly in the Python client code.  
 	\todo{See Feedback --> Real Landing Page, with logo and so on...}
+	\todo{result: what is this URL? Is it persisted? re-generted when entered into a browser? describe...}
+	\todo{Relook the comments here}
 	\item \textbf{Researcher A cites the input data in a publication.} \\
 	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"BACKEND\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
-	\todo{Make real citation}
+	\todo{Make real citation, look at EODC /Copernicus how to do that}
 	\todo{Feedback checked until here...}
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
 	To use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process graph of job B. Listing \ref{lst:impl_usecase1_3} gives an example of the code needed to use the same input with a different process constellation (max\_time instead of min\_time process).  
@@ -1378,7 +1368,7 @@ logging.info("Back End Version (commit): {}"
 	\caption{Describe \textit{jobA} execution environment.}
 	\label{lst:impl_usecase2_2}
 \end{code}
-
+\todo{remove logging Info lines and just output the whole thing...}
 	After the execution of the lines above, the researcher can retrieve the used programming language and the installed packages with their versions. Besides, the backend version identifies the used code for the job execution. Listing \ref{lst:use_case2_logfile} shows the output of the logging calls.  
 	
 \end{enumerate}
@@ -1485,8 +1475,8 @@ jobC.start_job()
 		\begin{minted}{python}
 diffAB = jobA.diff(jobB)
 diffAC = jobA.diff(jobC)
-logging.info(diffAB)
-logging.info(diffAC)
+logging.info("diffAB: \n {}".format(diffAB))
+logging.info("diffAC: \n {}".format(diffAC))
 		\end{minted}
 		\caption{Researcher compares the different jobs.}
 		\label{lst:impl_usecase3_4}
@@ -1505,47 +1495,56 @@ logging.info(diffAC)
 
 \begin{code}
 	\begin{minted}[fontsize=\footnotesize]{text}
-INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL', 
+INFO:root:diffAB:
+ {'input_data': 'EQUAL', 'output_data': 'EQUAL', 
  'process_graph': 'EQUAL', 'openeo_api': 'EQUAL', 
  'interpreter': 'EQUAL', 'code_env': 'EQUAL',
  'different': 
- {'back_end_timestamp': '20190417194702.496810', 
- 'job_id': 'jb-b92c688c-7fdc-4126-bcdf-85bc07030237', 
- 'start_time': '2019-04-17 19:47:02.496810', 
- 'end_time': '2019-04-17 19:47:03.258261'}} 
-INFO:root:{'input_data': 'EQUAL', 'output_data': 'EQUAL', 
+ {'back_end_timestamp': {'target': '20190417194702.496810',
+                         'source': '20190417154611.728540'}, 
+ 'job_id': {'target': 'jb-b92c688c-7fdc-4126-bcdf-85bc07030237',
+            'source': 'jb-b5e000f9-f586-40d1-b0b8-c813e5d93b4b'}, 
+ 'start_time': {'target': '2019-04-17 19:47:02.496810',
+                'source': '2019-04-17 15:46:11.728540'}, 
+ 'end_time': {'target': '2019-04-17 19:47:03.258261',
+              'source': '2019-04-17 15:46:13.015937'}} 
+
+
+INFO:root:diffAC:
+ {'input_data': 'EQUAL', 'output_data': 'EQUAL', 
  'openeo_api': 'EQUAL', 'interpreter': 'EQUAL', 'code_env': 'EQUAL',
- 'different': {'process_graph': {'imagery': {'imagery': {'extent': 
+ 'different': {'process_graph': { 'target': {'imagery': {'imagery': {'extent': 
+ {'crs': 'EPSG:4326', 'east': 12.189331, 'north': 46.905246, 
+ 'south': 45.935871, 'west': 10.288696}, 'imagery': 
+ {'extent': ['2017-05-01', '2017-05-31'], 
+ 'imagery': {'name': 's2a_prd_msil1c', 'process_id': 'get_collection'}, 
+ 'process_id': 'filter_daterange'}, 'process_id': 'filter_bbox'}, 
+ 'nir': 'B08', 'process_id': 'NDVI', 'red': 'B04'}, 'process_id':'max_time'}, 
+ 'source': {'imagery': {'imagery': {'extent': 
  {'crs': 'EPSG:4326', 'east': 12.189331, 'north': 46.905246, 
  'south': 45.935871, 'west': 10.288696}, 'imagery': 
  {'extent': ['2017-05-01', '2017-05-31'], 
  'imagery': {'name': 's2a_prd_msil1c', 'process_id': 'get_collection'}, 
  'process_id': 'filter_daterange'}, 'process_id': 'filter_bbox'}, 
  'nir': 'B08', 'process_id': 'NDVI', 'red': 'B04'}, 'process_id': 
- 'max_time'}, 'start_time': '2019-04-17 19:47:09.089075', 
- 'end_time': '2019-04-17 19:47:11.786845', 
- 'back_end_timestamp': '20190417194709.089075', 
- 'job_id': 'jb-ecdd5768-3c22-4c73-85b8-ac6f4bdc138f'}}
+ 'min_time'}}, 
+ 'start_time': {'target': '2019-04-17 19:47:09.089075',
+                'source': '2019-04-17 15:46:11.728540'}, 
+ 'end_time': {'target': '2019-04-17 19:47:11.786845',
+              'source': '2019-04-17 15:46:13.015937'}, 
+ 'back_end_timestamp': {'target': '20190417194709.089075',
+                        'source': '20190417154611.728540'}, 
+ 'job_id': {'target': 'jb-ecdd5768-3c22-4c73-85b8-ac6f4bdc138f',
+            'source': 'jb-b5e000f9-f586-40d1-b0b8-c813e5d93b4b'}}
 	\end{minted}
 	\caption{Logging output of the job comparisons diffAB and diffAC.}
 	\label{lst:use_case3_logfile}
 \end{code}
-
+%\todo{seperate logging info better, (maybe without Logging), show differences of both / use PROV O if possible. }
 \section{Summary}
 This chapter presented an implementation of the design of Chapter \ref{Design} at the EODC backend. It contains the implementation of the RDA recommendations. We implemented the query store with two additional tables at the database of the backend. We store the queries of the backend that follow the CSW\footnote{http://cite.opengeospatial.org/pub/cite/files/edu/cat/text/main.html} standard formatted in XML. The additional modules needed to achieve data identification are presented in Section \ref{Implementation:Data Identification}. Our implementation of the backend provenance uses GitHub as CVS to make the backend environment as well as the code for the job executions identifiable. We capture the job dependent environment by retrieving the Python environment using PIP. Our implementation uses the logging system of the backend to transfer the data to the additional modules. They create the context model by reading the logging files. The data of the query and the context model are stored in additions to the existing PostgreSQL database. Besides, the endpoints needed to access the provenance information lead to extensions of the openEO API. We implemented these extensions into the backend and the Python client. In the last section of the chapter, we present the code to run the use cases of Section \ref{Use Cases}. The following chapter evaluates the implementation by the impact on the EODC backend and by testing the implementation against exceptional cases.   
 
 \chapter{Evaluation}\label{Evaluation}
-
-%\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
-
-%\todo{Gesamte Thesis: Present simple \& Past simple and not "could / would" So: we have implemented --> we implemented}
-%\todo{Gesamte Thesis: Restructure passive sentences}
-%\todo{Gesamte Thesis:Konsistente Verwendung von Begriffen --> Glossary ?? --> workflow (Beschreibung des Experiments aus sicht des wissenschaftlers), job (Definition des im backend durchgeführten parts), workflow, process graph (technische Beschreibung bzw. Definition des jobs)}
-%\todo{Gesamte Thesis: Wortwiederholungen sind gut !!}
-%\todo{Gesamte Thesis: Unnötige Wörter / Sätze weg z.b. briefly, some, also, ...}
-%\todo{Gesamte Thesis: Kurze einfache Sätze}
-%\todo{Gesamte Thesis: Eher Reproducibility schreiben in den Allgemeinen Kapiteln, aber in den RQ repeatability schreiben}
-%\todo{Gesamte Thesis: Software --> Environment / Code ? --> just check correct usage}
 
 This chapter evaluates the concept of the prototype implementation described in Chapter \ref{Implementation}. We evaluate the solution with test cases, which simulate updates on data as well as on the backend environment. After that, we evaluate the performance and storage impact of the implementation by applying 18 test cases derived from 9 publications that used EODC data in the past. The chapter is structured as follows: \\
 First, we describe the setup of the evaluation environment in Section \ref{Evaluation:Setup}. Next, Section \ref{Evaluation:special_dataid} evaluates how the solution behaves on data updates at the backend. The following Section \ref{Evaluation:special_jobcap} evaluates the recreation of an older back end version using the solution. Section \ref{Evaluation:impact} provides measurements on the performance and storage impact of the prototype implementation. 
@@ -1590,7 +1589,7 @@ The policy of the EODC regarding updates on datasets is dependent on the type of
 
 \begin{enumerate}
 	\item \textbf{Sentinel Data} \\
-	The Sentinel data, which is used by EODC for the openEO project, has never been updated before. The data comes directly from ESA, and updated datasets from ESA were not applied to the EODC data yet. However, the occurrence of updates is, in general, not impossible in future of the backend. If a dataset was updated, it would follow the updated policy of ESA, therefore having a new file name for the updated file. Hence, updates on the data can be simulated by renaming the input files and the creation timestamp. Other than updating the existing datasets, there are regular updates on the extent of the Sentinel datasets.   
+	The Sentinel data, which is used by EODC for the openEO project, has never been updated before. The data comes directly from ESA, and updated datasets from ESA were not applied to the EODC data yet. However, the occurrence of updates is, in general, not impossible in future of the backend. If a dataset was updated, it would follow the updated policy of ESA, therefore having a new file name for the updated file. \bgoesswein{An update adds a new dataset record to the PostGIS database used for the data querying. It has the same attribute values as the original one, except for the new generated unique filename and the creation timestamp. In this solution we do not modify the PostGIS server of EODC. We simulate updates by modifying the query execution result.} Hence, we simulate updates on the data by renaming input files and their creation timestamp. Other than updating the existing datasets, there are regular updates on the extent of the Sentinel datasets.   
 	\item \textbf{Processed Data} \\
 	Data that is processed by partners of EODC is maintained and updated by the partners. EODC archives or deletes old versions depending on the decision of each partner. This type of data is not available using openEO, since it is the property of the partners and not EODC. Besides, to be able to use the same processes on different openEO backends, the data layer needs to be the same. Therefore, all openEO compliant backends provide unprocessed input data. Since the datasets are not available for openEO, the data identification of them is not in the scope of the thesis. By the time this thesis is written, EODC plans to use the openEO framework for their whole infrastructure, which brings the partners to use openEO for their processing. Therefore they can use the data identification implementation for their tasks.
 \end{enumerate}
@@ -1600,9 +1599,9 @@ The Design (see Section \ref{Design:Data Identification}) proposes the implement
 
 \begin{itemize}
 	\item \textbf{R1: Data Versioning} \\
-	The backend does versioning of data already, by following the versioning policies of ESA. The path to a file represents the version identifier. Modified files must have a different file path.
+	The backend does versioning of data already, by following the versioning policies of ESA. The path to a file represents the version identifier. Modified files must have a different file path.\bgoesswein{Every file has a data record in the PostGIS database, which stores the metadata e.g. timestamp of capturing and geographical extent. Every data record has an creation timestamp. It represents the time since the data record version is available at the backend. If a file is updated, the filename has to change as well as the creation timestamp. A query execution without filtering by the creation timestamp results in the file with the most recent creation timestamp. We filter by the creation timestamp to get the most recent file version of a specific time.}
 	\item \textbf{R2: Timestamping} \\
-	The creation timestamp of the files are stored by the file system of the backend. Since the files have to change the path after an update, the creation timestamp of the updated file is the update timestamp of the original file. 
+	The creation timestamp of the files are stored by the file system of the backend and the PostGIS database. Since the files have to change the path after an update, the creation timestamp of the updated file is the update timestamp of the original file. 
 	\item \textbf{R3: Query Store Facilities} \\
 	We introduce a new table in the database (PostGreSQL) of the backend for the query store. The query table stores the following data about each query:
 	\begin{itemize}
@@ -1628,11 +1627,12 @@ The Design (see Section \ref{Design:Data Identification}) proposes the implement
 	\item \textbf{R9: Store the Query} \\
 	We implemented the query store as an additional table of an existent relational database of the backend (PostgreSQL). 
 	\item \textbf{R10: Automated Citation Texts} \\
-	The citation text for the dataset is already available at EODC. We added the generated data PID. 
+	The citation text for the dataset is already available at EODC. We added the generated data PID. \todo{Link to automated citation text}
 	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
 	We define the landing page as an additional openEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page includes a link to re-execute the query and lists the result files. Since it is part of the openEO API, it can also be accessed from the openEO clients and be used in future jobs as input data.
+	\todo{Make Landing Page... and Link to it here}
 	\item \textbf{R13 \& R14: Technology Migration \& Migration Verification} \\
-	These recommendations are not implemented in this thesis, since there are no EODC migrations planned.
+	These recommendations are not implemented in this thesis, since there are no EODC migrations planned. \bgoesswein{Nevertheless, we estimate potential risks of a migration process. Using the Git commit as identifier of code might cause issues, when migrating to a different VCS. If the repository just moves to a different Git server, the whole history, including commit identifiers, can be migrated. There might be issues with the result hash, if the backend decides to change the format of the file paths. The creation timestamps of the datasets have to be migrated properly, since they are an important element of this solution.}
 \end{itemize}
 
 The original data of EODC can't be changed for this evaluation since the evaluation backend is using the actual data source (https://csw.eodc.eu). To simulate changes on the data, we modify the query result received by the backend. Figure \ref{fig:eva_data_simulation} gives an overview of where the data update simulator is located in the data identification implementation overview of Figure \ref{fig:impldataid}. The test cases describe what data is modified. \\
@@ -1705,7 +1705,7 @@ file_listA["input_files"]["state"] # Returns "EQUAL"
 		\label{lst:eva_datachange_nq1}
 	\end{code}
 	
-	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query of Figure \ref{fig:eva_data_changes_1_query}. The resulting file list (file\_listA["input\_files"]) are 51 files and the re-execution of the query results in the same 51 files. The path of each file provides information about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at the backend. The following folders define the date of the data record. The filename follows the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}. The Nxxyy value defines the baseline number, Rxxx defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, therefore distinguishes products that came from the data of the same sensing time. The timestamp shows when the data was first available at EODC.
+	Listing \ref{lst:eva_datachange_rf1} shows the first four file paths and timestamps of the resulting file list, after executing the query of Figure \ref{fig:eva_data_changes_1_query}. \bgoesswein{The query in Figure \ref{fig:eva_data_changes_1_query} in XML format follows the CSW standard for EO web service catalogs. The backend sends it to the PostGIS server of EODC, which translates it to the SQL based internal query and executes it.} The resulting file list (file\_listA["input\_files"]) are 51 files and the re-execution of the query results in the same 51 files. The path of each file provides information about the data record. The term "s2a\_prd\_msil1c" defines the dataset identifier of Sentinel 2 at the backend. The following folders define the date of the data record. The filename follows the ESA naming convention\footnote{https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/naming-convention}. The Nxxyy value defines the baseline number, Rxxx defines the orbit number of the satellite and Txxxxx defines the tile number. The first date is the sensing time and the second at the end of the file name is the product disclaimer, therefore distinguishes products that came from the data of the same sensing time. The timestamp shows when the data was first available at EODC.
 	
 	\begin{code}
 		\begin{minted}[fontsize=\footnotesize]{text}
@@ -1746,15 +1746,14 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 		\begin{tabular}{|r|l|}
 			\hline \multicolumn{2}{|c|}{\textbf{Query \textit{pidA}}} \\
 			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
-			query\_pid & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ 
-			dataset\_pid & s2a\_prd\_msil1c  \\ 
-			original & see Figure \ref{fig:eva_data_changes_1_query}   \\
-			normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
-			norm\_hash & 0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d  \\
-			result\_hash & abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455   \\
-			updated\_at & 2019-03-31 17:36:44.613893   \\
-			meta\_data & {'result\_files': 51}  \\
-			created\_at & 2019-03-31 17:36:43.064445   \\ \hline
+			Query PID & qu-a3bbe4a0-a875-4687-bb78-9457f33134a9  \\ 
+			Dataset PID & s2a\_prd\_msil1c  \\ 
+			Original Query & XML CSW query (see Figure \ref{fig:eva_data_changes_1_query})   \\
+			Unique Query & Sorted filter criteria (see Listing \ref{lst:eva_datachange_nq1})  \\
+			Query Hash & 0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d  \\
+			Result Hash & abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455   \\
+			Execution Timestamp & 2019-03-31 17:36:43.064445   \\ 
+			Metadata & \{'result\_files': 51\}  \\ \hline
 		\end{tabular}
 		\label{Tab:eva_datachanges1}
 	\end{table}
@@ -1766,7 +1765,7 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 \begin{enumerate}
 	\setcounter{enumi}{+1}
 	\item \textbf{Update one of the resulting files of the \textit{pidA} query} \\
-	We added the "update\_file()" method to the client and the backend to let the backend activate the \textit{Data Update Simulator} component shown in Figure \ref{fig:eva_data_simulation}. If it is activated, it simulates the update of the first file in the query result. It sets the creation timestamp of the file to the execution time of the "update\_file()" method and appends "\_new" to the file path. The update does not replace the old file but adds a new file to the result.
+	We added the "update\_file()" method to the client and the backend to let the backend activate the \textit{Data Update Simulator} component shown in Figure \ref{fig:eva_data_simulation}. If it is activated, it simulates the update of the first file in the query result. It sets the creation timestamp of the file to the execution time of the "update\_file()" method and appends "\_new" to the file path. The update does not replace the old file but adds a new file to the result. Therefore, we simulate a new additional dataset record in the PostGIS database.
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Update the first file of the pidA query resulting files.
@@ -1800,7 +1799,7 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 		\label{lst:eva_datachange_fl2}
 	\end{code}
 	\item \textbf{Re-execution of \textit{pidA} query} \\
-	Listing \ref{lst:eva_datachange_3} shows the re-execution of the query with the identifier \textit{pidA}, after the activation of the \textit{Data Update Simulator} component in the previous step. The second query re-execution results in the same file list as the first one (see Listing \ref{lst:eva_datachange_rf3}). The reason for this is that the old file is still available and the updated file is added after the execution timestamp of the original query execution (see timestamp element in the query in Figure \ref{fig:eva_data_changes_1_query}). The query entry contains the execution timestamp and keeps only the files with creation timestamps before it.
+	Listing \ref{lst:eva_datachange_3} shows the re-execution of the query with the identifier \textit{pidA}, after the activation of the \textit{Data Update Simulator} component in the previous step. The second query re-execution results in the same file list as the first one (see Listing \ref{lst:eva_datachange_rf3}). The reason for this is that the old file is still available and the updated file is added after the execution timestamp of the original query execution (see timestamp element in the query in Figure \ref{fig:eva_data_changes_1_query}). The query from the query store contains the execution timestamp and keeps only the most recent file versions from that time. \todo{This does not seem to be correct. Please double-check and describe the implementation more precisely, showing details of the versioning and the actual query execution. If the above text were  correct (keeping all files with creation date before the execution date) you would run into problems ay soon as you have 2 updates on a file: this would potentially, return 2 old versions instead of the correct one  valid at the very moment of the original query execution. This is  CRITICAL! ease check and update.}
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Get state of the resultfiles, so if they changed since 
@@ -1851,12 +1850,12 @@ file_listB = con.get_filelist(pidB)
 	
 	\begin{code}
 		\begin{minted}[fontsize=\small]{text}
+{'timestamp': '2019-03-31 17:44:43', 
+'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
+S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'},
 {'timestamp': '2017-05-08 00:00:00', 
 'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349.zip'}, 
-{'timestamp': '2019-03-31 17:44:43', 
-'path': '/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
-S2A_MSIL1C_20170504T101031_N0205_R022_T32TPR_20170504T101349_new.zip'}
 {'timestamp': '2017-05-08 00:00:00',
 'path':'/eodc/products/copernicus.eu/s2a_prd_msil1c/2017/05/04/
 S2A_MSIL1C_20170504T101031_N0205_R022_T32TQS_20170504T101349.zip', 
@@ -1872,28 +1871,27 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 		\label{lst:eva_datachange_fl3}
 	\end{code}
 	
-	Table \ref{Tab:eva_datachanges3} shows the query table after the execution of Listing \ref{lst:eva_datachange_4}. Now there is an additional query entry. Table \ref{Tab:eva_datachanges3} marks the important differences red. There is a different result hash, because the number of result files has increased (see Listing \ref{lst:eva_datachange_fl3}). The normalized query is still the same, but the result of the query changed therefore, a new data PID is generated. 
+	Table \ref{Tab:eva_datachanges3} shows the query table after the execution of Listing \ref{lst:eva_datachange_4}. Now there is an additional query entry. Table \ref{Tab:eva_datachanges3} marks the important differences red. There is a different result hash, because the \bgoesswein{resulted file name of the updated file is set to the most recent one}. The normalized query is still the same, but the result of the query changed therefore, a new data PID is generated. 
 	\begin{table}[]
 		\caption{Query table after the execution of Listing \ref{lst:eva_datachange_4}. Important elements are highlighted blue if they are the same and red if they are different.}
 		\centering
 		\begin{tabular}{|r|l|}
 			\hline \multicolumn{2}{|c|}{\textbf{Query \textit{pidA} (full entry in Table \ref{Tab:eva_datachanges1})}} \\
 			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
-			query\_pid & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
-			norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
-			result\_hash & {\color{red}abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455}   \\
-			meta\_data & {'result\_files': 51}  \\
+			Query PID & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
+			Query Hash & {\color{blue}0917c7a21cec960b8a6617...}  \\
+			Result Hash & {\color{red}abf43f519007050cbaeb59...}   \\
+			Metadata & \{'result\_files': 51\}  \\
 			\hline \multicolumn{2}{|c|}{\textbf{Query \textit{pidB}}} \\
 			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
-			query\_pid & { \color{red} qu-23f5a313-e804-4faa-aa33-60ed1ac69e2d}  \\ 
-			dataset\_pid & s2a\_prd\_msil1c  \\ 
-			original & see Figure \ref{fig:appendix_pidB} in the appendix \\
-			normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
-			norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
-			result\_hash & {\color{red}28088d113de19ce037e9651a64bae3f7957822665f17d8f4e2c7e6b2cf4250b3 }  \\
-			updated\_at & 2019-03-31 18:01:49.214956   \\
-			meta\_data & {\color{red}'result\_files': 52}  \\
-			created\_at & 2019-03-31 18:01:47.695042   \\ \hline
+			Query PID & { \color{red} qu-23f5a313-e804-4faa-aa33-60ed1ac69e2d}  \\ 
+			Dataset PID & s2a\_prd\_msil1c  \\ 
+			Original Query & \textit{see Figure \ref{fig:appendix_pidB} in the appendix} \\
+			Unique Query & \textit{see Listing \ref{lst:eva_datachange_nq1}}  \\
+			Query Hash & {\color{blue}0917c7a21cec960b8a6617...}  \\
+			Result Hash & {\color{red}28088d113de19ce037e965...}  \\
+			Metadata & \{'result\_files': 51\}  \\
+			Execution Timestamp & 2019-03-31 18:01:47.695042   \\ \hline
 		\end{tabular}
 		\label{Tab:eva_datachanges3}
 	\end{table}
@@ -1970,20 +1968,22 @@ S2A_MSIL1C_20170504T101031_N0205_R022_T32TPT_20170504T101349.zip'},
 	\end{code}	
 
 	\item \textbf{Get File-list of \textit{pidA}}\\ 
-	The re-execution of the query \textit{pidA} results in a file list without the deleted file. Since files are filtered by the query execution timestamp. The new file does not appear in the result file list. If the re-execution results not in the same file list, the "state" attribute contains the list of files that replaced no longer available files. Listing \ref{lst:eva_datachange_state} shows the content of the "state" attribute of Listing \ref{lst:eva_datachange_7}. The backend returns the most recent file version, even if there are versions between the original and the most recent file available. In the result of Listing \ref{lst:eva_datachange_7} the "state" contains only the one file that replaces the original file. Users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list was made by EODC. The reason is because of the additional needed storage size it would cause and the rare occasion of a data update. If the number of resulting files is different at a re-execution, we execute the query without the first timestamp filter, and the result is compared to the re-execution with the original execution timestamp. All files that are missing in the original execution are added to the "state" attribute. The researcher can use the file path to contact EODC or ESA to order older version.   
+	The re-execution of the query \textit{pidA} results in a file list without the deleted file. Since files are filtered by the query execution timestamp. The new file does not appear in the result file list. \bgoesswein{If the re-execution results not in the same file list, the "state" attribute contains "Incomplete Result" and a list of files that replaced no longer available files are stored in the "diff" attribute.} Listing \ref{lst:eva_datachange_state} shows the content of the "diff" attribute of Listing \ref{lst:eva_datachange_7}. The backend returns the most recent file version, even if there are versions between the original and the most recent file available. In the result of Listing \ref{lst:eva_datachange_7} the "diff" contains only the one file that replaces the original file. Users can see the alternatives for the original file, but not the original file itself. This is because the full file list is not persisted in the query store, but the number of result files. The decision for not storing the complete file list was made by EODC. The reason is because of the additional needed storage size it would cause and the rare occasion of a data update. If the number of resulting files is different at a re-execution, we execute the query without the timestamp filter, and the result is compared to the re-execution with the original execution timestamp. All files that are missing in the original execution are added to the "diff" attribute. The researcher can use the file path to contact EODC or ESA to order older version.   
+\todo{this feels plausible, but I am not sure whether I fully understand it.Query is executed with originL timestamps.As the number of resukt files differsandfhe hash key does not match, fhe user is informed that something went wrong --> how? is this the 'status" field (which, as the name indi ates, should report a status, not a file list!But then you also seem to be able to tell the user which file(s) are wdong, differsnt, missing - how do you do this??? Assumea scenario where in a result set of 10 files 5 files are changed, of which two have been deleted out of some reason - hoa do yoh identify which two files are different? Via the metadata database that still has the original filenames of the data repository? I seem to be missing something...}
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # re-execute query and get the resulting file list from the backend
 file_listA = con.get_filelist(pidA)
 # Stdout: Warning: The resulting file list changed from the original query
-# execution! Look into the "state" attribute to see the list of files that
-# have changed. 
-file_listA["input_files"]["state"] # Returns one file entry
+# execution! Look into the "diff" attribute to see the list of files that
+# have changed. The original data might be still obtainable by the original data provider. Please contact the backend provider for further information.
+file_listA["input_files"]["state"] # Returns "Incomplete Result"
+file_listA["input_files"]["diff"] # Returns one file entry
 		\end{minted}
 		\caption{Re-execute \textit{pidA} query after one file is updated and the old version is erased.}
 		\label{lst:eva_datachange_7}
 	\end{code}	
-	
+	\todo{Feedback bis hierher berücksichtigt}
 	%\begin{figure}[h]
 	%	\centering
 	%	\includegraphics[width=\textwidth]{eva_data_changes_7_state}
@@ -2002,7 +2002,7 @@ S2A_MSIL1C_20170524T101031_N0205_R022_T32TQR_20170524T101353_new.zip'}]
 	\end{code}
 
 	\item \textbf{Run duplicate of \textit{jobA}, by using the data PID of \textit{jobA} named \textit{jobD}}\\
-	Listing \ref{lst:eva_datachange_8} shows the code of running a new \textit{jobD} with the data of \textit{pidA}. The code is executed after the deletion of one file from the resulting file list of \textit{pidA}. After the creation of the job, the backend notices that the number of result files is different than the first execution of the input data PID. Therefore, a warning message is displayed at the client of the researcher. If the user starts the job nevertheless, the backend looks for updated files like described in the previous step and adds the most recent version of the missing file to the query result. The backend creates a new data PID for \textit{jobD}, since the query result changed. Table \ref{Tab:eva_datachanges5} shows the query table status after the execution. The second query entry has a different result hash, since one file changed. 
+	Listing \ref{lst:eva_datachange_8} shows the code of running a new \textit{jobD} with the data of \textit{pidA}. The code is executed after the deletion of one file from the resulting file list of \textit{pidA}. After the creation of the job, the backend notices that the number of result files is different than the first execution of the input data PID. Therefore, a warning message is displayed at the client of the researcher \bgoesswein{(see Listing \ref{lst:eva_datachange_8})}. If the user starts the job nevertheless, the backend looks for updated files like described in the previous step and adds the most recent version of the missing file to the query result. \bgoesswein{EODC chose this strategy, since updates on datasets usually fix errors, users expect the most recent ones. Most backends e.g. Google Earth Engine give the users the most recent version automatically.} The backend creates a new data PID for \textit{jobD}, since the query result changed. Table \ref{Tab:eva_datachanges5} shows the query table status after the execution. The second query entry has a different result hash, since one file changed. 
 	\begin{code}
 		\begin{minted}[fontsize=\small]{python}
 # Take input data of job A by using the input data PID A of job A
@@ -2013,8 +2013,8 @@ pgD = processes.min_time(pgD)
 # Create and start Job D
 jobD = con.create_job(pgD.graph)
 # Stdout: Warning: The resulting file list changed from the original query
-# execution! Look into the "state" attribute to see the list of files that
-# have changed. 
+# execution! Look into the "diff" attribute to see the list of files that
+# have changed. The original data might be still obtainable by the original data provider. Please contact the backend provider for further information. 
 jobD.start_job()
 pidD = jobD.get_data_pid() # pidD != pidA
 		\end{minted}
@@ -2028,21 +2028,20 @@ pidD = jobD.get_data_pid() # pidD != pidA
 		\begin{tabular}{|r|l|}
 			\hline \multicolumn{2}{|c|}{\textbf{Query \textit{pidA} (full entry in Table \ref{Tab:eva_datachanges1})}} \\
 			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
-			query\_pid & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
-			norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
-			result\_hash & {\color{red}abf43f519007050cbaeb59a067a2226d64b041c6d6ec323b2401109176e66455}   \\
-			meta\_data & {'result\_files': 51}  \\
+			Query PID & {\color{red}qu-a3bbe4a0-a875-4687-bb78-9457f33134a9}  \\ 
+			Unique Hash & {\color{blue}0917c7a21cec960b8a6617...}  \\
+			Result Hash & {\color{red}abf43f519007050cbaeb59...}   \\
+			Metadata & \{'result\_files': 51\}  \\
 			\hline \multicolumn{2}{|c|}{\textbf{Query \textit{pidD}}} \\
 			\hline \multicolumn{1}{|c|}{\textbf{Column}}  &  \multicolumn{1}{c|}{\textbf{Value}} \\ \hline
-			query\_pid & { \color{red} qu-3544aeae-cd24-4b6d-ad34-0d674c2a400f}  \\ 
-			dataset\_pid & s2a\_prd\_msil1c  \\ 
-			original & see Figure \ref{fig:appendix_pidD} in the appendix \\
-			normalized & see Listing \ref{lst:eva_datachange_nq1}  \\
-			norm\_hash & {\color{blue}0917c7a21cec960b8a6617b22ad26578c2c67f0b0501ba1a359b078c6c51d77d}  \\
-			result\_hash & {\color{red}28088d113de19ce037e9651a64bae3f7957822665f17d8f4e2c7e6b2cf4250b3}  \\
-			updated\_at & 2019-03-31 18:10:26.931578   \\
-			meta\_data & {'result\_files': 51}  \\
-			created\_at & 2019-03-31 18:10:25.46402   \\ \hline
+			Query PID & { \color{red} qu-3544aeae-cd24-4b6d-ad34-0d674c2a400f}  \\ 
+			Dataset PID & s2a\_prd\_msil1c  \\ 
+			Original Query & \textit{see Figure \ref{fig:appendix_pidD} in the appendix} \\
+			Unique Query & \textit{see Listing \ref{lst:eva_datachange_nq1}}  \\
+			Query Hash & {\color{blue}0917c7a21cec960b8a6617...}  \\
+			Result Hash & {\color{red}28088d113de19ce037e965...}  \\
+			Metadata & \{'result\_files': 51\}  \\
+			Execution Timestamp & 2019-03-31 18:10:25.46402   \\ \hline
 		\end{tabular}
 		\label{Tab:eva_datachanges5}
 	\end{table}
@@ -2175,11 +2174,11 @@ In this section, we evaluate the performance impact on the backend by measuring 
 This section provides a description regarding performance constraints for each element of the query table.
 
 \begin{itemize}
-	\item \textbf{dataset\_pid} \\
-	We take the \textit{dataset\_pid} directly from the parsed filter arguments of the backend. Therefore, the duration has a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance results, which are between 4 µs and 26 µs with a median of 8 µs. the standard deviation over all test cases is 2.5 µs. The results show that the duration time of retrieving the dataset PID is, except for a few aberrations, similar between all test case executions and independent of the job configuration.
+	\item \textbf{Dataset PID} \\
+	We take the \textit{Dataset PID} directly from the parsed filter arguments of the backend. Therefore, the duration has a complexity of $O(1)$. Figure \ref{fig:evaluation_perf_datapid} shows the performance results, which are between 4 µs and 26 µs with a median of 8 µs. the standard deviation over all test cases is 2.5 µs. The results show that the duration time of retrieving the dataset PID is, except for a few aberrations, similar between all test case executions and independent of the job configuration.
 	\begin{figure}[!h]
 		\centering
-		\caption{Boxplot of the duration needed in the test cases to handle the \textit{dataset\_pid} entry. }
+		\caption{Boxplot of the duration needed in the test cases to handle the \textit{Dataset PID} entry. }
 		\label{fig:evaluation_perf_datapid}
 		\begin{tikzpicture}
 		\begin{axis}
@@ -2187,7 +2186,7 @@ This section provides a description regarding performance constraints for each e
 		xlabel={duration [µs]},
 		y=2cm,
 		ytick={1},
-		yticklabels={dataset\_pid},
+		yticklabels={Dataset PID},
 		]
 		\addplot+[
 		boxplot prepared={
@@ -2204,11 +2203,11 @@ This section provides a description regarding performance constraints for each e
 		\end{tikzpicture}
 	\end{figure}
 
-	\item \textbf{original} \\
-	The \textit{Query Execution} component passes the original query. The \textit{Query Handler} transforms the query into a string. The query string has the same size for each query, and just the argument values are exchanged. Therefore the duration has a complexity of $O(1)$. The execution time of the test cases is between 24 µs and 98 µs, with a median of 37 µs. The standard deviation for all test cases is 5.34 µs. Figure \ref{fig:evaluation_perf_original} shows the boxplot of all test case executions and therefore the distribution of duration. The measurements indicate that most of the original query retrieval time is in a small range. The duration of the original query execution is constant in time and independent on the job configuration. 
+	\item \textbf{Original Query} \\
+	The \textit{Query Execution} component passes the \textit{Original Query}. The \textit{Query Handler} transforms the query into a string. The query string has the same size for each query, and just the argument values are exchanged. Therefore the duration has a complexity of $O(1)$. The execution time of the test cases is between 24 µs and 98 µs, with a median of 37 µs. The standard deviation for all test cases is 5.34 µs. Figure \ref{fig:evaluation_perf_original} shows the boxplot of all test case executions and therefore the distribution of duration. The measurements indicate that most of the \textit{Original Query} retrieval time is in a small range. The duration of \bgoesswein{retrieving the original query} is constant in time and independent on the job configuration. 
 	\begin{figure}[!h]
 		\centering
-		\caption{Duration boxplot of the test cases to handle the original query entry.}
+		\caption{Duration boxplot of the test cases to handle the \textit{Original Query} entry.}
 		\label{fig:evaluation_perf_original}
 		\begin{tikzpicture}
 		\begin{axis}
@@ -2216,7 +2215,7 @@ This section provides a description regarding performance constraints for each e
 		xlabel={duration [µs]},
 		y=2cm,
 		ytick={1},
-		yticklabels={original},
+		yticklabels={Original Query},
 		]
 		\addplot+[
 		boxplot prepared={
@@ -2233,11 +2232,11 @@ This section provides a description regarding performance constraints for each e
 		\end{tikzpicture}
 	\end{figure}
 
-	\item \textbf{normalized} \\
-	The normalized query is the result of an alphabetical sorting of the parsed filter arguments of the backend. It takes nearly constant duration time, since there are only 4 filter arguments allowed in the openEO API version 0.3.1, but they may not all be used. The sorting algorithm has a complexity of $O(n\log{}n)$, where "n" is the number of crucial elements in the dictionary (amount of filter operations). In this evaluation, four filter arguments were used for each test case. Therefore it has a constant complexity in every test case execution. It takes between 38 µs and 132 µs with a median of 59 µs of duration time with a standard deviation of 19.35 µs. Figure \ref{fig:evaluation_perf_normalized} shows the boxplot of all test case executions to visualize that the duration is not widely distributed.  
+	\item \textbf{Unique Query} \\
+	The \textit{Unique Query} is the result of an alphabetical sorting of the parsed filter arguments of the backend. It takes nearly constant duration time, since there are only 4 filter arguments allowed in the openEO API version 0.3.1, but they may not all be used. The sorting algorithm has a complexity of $O(n\log{}n)$, where "n" is the number of crucial elements in the dictionary (amount of filter operations). In this evaluation, four filter arguments were used for each test case. Therefore it has a constant complexity in every test case execution. It takes between 38 µs and 132 µs with a median of 59 µs of duration time with a standard deviation of 19.35 µs. Figure \ref{fig:evaluation_perf_normalized} shows the boxplot of all test case executions to visualize that the duration is not widely distributed.  
 	\begin{figure}[!h]
 		\centering
-		\caption{Boxplot of the duration time of the test cases to handle the normalized query entry.}
+		\caption{Boxplot of the duration time of the test cases to handle the \textit{Unique Query} entry.}
 		\label{fig:evaluation_perf_normalized}
 		\begin{tikzpicture}
 		\begin{axis}
@@ -2245,7 +2244,7 @@ This section provides a description regarding performance constraints for each e
 		xlabel={duration [µs]},
 		y=2cm,
 		ytick={1},
-		yticklabels={normalized},
+		yticklabels={Unique Query},
 		]
 		\addplot+[
 		boxplot prepared={
@@ -2262,11 +2261,11 @@ This section provides a description regarding performance constraints for each e
 		\end{tikzpicture}
 	\end{figure}
 
-	\item \textbf{norm\_hash} \\
-	The performance of the normalized query hash is dependent on the size of the normalized query ($O(n)$, where "n" is the size of the normalized query string). In this evaluation, it is constant because every test case uses four filter arguments. The circumstances makes the normalized query have a constant length. In the test cases, the duration is between 15 µs and 54 µs with a median of 20 µs and a standard deviation of 5.89 µs. Figure \ref{fig:evaluation_perf_norm_hash} shows the boxplot of all test case executions. The duration has a small range of distribution, except for a few executions. The measurements show that the duration is independent of the job configuration. 
+	\item \textbf{Query Hash} \\
+	The performance of the unique \textit{Query Hash} is dependent on the size of the unique query ($O(n)$, where "n" is the size of the unique query string). In this evaluation, it is constant because every test case uses four filter arguments. The circumstances makes the unique query have a constant length. In the test cases, the duration is between 15 µs and 54 µs with a median of 20 µs and a standard deviation of 5.89 µs. Figure \ref{fig:evaluation_perf_norm_hash} shows the boxplot of all test case executions. The duration has a small range of distribution, except for a few executions. The measurements show that the duration is independent of the job configuration. 
 	\begin{figure}[!h]
 		\centering
-		\caption{Boxplot of the duration time of the test cases to handle the normalized query hash entry.}
+		\caption{Boxplot of the duration time of the test cases to handle the \textit{Query Hash} entry.}
 		\label{fig:evaluation_perf_norm_hash}
 		\begin{tikzpicture}
 		\begin{axis}
@@ -2274,7 +2273,7 @@ This section provides a description regarding performance constraints for each e
 		xlabel={duration [µs]},
 		y=2cm,
 		ytick={1},
-		yticklabels={norm\_hash},
+		yticklabels={Query Hash},
 		]
 		\addplot+[
 		boxplot prepared={
@@ -2291,33 +2290,33 @@ This section provides a description regarding performance constraints for each e
 		\end{tikzpicture}
 	\end{figure}
 
-	\item \textbf{result\_hash} \\
-	Duration of the result hash creation is dependent on the length of the result file list. The SHA-256 operation has a complexity of $O(n)$, where "n" is the length of the resulting file list string. In the test cases, the duration time of the result hash calculation is between 28 µs and 9167 µs with a median of 51 µs. Figure \ref{fig:evaluation_data_resulthash} shows the duration of the result hash creation of the test cases, sorted by the size of the result file set in an ascending way. Table \ref{Tab:data_result_hash} shows the values of the chart. They indicate the relationship between the number of files and the duration.  
+	\item \textbf{Result Hash} \\
+	Duration of the \textit{Result Hash} creation is dependent on the length of the result file list. The SHA-256 operation has a complexity of $O(n)$, where "n" is the length of the resulting file list string. In the test cases, the duration time of the \textit{Result Hash} calculation is between 28 µs and 9167 µs with a median of 51 µs. Figure \ref{fig:evaluation_data_resulthash} shows the duration of the \textit{Result Hash} creation of the test cases, sorted by the size of the result file set in an ascending way. Table \ref{Tab:data_result_hash} shows the values of the chart. They indicate the relationship between the number of files and the duration.  
 	
 	\begin{table}[]
-		\caption{Result hash performance of the test cases depending on the number of result files.}
+		\caption{\textit{Result Hash} performance of the test cases depending on the number of result files.}
 		
 		\centering
 		\begin{tabular}{c|c|c}
-			\textbf{Test Case} & \textbf{Number of files} & \textbf{Result hash duration [µs]}  \\ \hline
-			1 & 14  & 47.244 \\ \hline 
-			2 & 24 & 78.047 \\ \hline
-			3 & 11 & 37.209 \\ \hline
-			4 & 9 & 32.419 \\ \hline
-			5 & 10 & 35.000 \\ \hline
-			6 & 10 & 35.884 \\ \hline
-			7 & 10 & 33.818 \\ \hline
-			8 & 12 & 36.886 \\ \hline
+			\textbf{Test Case} & \textbf{Number of files} & \textbf{\textit{Result Hash} duration [µs]}  \\ \hline
+			1 & 14  & 47.2 \\ \hline 
+			2 & 24 & 78.0 \\ \hline
+			3 & 11 & 37.2 \\ \hline
+			4 & 9 & 32.4 \\ \hline
+			5 & 10 & 35.0 \\ \hline
+			6 & 10 & 35.9 \\ \hline
+			7 & 10 & 33.8 \\ \hline
+			8 & 12 & 36.9 \\ \hline
 			9 & 2255 & 8698.7 \\ \hline
-			10 & 17 & 59.359 \\ \hline
-			11 & 1551 & 5343.588 \\ \hline
-			12 & 12 & 41.548 \\ \hline
-			13 & 28 & 95.182 \\ \hline
-			14 & 420 & 1400.707 \\ \hline
-			15 & 15 & 50.146 \\ \hline
-			16 & 1356 & 4985.047 \\ \hline
-			17 & 15 & 51.565 \\ \hline
-			18 & 54 & 187.186 \\ 
+			10 & 17 & 59.4 \\ \hline
+			11 & 1551 & 5343.9 \\ \hline
+			12 & 12 & 41.5 \\ \hline
+			13 & 28 & 95.2 \\ \hline
+			14 & 420 & 1400.7 \\ \hline
+			15 & 15 & 50.1 \\ \hline
+			16 & 1356 & 4985.0 \\ \hline
+			17 & 15 & 51.6 \\ \hline
+			18 & 54 & 187.2 \\ 
 		\end{tabular}
 		\label{Tab:data_result_hash}
 	\end{table}
@@ -2325,7 +2324,7 @@ This section provides a description regarding performance constraints for each e
 	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.45]{eva_data_resulthash}
-		\caption{Result hash duration of the test cases sorted by result size.}
+		\caption{\textit{Result Hash} duration of the test cases sorted by result size.}
 		\label{fig:evaluation_data_resulthash} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 	\end{figure}
 	
@@ -2336,11 +2335,11 @@ This section provides a description regarding performance constraints for each e
 	%		\label{fig:evaluation_impact_data_resulthash} % \label has to be placed AFTER \caption (or \subcaption) to produce correct cross-references.
 	%	\end{figure}
 
-	\item \textbf{meta\_data} \\
-	In the solution the \textit{meta\_data} contains only the number of result files. It measures it by the built-in len() operator of Python, which has a complexity of $O(1)$ according to the official Python description\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases, the data calculation takes a duration between 6 µs and 359 µs with a median of 12 µs and a standard deviation of 3.98 µs. Figure \ref{fig:evaluation_perf_meta_data} shows the boxplot of the test case execution. The measurements indicate no correlation of the test case configuration and the duration.
+	\item \textbf{Metadata} \\
+	In the solution the \textit{Metadata} contains only the number of result files. It measures it by the built-in len() operator of Python, which has a complexity of $O(1)$ according to the official Python description\footnote{https://wiki.python.org/moin/TimeComplexity}. In the test cases, the data calculation takes a duration between 6 µs and 359 µs with a median of 12 µs and a standard deviation of 3.98 µs. Figure \ref{fig:evaluation_perf_meta_data} shows the boxplot of the test case execution. The measurements indicate no correlation of the test case configuration and the duration.
 	\begin{figure}[!h]
 		\centering
-		\caption{Boxplot of the duration time of the test cases to handle the \textit{meta\_data} entry.}
+		\caption{Boxplot of the duration time of the test cases to handle the \textit{Metadata} entry.}
 		\label{fig:evaluation_perf_meta_data}	
 		\begin{tikzpicture}
 		\begin{axis}
@@ -2348,7 +2347,7 @@ This section provides a description regarding performance constraints for each e
 		xlabel={duration [µs]},
 		y=2cm,
 		ytick={1},
-		yticklabels={meta\_data},
+		yticklabels={Metadata},
 		]
 		\addplot+[
 		boxplot prepared={
@@ -2366,7 +2365,7 @@ This section provides a description regarding performance constraints for each e
 	\end{figure}
 	
 	\item \textbf{Database operations} \\
-	To ensure that there are no duplicate query entries in the database, the \textit{Query Handler} executes a SQL SELECT statement to check if there is already an entry with the same normalized query hash and the same result hash. In the evaluation, the query table is empty before the SELECT statement. Hence, the complexity is $O(1)$. The INSERT statement to store the query has a complexity of $O(1)$. The database operations in the test cases have a duration between 10.501 ms and 49.283 ms with a median of 13.377 ms. Figure \ref{fig:evaluation_perf_data_database} shows the boxplot of the test case executions indicating that the performance is independent of the job configuration.  
+	To ensure that there are no duplicate query entries in the database, the \textit{Query Handler} executes a SQL SELECT statement to check if there is already an entry with the same unique query hash and the same result hash. In the evaluation, the query table is empty before the SELECT statement. Hence, the complexity is $O(1)$. \bgoesswein{There is currently no statistic of queries at EODC, but an estimation of a few hundred per month.} The INSERT statement to store the query has a complexity of $O(1)$. The database operations in the test cases have a duration between 10.501 ms and 49.283 ms with a median of 13.377 ms. Figure \ref{fig:evaluation_perf_data_database} shows the boxplot of the test case executions indicating that the performance is independent of the job configuration.  
 	\begin{figure}[!h]
 		\centering
 		\caption{Boxplot of the duration time of the test cases to make the needed database operations.}
@@ -2481,24 +2480,24 @@ Figure \ref{fig:eva_data_static} shows the duration of the constant query elemen
 		\caption{Result hash performance of the test cases in relation to the result size.}
 		\begin{tabular}{c|c|c}
 			\textbf{Test Case} & \textbf{Result size [kByte]} & \textbf{Result hash duration [ms]}  \\ \hline
-			1 & 587  & 2.184 \\ \hline 
-			2 & 721 & 2.684 \\ \hline
-			3 & 600 & 2.233 \\ \hline
-			4 & 556 & 2.068 \\ \hline
-			5 & 570 & 2.119 \\ \hline
-			6 & 553 & 2.058 \\ \hline
-			7 & 578 & 2.149 \\ \hline
-			8 & 638 & 2.374 \\ \hline
-			9 & 27 999 & 104.182 \\ \hline
-			10 & 621 & 2.313 \\ \hline
-			11 & 7 969 & 29.654 \\ \hline
-			12 & 649 & 2.415 \\ \hline
-			13 & 1 376 & 5.121 \\ \hline
-			14 & 6 026 & 22.422 \\ \hline
-			15 & 777 & 2.891 \\ \hline
-			16 & 7 978 & 29.685 \\ \hline
-			17 & 733 & 2.727 \\ \hline
-			18 & 706 & 2.627 \\ 
+			1 & 587  & 2.2 \\ \hline 
+			2 & 721 & 2.7 \\ \hline
+			3 & 600 & 2.2 \\ \hline
+			4 & 556 & 2.1 \\ \hline
+			5 & 570 & 2.1 \\ \hline
+			6 & 553 & 2.1 \\ \hline
+			7 & 578 & 2.1 \\ \hline
+			8 & 638 & 2.4 \\ \hline
+			9 & 27 999 & 104.2 \\ \hline
+			10 & 621 & 2.3 \\ \hline
+			11 & 7 969 & 29.7 \\ \hline
+			12 & 649 & 2.4 \\ \hline
+			13 & 1 376 & 5.1 \\ \hline
+			14 & 6 026 & 22.4 \\ \hline
+			15 & 777 & 2.9 \\ \hline
+			16 & 7 978 & 29.7 \\ \hline
+			17 & 733 & 2.7 \\ \hline
+			18 & 706 & 2.6 \\ 
 		\end{tabular}
 		\label{Tab:result_hash}
 	\end{table}
@@ -2535,7 +2534,7 @@ Figure \ref{fig:eva_data_static} shows the duration of the constant query elemen
 	
 \end{enumerate}
 
-The context model creation performance is not affected by the complexity of the test cases. The captured data for the context model is not related to the complexity of the job execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss because the \textit{Query Handler} and the context model have elements that need the same execution duration. In conclusion, it can be argued that the execution of the \textit{Query Handler} and the context model creation is less affecting complex test cases, since the have a minimum duration time. Besides, it should be mentioned that the \textit{Query Handler} and the context model creation happens after the processing. So that the result files of the job execution are available for the user even if both modules have not finished yet. \\
+The context model creation performance is not affected by the complexity of the test cases. The captured data for the context model is not related to the complexity of the job execution. The "Increase" column of Table \ref{Tab:eva_performance} shows that simple test cases are affected the most in terms of relative performance loss because the \textit{Query Handler} and the context model have elements that need the same execution duration. In conclusion, it can be argued that the execution of the \textit{Query Handler} and the context model creation is less affecting complex test cases, \bgoesswein{because of the constant overhead, which adds a fixed amount of time}. Besides, it should be mentioned that the \textit{Query Handler} and the context model creation happens after the processing. So that the result files of the job execution are available for the user even if both modules have not finished yet. \\
 Table \ref{Tab:eva_performance} summarizes the result of the mean duration time over the 50 runs of each the test case. The second column presents the duration of the \textit{Reference Backend}. The other columns are measurements of the \textit{Solution Backend}. It includes the total execution duration of the \textit{Solution Backend}, the duration of the \textit{Query Handler} and the duration of the context model creation. The last column shows the additional time the \textit{Solution Backend} needs in comparison to the \textit{Reference Backend}. The last row of Table \ref{Tab:eva_performance} shows the mean duration over all test cases. It indicates that the solution adds between 20 ms and 175 ms to the duration of the \textit{Reference Backend}. It depends on the result sizes and not on the execution duration of the job execution. Compared to the estimated computation time of the test cases between 10 seconds and 20 minutes at the production version of the EODC backend, we conclude that the impact of the \textit{Query Handler} is negligible.
 
 \begin{table}[]
@@ -2544,25 +2543,25 @@ Table \ref{Tab:eva_performance} summarizes the result of the mean duration time 
 		
 		\textbf{} & \textbf{Reference Backend} & \multicolumn{3}{c|}{\textbf{Solution Backend}} &  \\ \hline \textbf{Test} & \textbf{} & \textbf{Comparison} & \textbf{Query} & \textbf{Context} & \textbf{Solution} \\ 
 		\textbf{Case} & \textbf{Total} & \textbf{Total} & \textbf{Handler} & \textbf{Model} & \textbf{Addition} \\ \hline
-		1 & 322.946 ms & 345.127 ms & 14.187 ms & 7.994 ms & 22.181 ms \\ 
-		2 & 369.066 ms & 393.505 ms & 16.342 ms & 8.097 ms & 24.439 ms \\ 
-		3 & 281.657 ms & 305.407 ms & 15.669 ms & 8.081 ms & 23.750 ms \\ 
-		4 & 276.324 ms & 298.954 ms & 14.015 ms & 8.615 ms & 22.630 ms \\ 
-		5 & 312.150 ms & 334.802 ms & 13.925 ms & 8.727 ms & 22.652 ms \\ 
-		6 & 314.571 ms & 337.290 ms & 13.985 ms & 8.734 ms & 22.719 ms \\ 
-		7 & 320.081 ms & 343.552 ms & 14.555 ms & 8.916 ms & 23.471 ms \\ 
-		8 & 304.998 ms & 328.633 ms & 14.742 ms & 8.893 ms & 23.635 ms \\ 
-		9 & 565.289 ms & 740.751 ms & 48.766 ms & 126.696 ms & 175.462 ms \\ 
-		10 & 401.922 ms & 425.026 ms & 14.874 ms & 8.230 ms & 23.104 ms \\ 
-		11 & 521.022 ms & 605.185 ms & 34.660 ms & 49.503 ms & 84.163 ms \\ 
-		12 & 387.536 ms & 412.079 ms & 15.711 ms & 8.832 ms & 24.543 ms \\ 
-		13 & 510.517 ms & 538.784 ms & 17.070 ms & 11.197 ms & 28.267 ms \\ 
-		14 & 657.989 ms & 706.329 ms & 19.010 ms & 29.330 ms & 48.340 ms  \\ 
-		15 & 345.806 ms & 371.984 ms & 17.027 ms & 9.151 ms & 26.178 ms \\ 
-		16 & 585.730 ms & 658.493 ms & 23.956 ms & 48.807 ms & 72.763 ms \\ 
-		17 & 563.755 ms & 589.776 ms & 16.778 ms & 9.243 ms & 26.021 ms \\ 
-		18 & 836.377 ms & 862.271 ms & 16.801 ms & 9.093 ms & 25.894 ms \\ \hline
-		\textbf{Avg.} & \textbf{437.652 ms} & \textbf{477.664 ms} & \textbf{19.004 ms} & \textbf{21.008 ms} & \textbf{40.012 ms} \\ 
+		1 & 322.946 ms & 345.127 ms & 14.187 ms & 7.994 ms & 22.181 ms (6.8 \%) \\ 
+		2 & 369.066 ms & 393.505 ms & 16.342 ms & 8.097 ms & 24.439 ms (6.6 \%)\\ 
+		3 & 281.657 ms & 305.407 ms & 15.669 ms & 8.081 ms & 23.750 ms (8.4 \%)\\ 
+		4 & 276.324 ms & 298.954 ms & 14.015 ms & 8.615 ms & 22.630 ms (8.2 \%)\\ 
+		5 & 312.150 ms & 334.802 ms & 13.925 ms & 8.727 ms & 22.652 ms (7.3 \%)\\ 
+		6 & 314.571 ms & 337.290 ms & 13.985 ms & 8.734 ms & 22.719 ms (7.2 \%)\\ 
+		7 & 320.081 ms & 343.552 ms & 14.555 ms & 8.916 ms & 23.471 ms (7.3 \%)\\ 
+		8 & 304.998 ms & 328.633 ms & 14.742 ms & 8.893 ms & 23.635 ms (7.7 \%)\\ 
+		9 & 565.289 ms & 740.751 ms & 48.766 ms & 126.696 ms & 175.462 ms (31.0 \%)\\ 
+		10 & 401.922 ms & 425.026 ms & 14.874 ms & 8.230 ms & 23.104 ms (5.7 \%)\\ 
+		11 & 521.022 ms & 605.185 ms & 34.660 ms & 49.503 ms & 84.163 ms (16.2 \%)\\ 
+		12 & 387.536 ms & 412.079 ms & 15.711 ms & 8.832 ms & 24.543 ms (6.3 \%)\\ 
+		13 & 510.517 ms & 538.784 ms & 17.070 ms & 11.197 ms & 28.267 ms (5.5 \%)\\ 
+		14 & 657.989 ms & 706.329 ms & 19.010 ms & 29.330 ms & 48.340 ms (7.3 \%)\\ 
+		15 & 345.806 ms & 371.984 ms & 17.027 ms & 9.151 ms & 26.178 ms (7.6 \%)\\ 
+		16 & 585.730 ms & 658.493 ms & 23.956 ms & 48.807 ms & 72.763 ms (12.4 \%)\\ 
+		17 & 563.755 ms & 589.776 ms & 16.778 ms & 9.243 ms & 26.021 ms (4.6 \%)\\ 
+		18 & 836.377 ms & 862.271 ms & 16.801 ms & 9.093 ms & 25.894 ms (3.1 \%)\\ \hline
+		\textbf{Avg.} & \textbf{437.652 ms} & \textbf{477.664 ms} & \textbf{19.004 ms} & \textbf{21.008 ms} & \textbf{40.012 ms (8.9 \%)} \\ 
 	\end{tabular}
 	\label{Tab:eva_performance}
 \end{table}
@@ -2620,13 +2619,13 @@ FROM queryjob as t WHERE job_id = '{}';
 %\end{table}
 
 The storage need for the evaluation is constant. The mean storage of the 50 runs per test case and the average storage size of the test cases are measured. Three parts of the implementation are storing data in the database. First, we store the context model in an additional column named "context\_model" in the job table. There is no element in the context model that can vary in size, except for the list of packages of Python, which didn't change during the evaluation. It takes an additional 1.043 kByte of size for every job entry. The same occurs at the queryjob table, which maps the query table and the job table and therefore contains the needed identifiers and timestamps for creation and modification. Every record of the queryjob table needs 0.113 kBytes of storage space.
-The query records have a varying size because of the string length of the parameters in the original query. The remaining parts of the query table are constant in storage usage. Each query record of the test cases needs between 1.520 kByte and 1.533 kByte of space. The original query makes up the biggest part in the query table (e.g. 959 Bytes of 1521.432 Bytes in test case 18). The reason for this is the high amount of XML annotations. In summary, the average additional storage needed by the \textit{Solution Backend} per job with a new query entry is 2.677 kBytes. If the used query is already in the query table, only additional 1.043 kBytes are needed by the \textit{Solution Backend}.
+The query records have a varying size because of the string length of the parameters in the original query. The remaining parts of the query table are constant in storage usage. Each query record of the test cases needs between 1.520 kByte and 1.533 kByte of space. The original query makes up the biggest part in the query table (e.g. 959 Bytes of 1521.432 Bytes in test case 18). The reason for this is the high amount of XML annotations. In summary, the average additional storage needed by the \textit{Solution Backend} per job with a new query entry is 2.677 kBytes. If the used query is already in the query table, only additional 1.043 kBytes are needed by the \textit{Solution Backend}. \bgoesswein{For EODC this are eligible numbers with the estimate of under one hundred queries and job executions.}
 \newpage
 \section{Summary}
 The evaluation in this chapter showed how the solution tackles the goals of the research questions. First, it summarizes how the RDA recommendations are implemented in the solution, except for the migration recommendations (R14 and R15). The data identification implementation is then tested against exceptional test cases regarding data updates and data deletions at the backend. The evaluation shows that the solution can re-execute queries properly by returning old versions of updated files. The test cases show that the usage of the data PID as input data of a new job is superior to the current way of re-executing a job with the same process graph at EODC.
 The reason for this is that the process graph does not have the original execution timestamp and therefore, does not use the same input data after an update occurs. In the evaluation of deleted data at the backend, the solution happens to be not capable of showing the exact missing files, since not the whole file list result of the query is persisted. The test case on job capturing showed that the solution is capable of identifying the backend version and therefore, the environment of the job execution. Still, to run a new job in the same environment, EODC has to provide it manually. The evaluation also contains a section about the performance and storage impact on the EODC backend, by running 18 test cases derived from past publications that used data from EODC. The results show that, except for the result hashes, the calculation of the data identification and the context model are independent of the complexity of the job. The time of the result hashing used for the data identification is dependent on the size of the query result, and the resulting hash of the context model is dependent on the size of the output file of the job execution. The evaluation of storage impact results in the conclusion that the additional needed space per job is unrelated to the job configuration. It depends on if there is a new query entry added to the database or not. The performance impact of the test case execution is between 20ms and 170ms. Compared to the estimated computation time of the test cases between 10 seconds and 20 minutes at the production version of the EODC backend, we conclude that the impact of the Query Handler is negligible. The additional needed space per job is constant and also minimal if compared to size of data kept at the backend.
    
-\chapter{Conclusion and future Work}\label{Conclusion}
+\chapter{Conclusion and Future Work}\label{Conclusion}
 
 \section{Conclusion}
 %\todo{Always "the backend" not "the EODC backend", just in the first mentioning of the section}
@@ -2649,7 +2648,7 @@ This section revisits the research questions defined in Section \ref{research qu
 		\item \textbf{How can the data of the original execution be identified?} \\
 		\bgoesswe{The data of an EO job execution is defined by a list of satellite images needed to execute the job. It it is specified by the satellite identifier and the filter operations of the job, which result in a backend specific query (e.g. CSW). We made it} identifiable by storing the original query following the RDA recommendations. Therefore, we assigned a persistent identifier to every unique query and result combination. We defined the result as the hash value of the resulting file list of the query execution. The landing page of the resolvable input data PID is a human-readable and machine-readable website. \bgoesswe{We extended the openEO API specification to access the information of the landing page using an openEO client application.}
 		\item \textbf{How can the environment of the original execution be reproduced?} \\
-		The original environment consists of the \bgoesswe{executed} code, the version of programming language, and the installed libraries. We use Git and GitHub in our implementation to identify a version of the backend. \bgoesswe{Each commit represents a version of code.} \bgoesswe{The version of the programming language as well as the installed libraries are captured during the execution of the job using. In our implementation we used the Python tool pip. The context model stores the three elements of the environment during the job execution.} The backend has to jump back to the version of the backend used during the job execution to reproduce the original execution environment.       
+		The original environment consists of the \bgoesswe{executed} code, the version of programming language, and the installed libraries. We use Git and GitHub in our implementation to identify a version of the backend. \bgoesswe{Each commit represents a version of code.} \bgoesswe{The version of the programming language as well as the installed libraries are captured during the execution of the job \bgoessweindel{using}. In our implementation we used the Python tool pip. The context model stores the three elements of the environment during the job execution.} The backend has to jump back to the version of the backend used during the job execution to reproduce the original execution environment.       
 		\item \textbf{Which parts of the backend need to be extended?} \\
 		The RDA recommendations have to be implemented at the query execution component of the backend. To realize the backend version, we recommend to use a version control system. The job execution environment has to be modified to capture the job dependent environment. After the execution of the job finished, we added the creation of a result hash. We suggest an additional database table to store the context model for every job.
 		\item \textbf{How can the result of a re-execution in future environments be verified?} \\
