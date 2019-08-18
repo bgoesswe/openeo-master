@@ -1159,6 +1159,9 @@ The previous sections describe the technical insight of the backend. This sectio
 
 \item \textbf{Data Identifier Landing Page} \\
 	Depending on the backend, the input data may be restricted to the openEO interface. Therefore, the resolver of the input data PID is set within the coreAPI specification. There exists an endpoint to retrieve detailed information about a data set. We introduce the additional "GET /data/<data-pid>" endpoint. If the user calls the endpoint with a data PID, the result are the details of the underlying dataset and besides, the result of the query execution and the original query parameters \bgoesswein{in JSON format}. The landing page contains a link to another page with the file list after a query re-execution ("GET /data/<data-pid>/result" endpoint). If the result file list differs from the original execution, there is a list of the files that differ. Otherwise, it states that the file list is equal to the first execution. 
+	\bgoesswein{The landing page contains the citation text for the data. In EODC only Sentinel data is available for the users. EODC already stores the official citation text from ESA. In addition to this text we add the data PID and filter arguments.}
+	\todo{Link to citation text.}
+
 
 \item \textbf{Re-use of Input Data} \\
 	To re-use the input data in different job execution, the client user can use the data PID in the process graph directly as source data, instead of just the unfiltered dataset identifier. If a process graph uses the input data PID, the backend automatically applies the queries in the way of the original execution. It is inserted in the process "get\_collection" as an additional filter argument named "data\_pid", to pass the data PID to the process graph. Section \ref{Implementation:Use Case1} provides an example of such a process graph. If the query result data changed from the original execution of the PID, the job shall be processed nonetheless, but a warning message appears to notify the user. \bgoesswein{The notification appears in the Python client, when the user fetches the result either automatically with synchronous jobs, or by a separate call in asynchronous jobs.}   
@@ -1272,9 +1275,18 @@ file_list = con.get_filelist(pidA)
 	\todo{result: what is this URL? Is it persisted? re-generted when entered into a browser? describe...}
 	\todo{Relook the comments here}
 	\item \textbf{Researcher A cites the input data in a publication.} \\
-	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"BACKEND\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation.   
-	\todo{Make real citation, look at EODC /Copernicus how to do that}
-	\todo{Feedback checked until here...}
+	This step is independent from the implementation and therefore not explained in detail. For the further steps it is assumed that Researcher A used the resolvable PID from step 2 (\textit{"BACKEND\_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"}) for the citation. \bgoesswein{Listing \ref{lst:use_case1_citation} shows the whole generated citation text.}
+\begin{code}
+	\begin{minted}[fontsize=\footnotesize]{text}
+	Copernicus Sentinel data (2017). Retrieved from EODC, Austria [2019-04-17], processed by ESA. PID: BACKEND_URL/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06
+	\end{minted}
+	\caption{Generated citation text of pidA.}
+	\label{lst:use_case1_citation}
+\end{code}
+
+	 
+	%\todo{Make real citation, look at EODC /Copernicus how to do that}
+	%\todo{Feedback checked until here...}
 	\item \textbf{Researcher B uses the same input data of job A for job B.} \\
 	To use the same input data as Researcher A, Researcher B uses the data PID from the publication and puts it into the input data element of the process graph of job B. Listing \ref{lst:impl_usecase1_3} gives an example of the code needed to use the same input with a different process constellation (max\_time instead of min\_time process).  
 
@@ -1627,7 +1639,9 @@ The Design (see Section \ref{Design:Data Identification}) proposes the implement
 	\item \textbf{R9: Store the Query} \\
 	We implemented the query store as an additional table of an existent relational database of the backend (PostgreSQL). 
 	\item \textbf{R10: Automated Citation Texts} \\
-	The citation text for the dataset is already available at EODC. We added the generated data PID. \todo{Link to automated citation text}
+	The citation text for the dataset is already available at EODC. We added the generated data PID and filter arguments. \todo{Link to automated citation text}
+	
+	
 	\item \textbf{R11 \& R12: Landing Page \& Machine Actionability} \\
 	We define the landing page as an additional openEO endpoint. It is publicly accessible and in a JSON format, which makes it machine actionable. The landing page includes a link to re-execute the query and lists the result files. Since it is part of the openEO API, it can also be accessed from the openEO clients and be used in future jobs as input data.
 	\todo{Make Landing Page... and Link to it here}

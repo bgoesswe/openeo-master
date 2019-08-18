@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
+<!--[if IE 8]> <html lang="en" class="ie ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class=" js" lang="en"><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!--[if lte ie 8]><script type="text/javascript" src="/fanstatic/vendor/:version:2018-09-10T12:12:57.88/html5.min.js"></script><![endif]-->
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/select2.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/font-awesome.css">
+<!--[if ie 7]><link rel="stylesheet" type="text/css" href="/fanstatic/vendor/:version:2018-09-10T12:12:57.88/font-awesome/css/font-awesome-ie7.min.css" /><![endif]-->
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/LivIconsEvo.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/introjs.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/bundlelivicons_addition.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/geo-resource-styles.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/harvest.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/leaflet.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/dataset_map.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/filtersearch.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/citation_copy.css">
+<link rel="stylesheet" type="text/css" href="landing_page-Dateien/package_read.css">
+
+    <meta charset="utf-8">
+      <meta name="generator" content="ckan 2.6.6">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+    <title>EODC Landing page</title>
+
+    
+    <link rel="shortcut icon" href="https://data.ccca.ac.at/images/favicon.ico">
+    
+  
+  
+    
+    
+  
+      <link rel="stylesheet" href="landing_page-Dateien/new_design.css">
+    
+  
+
+    <link rel="stylesheet" href="landing_page-Dateien/localimp-theme.css">
+
+    
+
+  <!-- <link rel='stylesheet' href="/new_design_ccca.css" /> -->
+  <!-- <link rel='stylesheet' href="/new_design.css" /> -->
+  <!-- <link rel="stylesheet" href="LivIconsEvo/css/LivIconsEvo.css" /> -->
+  <!-- <link rel='stylesheet' id='font_source_sans_pro-css'  href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,400italic,600italic' type='text/css' media='all' /> -->
+
+  
+
+
+    
+      
+      
+    
+  
+  <meta property="og:title" content="qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06 - EODC Backend compliant with openEO">
+  <meta property="og:description" content="Sentinel Data">
+
+    
+  </head>
+
+  
+  <body data-site-root="https://data.ccca.ac.at/" data-locale-root="https://data.ccca.ac.at/">
+
+    
+    <div class="hide"><a href="#content">Skip to content</a></div>
+  
+
+  
+    
+
+
+
+ <!--
+
+  <header class="account-masthead">
+   <div class="container">    
+    
+      <nav class="account not-authed">
+        <ul class="unstyled">
+          
+          <li><a href="https://data.ccca.ac.at/user/login">Log in</a></li>
+          
+            <li><a class="sub" href="https://data.ccca.ac.at/user/register">Register</a></li>
+          
+          
+        </ul>
+      </nav>
+    
+
+  
+</div>
+
+
+</header> --> 
+
+  
+  
+
+
+
+<nav class="navbar navbar-default" id="main-navigation">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="pull-left" href="https://data.ccca.ac.at/">
+        <img src="landing_page-Dateien/eodc_logo.png" class="navbar-brand-ccca" alt="EODC Logo" title="EODC">
+      </a>
+      <img src="landing_page-Dateien/eodc_beschr.png" class="navbar-brand-ccca" alt="EODC Description" title="EODC Description">
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-navigation-collapse" role="navigation">
+      <div>
+        <ul class="nav navbar-nav navbar-right">
+      <!--      <li><a href="https://data.ccca.ac.at/group">Groups</a></li><li><a href="https://data.ccca.ac.at/organization">Organizations</a></li><li><a href="https://data.ccca.ac.at/dataset">Datasets</a></li><li><a href="https://data.ccca.ac.at/about">About</a></li> -->
+          <img src="landing_page-Dateien/openeo_logo.png" class="navbar-brand-ccca" alt="openEO Logo" title="openEO Logo">
+        </ul>
+      </div>
+    </div> 
+  </div><!-- /.container -->
+</nav>
+
+
+  
+    <div role="main">
+        
+          
+            <div class="flash-messages">
+              
+                
+              
+            </div>
+          
+
+      <div class="page-header">
+          
+            <div class="toolbar">
+              
+              <div id="content" class="container">
+                
+                  <ol class="breadcrumb">
+                    
+<!--<li class="item-home"><a class="bread-link bread-home" href="https://data.ccca.ac.at/">Home</a></li>
+                    
+  
+    
+    
+      
+      <li><a href="https://data.ccca.ac.at/organization">Organizations</a></li>
+      <li><a href="https://data.ccca.ac.at/organization/ccca">CCCA Data Centre</a></li>
+    
+    <li class="active"><a class=" active" href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01">test Heat load maps</a></li> -->
+  
+
+                  </ol>
+                
+              </div>
+              
+            </div>
+          
+       </div>
+
+      <div id="content" class="container">
+          <div class="row wrapper no-nav">
+
+            
+            <div class="col-md-12">
+            
+            
+            </div>
+
+            
+  <div class="primary col-md-12">
+    
+    
+      <article class="module">
+        
+
+        <div class="module-content">
+          
+          
+  
+    
+      
+    
+
+  
+
+<span style="margin-left:0px; float:right;padding-left:15px;padding-button:15px;">
+  <div align="right">
+<!--      <a class="btn btn-sm" href="javascript:void(0);" onclick="javascript:introJs().setOption('tooltipClass', 'customDefault').setOption('showProgress', true).start('explain-package');" title="Explain me this page">
+        <i class="icon-question-sign icon-2x"></i>
+      </a>
+    -->  
+
+      
+ <!-- 
+     <section data-step="6" data-intro-group="explain-package" data-intro="Here you can add this dataset to one of your baskets (if you have already created a basket). Baskets are there to memorise and group datasets of special importance for yourself. As a logged-in user you can also follow the dataset on this site or you can share it on social media.">
+     
+     
+
+
+
+
+
+
+    
+    
+
+
+  
+
+     <br><br>
+     
+
+
+ <dt><i>Followers: </i> <span>0</span>  </dt>
+     
+     <dt><i>Views: </i> <span>11</span></dt>
+     
+
+    <dt>
+     
+       
+     
+       <a href="https://www.facebook.com/sharer.php?u=https://data.ccca.ac.at/dataset/test-heat-load-maps-v01" target="_blank" data-toggle="tooltip" title="Share on Facebook"><i style="color:#3c5a99" class="icon-facebook-sign"></i> </a>
+       <a href="https://twitter.com/share?url=https://data.ccca.ac.at/dataset/test-heat-load-maps-v01" target="_blank" data-toggle="tooltip" title="Share on Twitter"><i style="color:#57c1df" class="icon-twitter-sign"></i> </a>
+       <a href="https://plus.google.com/share?url=https://data.ccca.ac.at/dataset/test-heat-load-maps-v01" target="_blank" data-toggle="tooltip" title="Share on Google+" class="nav-item"><i style="color:#ea4335" class="icon-google-plus-sign"></i> </a>
+   </dt>
+    </section>
+-->
+     
+    </div>
+  </span>
+
+  <!--
+    <div class="info-panel-01 green-border" data-step="1" data-tooltipclass="introjs-ttip" data-intro-group="explain-package" data-intro="Hi! Let me explain this page to you! You are currently on a dataset page and can see the dataset's title. Let's start the tour!">
+        <h6 class="text-uppercase">
+        <div class="livicon-evo livicon-evo-holder" data-options="
+            name: tag.svg;
+            style: lines;
+            size: 40px;
+            strokeColor: #30778d;
+            strokeWidth: 2;
+            duration: 1;
+            eventOn: none;
+            drawOnViewport: true
+        " style="visibility: visible; width: 40px;"><div class="lievo-svg-wrapper"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60" xml:space="preserve" data-animoptions="{'duration':'0.3', 'repeat':'2', 'repeatDelay':'0'}" preserveAspectRatio="xMinYMin meet" style="left: 0.5px; top: -0.25px;"><g class="lievo-setrotation"><g class="lievo-setsharp" data-svg-origin="31 30" style="transform-origin: 0px 0px 0px;" transform="matrix(1,0,0,1,-1.0000005811452692,-1.0000005811452692)"><g class="lievo-setflip"><g class="lievo-main">
+		
+
+		<g class="lievo-lineicon">
+			<path fill="none" stroke="#30778d" stroke-width="3" stroke-linecap="square" stroke-miterlimit="10" d="M48.41,11.58C48.78,11.95,49,12.45,49,13v13.97c0,0.55-0.32,1.32-0.71,1.71L26.37,50.6c-0.78,0.78-2.05,0.78-2.83,0L9.4,36.46c-0.78-0.78-0.78-2.05,0-2.83l21.92-21.92c0.39-0.39,1.15-0.71,1.71-0.71H47C47.55,11,48.05,11.22,48.41,11.58z" style="fill-opacity: 1; stroke-opacity: 1; stroke-dashoffset: 0px; stroke-dasharray: none; stroke: rgb(48, 119, 141);"></path>
+
+			<path class="lievo-altstroke" fill="none" stroke="#30778d" stroke-width="3" stroke-linecap="square" stroke-miterlimit="10" d="M41.83,18.17c-1.56-1.56-4.09-1.56-5.66,0c-1.56,1.56-1.56,4.1,0,5.66c1.56,1.56,4.09,1.56,5.66,0C43.39,22.27,43.39,19.73,41.83,18.17z" style="fill-opacity: 1; stroke-opacity: 1; stroke-dashoffset: 0px; stroke-dasharray: none; stroke: rgb(48, 119, 141);"></path>
+		</g>
+		
+		
+	<rect x="-19" y="-19" width="4" height="4" class="lievo-checkshift lievo-donotdraw lievo-nohoverstroke lievo-nohovercolor" style="stroke-width: 2px; stroke-linecap: butt; stroke-linejoin: round; opacity: 0;" fill="none" stroke="#30778d" stroke-width="3"></rect></g></g></g></g>
+	
+<desc>LivIcons Evolution</desc><defs></defs></svg></div></div>
+        Dataset
+        </h6>
+        <h2>
+        test Heat load maps
+        
+        
+        </h2>
+    </div>
+-->
+
+
+    
+    <h5>
+        
+        Published by: <a href="https://eodc.at">EODC</a>
+        
+        
+
+  
+
+  
+
+        
+      </h5>
+    
+    
+    <div class="notes embedded-content">
+      <p>Data PID: qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06</p>
+    </div>
+  
+
+
+   <span class="pull-right  span2" style="margin-left:0px;float:right">
+     <div align="right">
+    </div>
+   </span>
+
+
+  
+    <span class="insert-comment-thread"></span>
+
+
+  
+
+    
+
+<div class="row">
+  <div class="col-md-12">
+  <!--<a class="btn btn-default" data-toggle="collapse" href="#multiCollapseVersion" role="button" aria-expanded="false" aria-controls="multiCollapseVersion" data-step="2" data-intro-group="explain-package" data-intro="Click on this button to see the different versions of this dataset! A new version is being created when a resource of a public dataset gets updated.">Dataset Versions</a>
+   <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#multiCollapseCitation" aria-expanded="true" aria-controls="multiCollapseCitation" data-step="3" data-intro-group="explain-package" data-intro="Click on this button to see how to cite this dataset! It's very simple, don't be shy!">Citation</button> -->
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="collapse multi-collapse" id="multiCollapseVersion">
+      <div class="card card-body">
+        
+        <h3> Dataset Versions: </h3>
+
+        <h4>This Version</h4>
+        
+            
+                <table class="versiontable">
+                    <tbody><tr>
+                        <td style="width:100px">Version 1</td>
+                        
+                        <td><b>Release Date:</b> 2019-06-17 08:11:43.060882</td>
+                        
+                    </tr>
+                </tbody></table>
+            
+        
+
+        <h4>Latest Version</h4>
+        
+        <table class="versiontable">
+            <tbody><tr>
+                <td style="width:100px">
+                
+                    
+                    <a href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01">
+                
+                Version 1 </a></td>
+                
+                <td><b>Release Date:</b> 2019-06-17 08:11:43.060882</td>
+                
+            </tr>
+        </tbody></table>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="multi-collapse collapse in" id="multiCollapseCitation" aria-expanded="true" style="">
+      <div class="card card-body">
+        <h3> Cite this dataset: </h3>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Using this data set or resource, you should cite it with the following citation text:
+          </div>
+          <div class="panel-body panel-body">
+          <div class="row">
+          <div class="col-md-10">
+          <div id="citation-text">
+          Copernicus Sentinel data (2017). Retrieved from EODC, Austria [2019-04-17], processed by ESA. PID: <a href="http://openeo.local.127.0.0.1.nip.io/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06"> http://openeo.local.127.0.0.1.nip.io/data/qu-d1701f4e-e7c5-4a83-92e0-9facbd401a06 </a>
+          </div>
+          </div>
+          <div class="col-md-2">
+            <input type="image" src="landing_page-Dateien/copy.png" /> <!--<button id="copy-button" class="btn btn-default"><i class="fa fa-home"></i>Copy Text</button>-->
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+    
+    
+
+    
+
+<section id="dataset-resources" class="resources" style="clear:right" data-step="4" data-intro-group="explain-package" data-intro="These are the dataset's resources!
+A dataset must have at least one resource, these resources represent the different distributions (.nc, .csv, .pdf,...).
+This dataset has 3  resources.
+You can click on each resource to go to its individual page.">
+  <h3>Dataset description</h3>
+  
+Sentinel-2 is a multispectral, high-resolution, optical imaging mission, developed by the European Space Agency (ESA) in the frame of the Copernicus program of the European Commission.   
+  <!--    <ul class="resource-list">
+        
+          
+            
+
+
+
+<li class="resource-item" data-id="17b472dd-589f-40db-a3c0-83cb5382455c">
+  
+  <a class="heading" href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/17b472dd-589f-40db-a3c0-83cb5382455c" title="Heat load maps ">
+    Heat load maps <span class="format-label" property="dc:format" data-format="netcdf">NetCDF</span>
+    
+
+  </a>
+  
+  
+    <p class="description">
+      
+        Heat load maps 
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      <i class="icon-share-alt"></i>
+      Explore
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/17b472dd-589f-40db-a3c0-83cb5382455c">
+          
+            <i class="icon-bar-chart"></i>
+            Preview
+          
+        </a>
+      </li>
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871/resource/17b472dd-589f-40db-a3c0-83cb5382455c/download/stationsdaten_historical_1981-2010.nc" class="resource-url-analytics" target="_blank">
+          
+            <i class="icon-download"></i>
+            Download
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+         
+            
+
+
+
+<li class="resource-item" data-id="b5b233dd-7926-40ac-9ce8-24a8325e1e15">
+  
+  <a class="heading" href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/b5b233dd-7926-40ac-9ce8-24a8325e1e15" title="Heat load maps euro">
+    Heat load maps euro<span class="format-label" property="dc:format" data-format="application/x-netcdf">application/x-netcdf</span>
+    
+
+  </a>
+  
+  
+    <p class="description">
+      
+        Heat load maps euro
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      <i class="icon-share-alt"></i>
+      Explore
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/b5b233dd-7926-40ac-9ce8-24a8325e1e15">
+          
+            <i class="icon-bar-chart"></i>
+            Preview
+          
+        </a>
+      </li>
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871/resource/b5b233dd-7926-40ac-9ce8-24a8325e1e15/download/euro-cordex_ensavg_historical_1971-2000-1.nc" class="resource-url-analytics" target="_blank">
+          
+            <i class="icon-download"></i>
+            Download
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="91594a91-b1fe-486e-8f0f-1865e03858cc">
+  
+  <a class="heading" href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/91594a91-b1fe-486e-8f0f-1865e03858cc" title="grt_test">
+    grt_test<span class="format-label" property="dc:format" data-format="netcdf">NetCDF</span>
+    
+
+  </a>
+  
+  
+    <p class="description">
+      
+        grt
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      <i class="icon-share-alt"></i>
+      Explore
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/test-heat-load-maps-v01/resource/91594a91-b1fe-486e-8f0f-1865e03858cc">
+          
+            <i class="icon-bar-chart"></i>
+            Preview
+          
+        </a>
+      </li>
+      
+      <li>
+        <a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871/resource/91594a91-b1fe-486e-8f0f-1865e03858cc/download/subset_tx_sdm_hadcm3q3_a1b_r1_meto-hc-hadrm3q3_all.nc" class="resource-url-analytics" target="_blank">
+          
+            <i class="icon-download"></i>
+            Download
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+       
+        
+      </ul> -->  
+    
+    
+</section>
+  
+
+
+  
+    
+  
+
+  
+  
+
+
+
+
+<section class="additional-info" data-step="5" data-intro-group="explain-package" data-intro="These are all the dataset's metadata! Metadata provide information about the data itself. The metadata profile is based on INSPIRE guidelines. Click on the different sections to browse through the metadata.">
+    <div class="dropdown pull-right">
+      <!-- <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        Export Metadata
+        <span class="caret"></span>
+      </button> -->
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuMDExport">
+        <li><a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871.xml" target="_blank">XML</a></li>
+        <li><a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871.n3" target="_blank">N3</a></li>
+        <li><a href="https://data.ccca.ac.at/dataset/2b1237e0-1d6f-42e8-8805-0af76609c871.ttl" target="_blank">TTL</a></li>
+      </ul>
+    </div>
+    <h3>Dataset Metadata</h3>
+
+<div class="container"><!--<ul class="nav nav-tabs" style="margin-bottom:10px;"><li class="active">
+                <a data-toggle="tab" data-html="true" href="#Contact">Contact</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Basics">Basics</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Keywords">Keywords</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Spatial">Spatial</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Time">Time</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Specifics">Specifics</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Quality">Quality</a>
+            </li>
+<li class="">
+                <a data-toggle="tab" data-html="true" href="#Conformity">Conformity</a>
+            </li>
+</ul>
+-->
+<div class="tab-content">
+       <div id="Contact" class="tab-pane fade in active">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <!-- <th colspan="2" scope="row"><h4><i>Owner and Contact Information regarding this dataset </i></h4></th>-->
+              </tr>
+            </thead>
+            <tbody>
+    
+    <tr>
+           <th scope="row" class="mdedit_normal">
+           Organization</th>
+           <td class="dataset-details">EODC</td>
+       </tr><tr>
+            <th class="mdedit_normal" scope="row"><i>Data source Identifier</i></th>
+            <td class="dataset-details"><a href="https://test.at">s2a_prd_msil1c</a></td>
+              </tr>
+              
+    <tr>
+            <th class="mdedit_normal" scope="row"><i>Data source (Author)</i></th>
+            <td class="dataset-details">ESA - Copernicus Program<br>
+            <th class="mdedit_normal" scope="row"><i>Date of creation</i></th>
+            <td class="dataset-details">TODO<br>
+            <th class="mdedit_normal" scope="row"><i>Spatial Extent</i></th>
+            <td class="dataset-details">TODO<br>
+            <th class="mdedit_normal" scope="row"><i>Temporal Extent</i></th>
+            <td class="dataset-details">TODO<br>
+
+      
+    
+    <a href="mailto:chris.schubert@ccca.ac.at"></a><br></td>
+              </tr>
+              
+    
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Citation Info</th>
+        <td class="dataset-details">Schubert et al</td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Basics" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Basic Information about this dataset </i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Dataset Locator - URI</th>
+        <td class="dataset-details"><a href="https://hdl.handle.net/20.500.11756/012691f6" rel="" target="_blank">https://hdl.handle.net/20.500.11756/012691f6</a></td>
+      </tr>
+    
+    
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Abstract</th>
+        <td class="dataset-details">Heat load maps </td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Metadata Language</th>
+        <td class="dataset-details">English</td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          License</th>
+        <td class="dataset-details">cc-by</td>
+      </tr>
+    <tr>
+          <th scope="row" class="mdedit_normal">Visibility</th>
+          <td class="dataset-details">
+              public</td>
+       </tr><tr>
+        <th class="mdedit_normal" scope="row">
+          Use Limitation</th>
+        <td class="dataset-details">no limitation</td>
+      </tr>
+    <tr>
+                    <th class="mdedit_normal" scope="row">
+                      Date of creation (created)</th>
+                    <td class="dataset-details">
+                      
+                    </td>
+                  </tr>
+    <tr>
+              <th class="mdedit_normal" scope="row">
+                Date of publication (issued)</th>
+              <td class="dataset-details">
+                
+              </td>
+            </tr>
+             
+               <tr>
+                 <th scope="row" class="dataset-label">Date of last modification (modified)</th>
+                 <td class="dataset-details">
+                     
+                     
+<span class="automatic-local-datetime" data-datetime="2019-06-17T08:41:20+0000">June 17, 2019, 10:41 AM (UTC+02:00)</span>
+                     
+                 </td>
+               </tr>
+             
+    
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Server State of the Dataset</th>
+        <td class="dataset-details">active</td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Keywords" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Keywords</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    
+    <tr>
+            <th scope="row" class="mdedit_normal">
+            Controlled Keywords
+           </th>
+            <td class="dataset-details"></td>
+        </tr><tr>
+        <th class="mdedit_normal" scope="row">
+          Used Thesauri</th>
+        <td class="dataset-details"></td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Spatial" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Geographic Aspects of the Resources</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Polygon</th>
+        <td class="dataset-details">
+
+
+<section class="module module-narrow dataset-map">
+<h2 class="module-heading"><i class="icon-medium icon-globe"></i> Dataset extent</h2>
+  
+
+
+<div class="dataset-map" data-module="dataset-map" data-extent="" data-module-site_url="&quot;https://data.ccca.ac.at/&quot;" data-module-map_config="{}">
+  <div id="dataset-map-container"></div>
+  <div id="dataset-map-attribution">
+    <div>Map data © <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>
+
+  <div>Tiles by <a href="http://www.mapquest.com/">MapQuest</a></div>
+
+
+  </div>
+</div>
+
+
+</section></td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Coverage</th>
+        <td class="dataset-details">-</td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Time" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Temporal Extent of the Resources</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Starting Date</th>
+        <td class="dataset-details"></td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Ending Date</th>
+        <td class="dataset-details"></td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Frequency</th>
+        <td class="dataset-details">unknown</td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Specifics" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Specific information about the resource(s) in this dataset</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Key-Value Information</th>
+        <td class="dataset-details">
+  -
+</td>
+      </tr>
+    
+              
+    
+              
+    
+              
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Quality" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Quality and applied methods</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Equivalent Scale</th>
+        <td class="dataset-details">-</td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Scale Distance</th>
+        <td class="dataset-details">-</td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Provenance</th>
+        <td class="dataset-details">-</td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Status of the resource(s)</th>
+        <td class="dataset-details"></td>
+      </tr>
+    
+          </tbody>
+           </table>
+         </div> 
+         <div id="Conformity" class="tab-pane fade">
+       
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th colspan="2" scope="row"><h4><i>Conformity</i></h4></th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Specification</th>
+        <td class="dataset-details"></td>
+      </tr>
+    <tr>
+        <th class="mdedit_normal" scope="row">
+          Degree</th>
+        <td class="dataset-details"></td>
+      </tr>
+    
+
+
+  
+  
+
+
+
+    </tbody>
+  </table>
+</div>
+</div></div></section>
+
+
+
+        </div>
+      </article>
+    
+  </div>
+
+
+            
+
+          </div>
+        
+      </div>
+    </div>
+  
+    
+
+<footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4 col-xs-6">
+        <a href="https://data.ccca.ac.at/dataset">
+          
+          <div class="statsnumber">
+            <span title="2,406">2.4k</span> <i class="icon-file"></i>
+          </div>
+          <p>Datasets</p>
+        </a>
+      </div>
+      <div class="col-sm-4 col-xs-6">
+        <a href="https://data.ccca.ac.at/organization">
+          
+          <div class="statsnumber">
+            <span>36</span> <i class="icon-user"></i>
+          </div>
+          <p>Organizations</p>
+        </a>
+      </div>
+      <div class="col-sm-4 col-xs-6">
+        <a href="https://data.ccca.ac.at/group">
+          
+          <div class="statsnumber">
+            <span>43</span> <i class="icon-tags"></i>
+          </div>
+          <p>Groups</p>
+        </a>
+      </div>
+    </div>
+    <hr style="width: 100%; color: white; height: 1px; background-color:white;">
+    <div class="row top-buffer">
+      <div class="col-md-3 col-xs-6">
+        <div>
+          <ul class="list-unstyled">
+            <li><a href="https://data.ccca.ac.at/group">Groups</a></li>
+            <li><a href="https://data.ccca.ac.at/organization">Organizations</a></li>
+            <li><a href="https://data.ccca.ac.at/dataset">Data</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <div>
+          <ul class="list-unstyled">
+            <li><a href="https://data.ccca.ac.at/about">About</a></li>
+            <li><a href="https://data.ccca.ac.at/contact">Contact</a></li>
+            <li><a href="https://data.ccca.ac.at/disclaimer">Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <div>
+          <ul class="list-unstyled">
+            <li><a href="http://docs.ckan.org/en/latest/api/index.html" target="_blank">API</a></li>
+            <li><a href="https://github.com/ccca-dc" target="_blank">Sourcecode</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-2 col-xs-6 col-md-offset-1">
+      <strong>Based on</strong> <a class="hide-text ckan-footer-logo" href="http://ckan.org/">CKAN</a>
+      </div>
+    </div>
+    <hr style="width: 100%; color: white; height: 1px; background-color:white;">
+    <div class="row">
+      <div class="col-md-3 col-xs-6">
+        <a href="http://www.re3data.org/repository/r3d100012288"><img class="img-responsive" src="landing_page-Dateien/re3data_badge.png"></a>
+      </div>
+      
+      <div class="col-md-4 col-xs-6">
+        <a href="https://forschungsinfrastruktur.bmbwf.gv.at/de/fi/ccca-data-centre_3392"><img class="img-responsive" src="landing_page-Dateien/forschungsinfrastruktur_logo.png"></a>
+      </div>
+      <div class="col-md-2 col-xs-6">
+        <a href="https://www.zamg.ac.at/"><img class="img-responsive" src="landing_page-Dateien/zamg_white_WBM_normal_kurz.png"></a>
+      </div>
+      <div class="col-md-2 col-md-offset-1 col-xs-4">
+        <a href="http://vsc.ac.at/"><img class="img-responsive" src="landing_page-Dateien/logo_vsc.gif"></a>
+      </div>
+    </div>
+  </div>
+  
+    
+  
+</footer>
+  
+    
+    
+    
+      
+    
+    
+  <!-- <script type='text/javascript' src='https://code.jquery.com/jquery-1.11.1.min.js?ver=1.11.1'></script> -->
+  <!-- <script type='text/javascript' src='/app.min.js'></script> -->
+  <!-- <script src="LivIconsEvo/js/LivIconsEvo.Tools.js"></script> -->
+  <!-- <script src="LivIconsEvo/js/LivIconsEvo.defaults.js"></script> -->
+  <!-- <script src="LivIconsEvo/js/LivIconsEvo.min.js"></script> -->
+
+
+
+  <script>document.getElementsByTagName('html')[0].className += ' js';</script>
+<script type="text/javascript" src="landing_page-Dateien/jquery.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/select2.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/image-upload.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/tracking.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/intro.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/dataset_map.js"></script>
+<script type="text/javascript" src="landing_page-Dateien/citation_copy.js"></script>
+</body></html>
