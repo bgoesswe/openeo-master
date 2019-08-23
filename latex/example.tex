@@ -45,7 +45,7 @@
 \usepackage[nonumberlist,acronym,section=section]{glossaries} % Enables the generation of glossaries and lists fo acronyms. This package has to be included last.
 % Define convenience functions to use the author name and the thesis title in the PDF document properties.
 \newcommand{\authorname}{Bernhard Gößwein} % The author name without titles.
-\newcommand{\thesistitle}{Designing a Framework gaining Repeatability for the openEO platform} % The title of the thesis. The English version should be used, if it exists.
+\newcommand{\thesistitle}{Designing a Framework Gaining Repeatability for the openEO Platform} % The title of the thesis. The English version should be used, if it exists.
 
 % Set PDF document properties
 \hypersetup{
@@ -75,7 +75,7 @@
 
 % For bachelor and master theses:
 %\setfirstassistant{Ao.Univ.Prof. Dipl.-Ing. Dr.techn.}{Andreas Rauber}{}{male}
-\setfirstassistant{Dr.}{Tomasz Miksa}{}{male}
+\setfirstassistant{Projektass. Dr.techn. Mag.}{Tomasz Miksa}{}{male}
 %\setthirdassistant{Pretitle}{Forename Surname}{Posttitle}{male}
 
 % For dissertations:
@@ -88,7 +88,7 @@
 % Required data.
 \setaddress{Vorderer Ödhof 1, 3062 Kirchstetten}
 \setregnumber{01026884}
-\setdate{01}{08}{2019} % Set date with 3 arguments: {day}{month}{year}.
+\setdate{23}{08}{2019} % Set date with 3 arguments: {day}{month}{year}.
 \settitle{\thesistitle}{Entwurf eines Frameworks zur Unterstützung von Reproduzierbarkeit für die openEO Plattform} % Sets English and German version of the title (both can be English or German). If your title contains commas, enclose it with additional curvy brackets (i.e., {{your title}}) or define it as a macro as done with \thesistitle.
 \setsubtitle{}{} % Sets English and German version of the subtitle (both can be English or German).
 
@@ -116,8 +116,8 @@
 \newcounter{tmp@cnt}
 
 \newcommand{\bgoesswe}[1]{#1}
-\newcommand{\bgoesswein}[1]{{\color{blue}#1}}
-\newcommand{\bgoessweindel}[1]{{\color{red}#1}}
+\newcommand{\bgoesswein}[1]{#1}
+\newcommand{\bgoessweindel}[1]{#1}
 
 \newcommand*\combine[1][2]{%
 	\refstepcounter{enumi}
@@ -214,7 +214,7 @@
 %\end{danksagung*}
 
 \begin{acknowledgements*}
-To my girlfriend Viola: Thank you very much for helping me through the stressful days of working on the thesis and for providing breaks and diversions when I needed them.\\ \\
+To my fiancee Viola: Thank you very much for helping me through the stressful days of working on the thesis and for providing breaks and diversions when I needed them.\\ \\
 To my family: Thank you for supporting me through my whole studying time and for motivating me to go on with the thesis. \\ \\
 To my colleagues of the Remote sensing research group: Thank you for patiently waiting for me to finish my studies and letting me work on a thesis within the openEO project. \\ \\
 To my colleagues at EODC: Thank you for providing me all resources I requested and letting me implement the solution on your system. \\ \\
@@ -240,7 +240,7 @@ In dieser Arbeit wird gezeigt, wie existierende Datenanbieter modifiziert werden
 
 Earth observation researchers use specialised computing services for satellite image processing offered by various data backends. The source of data is similar, for example Sentinel satellites operated by Copernicus and the European Space Agency. The way it is pre-processed, updated, corrected and later analysed may differ among the backends.
 Backends often lack mechanisms for data versioning, for example, data corrections are not tracked. Furthermore, an evolving software stack used for data processing remains a black box to researchers. Researchers have no means to identify why executions of the same code deliver different results. This hinders reproducibility of earth observation experiments.
-In this thesis, we present how existing earth observation backends can be modified to support reproducibility. The proposed extensions are based on recommendations of the Research Data Alliance regarding data identification and the VFramework for automated process provenance documentation. Additionally, we provide suggestions on how backends make the captured information accessable for scientists. We implemented these extensions at the Earth Observation Data Centre, a partner in the openEO consortium. We evaluated the solution on a variety of usage scenarios, providing also performance and storage measures to evaluate the impact of the modifications. The results indicate reproducibility can be supported with minimal performance and storage overhead.     
+In this thesis, we present how existing earth observation backends can be modified to support reproducibility. The proposed extensions are based on recommendations of the Research Data Alliance regarding data identification and the VFramework for automated process provenance documentation. Additionally, we provide suggestions on how backends make the captured information accessible to scientists. We implemented these extensions at the Earth Observation Data Centre, a partner in the openEO consortium. We evaluated the solution on a variety of usage scenarios, providing also performance and storage measures to evaluate the impact of the modifications. The results indicate reproducibility can be supported with minimal performance and storage overhead.     
 \end{abstract}
 
 % Select the language of the thesis, e.g., english or naustrian.
@@ -2731,7 +2731,7 @@ FROM queryjob as t WHERE job_id = '{}';
 %\end{table}
 
 The storage need for the evaluation is constant. The mean storage of the 50 runs per test case and the average storage size of the test cases are measured. Three parts of the implementation are storing data in the database. First, we store the context model in an additional column named "context\_model" in the job table. There is no element in the context model that can vary in size, except for the list of packages of Python, which didn't change during the evaluation. It takes an additional 1.043 kByte of size for every job entry. The same occurs at the queryjob table, which maps the query table and the job table and therefore contains the needed identifiers and timestamps for creation and modification. Every record of the queryjob table needs 0.113 kBytes of storage space.
-The query records have a varying size because of the string length of the parameters in the original query. The remaining parts of the query table are constant in storage usage. Each query record of the test cases needs between 1.520 kByte and 1.533 kByte of space. The original query makes up the biggest part in the query table (e.g. 959 Bytes of 1521.432 Bytes in test case 18). The reason for this is the high amount of XML annotations. In summary, the average additional storage needed by the \textit{Solution Backend} per job with a new query entry is 2.677 kBytes. If the used query is already in the query table, only additional 1.043 kBytes are needed by the \textit{Solution Backend}. {For EODC this are eligible numbers with the estimate of under five hundred queries and job executions per month (maximum additional 1.338 MBytes per month).}
+The query records have a varying size because of the string length of the parameters in the original query. The remaining parts of the query table are constant in storage usage. Each query record of the test cases needs between 1.520 kByte and 1.533 kByte of space. The original query makes up the biggest part in the query table (e.g. 959 Bytes of 1521.432 Bytes in test case 18). The reason for this is the high amount of XML annotations. In summary, the average additional storage needed by the \textit{Solution Backend} per job with a new query entry is 2.677 kBytes. If the used query is already in the query table, only additional 1.043 kBytes are needed by the \textit{Solution Backend}. {For EODC this are unproblematic numbers with the estimate of under five hundred queries and job executions per month (maximum additional 1.338 MBytes per month).}
 \newpage
 \section{Summary}
 The evaluation in this chapter showed how the solution tackles the goals of the research questions. First, it summarizes how the RDA recommendations are implemented in the solution, except for the migration recommendations (R14 and R15). The data identification implementation is then tested against exceptional test cases regarding data updates and data deletions at the backend. The evaluation shows that the solution can re-execute queries properly by returning old versions of updated files. The test cases show that the usage of the data PID as input data of a new job is superior to the current way of re-executing a job with the same process graph at EODC.
