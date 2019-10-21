@@ -24,6 +24,6 @@ requests==2.20.0
 Shapely==1.6.4.post1
 six==1.11.0
 urllib3==1.22
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wincertstore==0.2
 wrapt==1.10.11
